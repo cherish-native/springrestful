@@ -1,0 +1,50 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<title>上海市普陀区捺印指纹大数据智能分析和统计展示平台-登录页</title>
+<style type="text/css">
+body{height: 100%;width: 100%;margin: 0px;padding: 0px;font-family:"微软雅黑"; font-size:18px; color:#FFF; background:url(images/bodybg.png)}
+#bg{position:absolute; z-index:-1;}
+#top {height: 68px;width: 1125px;background: url(images/toptitle.png) no-repeat;margin: 50px auto 0px auto;}
+#main {height: 296px;width: 480px;margin: 120px auto 0 auto;background: url(images/loginbg.png) no-repeat;}
+#main #login {height: 183px;width: 416px;margin: 0px auto;padding-top: 90px;}
+.td1{width:31%; height:50px; line-height:50px; text-align:right;}
+.text1{width:190px;height:21px;}
+.an{height:70px; line-height:70px; text-align:center;}
+img{border:0;}
+</style>
+
+<script src="js/jquery.min.js"></script>
+  <script src="js/pages/index.js"></script>
+<script type="text/javascript">
+$(function(){
+	$('#bg').height($(window).height());
+	$('#bg').width($(window).width());
+});
+</script>
+</head>
+
+<body>
+<div id="bg">
+<div id="top"></div>
+<div id="main">
+  <div id="login">
+    <table width="100%" border="0">
+  <tr>
+    <td class="td1">用户名：</td>
+    <td><input class="text1" type="text" name="textfield" id="username" /></td>
+  </tr>
+  <tr>
+    <td class="td1">密&nbsp;&nbsp;&nbsp;码：</td>
+    <td><input class="text1" type="password" name="textfield2" id="password" /></td>
+  </tr>
+  <tr>
+    <td colspan="2" class="an"><a href="#" id="login-a"><img src="images/an-login.png" width="111" height="39" /></a></td>
+    </tr>
+    </table>
+
+  </div>
+</div>
+</body>
+</html>

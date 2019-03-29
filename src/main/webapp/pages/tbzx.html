@@ -1,0 +1,193 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>restful-spring</title>
+<script type="text/javascript" src="../js/jquery.min.js"></script>
+<script type="text/javascript" src="../js/echarts.min.js"></script>
+<script type="text/javascript" src="../js/echarts-gl.min.js"></script>
+<script type="text/javascript">
+
+	
+	/*
+		提交数据
+		注:更新、删除都属于提交数据
+	*/
+	function postUser()
+	{
+		$.ajax(
+				"user/saveUserInfo"
+                , {
+                      async: true
+			        , cache: false
+                    , dataType: "json"
+			        , data: { 
+			        		  "name": "jask"
+	            			, "password": "0109"
+	            			, "ip":"111"
+	            			, "marker":"aa"
+	                		}
+			        , type: "POST"
+			        , processData: true
+			        , success: function (data, textStatus, jqXHR) {
+			            if (textStatus == "success") {
+			            		alert(data.message);
+			            }
+			        }
+			        , error:function(XMLHttpRequest, textStatus, errorThrown){
+			        	 //调试用
+			        	 alert(XMLHttpRequest.status);
+			        	 alert(XMLHttpRequest.readyState);
+			        	 alert(textStatus);
+			        	 alert(errorThrown);
+		            }
+
+                }
+    	);
+		
+	}
+
+    var geoCoordMap = {
+        "长寿路派出所":[121.432991, 31.243231],
+        "甘泉路派出所":[121.437759, 31.26409],
+		"石泉路派出所":[121.427368,31.247561],
+		"真如派出所":[121.400803,31.25633],
+		"白玉路派出所":[121.418381,31.22974],
+		"东新路派出所":[121.426064,31.24349],
+		"宜川新村派出所":[121.439346,31.25861],
+		"中山北路派出所":[121.436501,31.25349],
+		"曹杨新村派出所":[121.410332,31.24192],
+		"万里派出所":[121.413986,31.26655],
+		"长风新村派出所":[121.398216,31.23004],
+		"真光路派出所":[121.385529,31.252609],
+		"长征派出所":[121.393044,31.24283],
+		"桃浦派出所":[121.365189,31.278799],
+		"白丽路派出所":[121.350769,31.282351],
+		"上海市公安局普陀分局":[121.397911,31.254089]
+    };
+
+    var convertData = function (data) {
+        var res = [];
+        for (var i = 0; i < data.length; i++) {
+            var geoCoord = geoCoordMap[data[i].name];
+            if (geoCoord) {
+                res.push({
+                    name:data[i].name,
+					value:geoCoord.concat(data[i].value)
+				})
+            }
+        }
+        return res;
+    };
+
+	$.get('../js/map/json/putuo.json',function (puTuoJson) {
+		echarts.registerMap('putuo',puTuoJson);
+        var chart = echarts.init(document.getElementById('main'));
+		chart.setOption({
+            tooltip: {
+                trigger: 'item',
+                formatter:function (data){
+                    var str = ""
+					str += data.data.name + "<br>" + "<span style='color:" + data.color + ";font-size: large'>" +data.data.value[2] + "</span>"
+					return str
+				}
+            },
+            visualMap: {
+                min: 0,
+                max: 1500,
+                color: ['#d94e5d','#eac736','#50a3ba'],
+                textStyle: {
+                    color: '#50a3ba'
+                }
+                /*left: 'left',
+                top: 'bottom',
+                text: ['High','Low'],
+                inRange: {
+                    color: ['lightskyblue','yellow', 'orangered']
+                },
+                calculable : true,
+				realtime:false*/
+            },
+			geo:{
+                map:'putuo',
+				label:{
+                    normal: {
+                        show: false
+                    }
+				},
+                itemStyle: {
+                    normal: {
+                        areaColor: '#FFFFFF',
+                        borderColor: '#d94e5d'
+                    },
+                    emphasis: {
+                        areaColor: '#FFFFFF'
+                    }
+                }
+			},
+		    series:[{
+				map:'putuo',
+                //type: 'map',
+				type:'scatter',
+                coordinateSystem: 'geo',
+                roam:true,
+				/*roam:false,
+				itemStyle:{
+				    normal:{
+				        label:{
+				            show:true
+						}
+					},
+					emphasis:{
+				        label:{
+				            show:false
+						}
+				    }
+				},*/
+                data:convertData([
+                    {name: '长寿路派出所', value: 100},
+                    {name: '甘泉路派出所', value: 1200},
+					{name: '石泉路派出所', value:500},
+					{name: '真如派出所',   value:200},
+					{name: '白玉路派出所',  value:12},
+					{name: '东新路派出所',  value:40},
+					{name: '宜川新村派出所',value:97},
+					{name: '中山北路派出所',value:50},
+					{name: '曹杨新村派出所',value:70},
+					{name: '万里派出所',value:342},
+					{name: '长风新村派出所',value:590},
+					{name: '真光路派出所',value:300},
+					{name: '长征派出所',value:876},
+					{name: '桃浦派出所',value:700},
+					{name: '白丽路派出所',value:90},
+					{name: '上海市公安局普陀分局',value:65}
+                ]),
+                symbolSize: 24,
+                label: {
+                    normal: {
+                        //formatter: '{b}',
+                        show: false
+                    },
+                    emphasis: {
+                        show: false
+                    }
+                },
+                itemStyle: {
+                    emphasis: {
+                        borderColor: '#FFFFFF',
+                        borderWidth: 1
+                    }
+                }
+			}]
+		})
+    })
+
+	$(function(){
+
+	})
+</script>
+</head>
+<body>
+	<div id="main" style="width: 800px;height:600px;"></div>
+</body>
+</html>
