@@ -17,10 +17,4 @@ public class ComponentConfig {
         StartListener startListener = new StartListener();
         return startListener;
     }
-
-    @Bean
-    public MonitorService monitorService(){
-        MonitorService monitorService = new MonitorService();
-        return monitorService;
-    }
 }

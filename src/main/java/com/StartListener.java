@@ -1,6 +1,5 @@
 package com;
 
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationListener;
 import org.springframework.context.event.ContextRefreshedEvent;
 
@@ -9,9 +8,6 @@ import org.springframework.context.event.ContextRefreshedEvent;
  * @since 2019/2/22
  */
 public class StartListener implements ApplicationListener<ContextRefreshedEvent> {
-
-    @Autowired
-    MonitorService monitorService;
 
     @Override
     public void onApplicationEvent(ContextRefreshedEvent event) {
