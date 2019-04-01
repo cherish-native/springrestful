@@ -1,5 +1,6 @@
 package com.controller.menu;
 
+import com.annotation.Aouth;
 import com.constant.Constant;
 import com.dao.SysModuleDao;
 import com.entity.SysModule;
@@ -9,7 +10,6 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
 
-import javax.servlet.http.HttpServletRequest;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -27,7 +27,8 @@ public class MenuController {
 
     @RequestMapping(value = "/getMenuList",method = RequestMethod.GET)
     @ResponseBody
-    public Map<String,Object> getMenuList(HttpServletRequest request){
+    @Aouth(code = "1201")
+    public Map<String,Object> getMenuList(){
 
         Map<String,Object> resultMap = new HashMap<>();
         try{

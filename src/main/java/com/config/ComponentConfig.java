@@ -2,9 +2,6 @@ package com.config;
 
 
 import com.StartListener;
-import com.esotericsoftware.kryo.Kryo;
-import com.esotericsoftware.kryo.serializers.BeanSerializer;
-import com.service.MonitorService;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 

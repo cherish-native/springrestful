@@ -3,6 +3,7 @@ package com.bootstrap;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.context.annotation.EnableAspectJAutoProxy;
 import org.springframework.web.servlet.View;
 import org.springframework.web.servlet.ViewResolver;
 import org.springframework.web.servlet.config.annotation.DefaultServletHandlerConfigurer;
@@ -21,7 +22,8 @@ import java.util.List;
  */
 @Configuration
 @EnableWebMvc
-@ComponentScan("com.controller")
+@EnableAspectJAutoProxy(proxyTargetClass =true)
+@ComponentScan(basePackages = "com.controller")
 public class WebConfig extends WebMvcConfigurerAdapter{
 
 
