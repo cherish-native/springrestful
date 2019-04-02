@@ -15,6 +15,8 @@ public class Config {
 
     private ZookeeperConfig zookeeperConfig;
 
+    private String apiUrl;
+
     @XmlElement(name = "web_config")
     public WebConfig getWebConfig() {
         return webConfig;
@@ -40,5 +42,14 @@ public class Config {
 
     public void setZookeeperConfig(ZookeeperConfig zookeeperConfig) {
         this.zookeeperConfig = zookeeperConfig;
+    }
+
+    @XmlElement(name = "api_url")
+    public String getApiUrl() {
+        return apiUrl;
+    }
+
+    public void setApiUrl(String apiUrl) {
+        this.apiUrl = apiUrl;
     }
 }

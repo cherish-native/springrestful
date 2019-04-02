@@ -11,7 +11,11 @@
         <password>root</password>
     </database_config>
 
+    <api_url>http://127.0.0.1:8081</api_url>
+
     <zookeeper_config>
         <connect_string>127.0.0.1:2181</connect_string>
     </zookeeper_config>
+
+
 </config>

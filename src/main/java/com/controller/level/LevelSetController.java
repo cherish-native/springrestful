@@ -1,7 +1,9 @@
 package com.controller.level;
 
+import com.config.Config;
 import com.support.HttpComponent;
 import com.support.HttpResult;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
@@ -17,6 +19,10 @@ import java.util.Map;
 @Controller
 @RequestMapping(value = "/pages/main/level")
 public class LevelSetController {
+
+
+    @Autowired
+    private Config config;
 
     @RequestMapping(value = "/personLevelSet",method = RequestMethod.POST)
     @ResponseBody
@@ -37,7 +43,7 @@ public class LevelSetController {
             personLevelBean.setMinAge(minAge);
             personLevelBean.setMaxAge(maxAge);
             personLevelBean.setCriminalRecord(criminalRecord);
-            HttpResult httpResult = HttpComponent.rpc_post("",HttpComponent.registerKryo(personLevelBean));
+            HttpResult httpResult = HttpComponent.rpc_post(config.getApiUrl() + "/PersonLevelSetPage",HttpComponent.registerKryo(personLevelBean));
             if(httpResult.getSuccess()){
                 resultMap.put("success",true);
                 resultMap.put("result",httpResult.getResult());
