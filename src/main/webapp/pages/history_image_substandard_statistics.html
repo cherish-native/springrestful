@@ -1,0 +1,173 @@
+<!DOCTYPE html>
+<html style="height: 100%">
+<head>
+    <meta charset="utf-8">
+    <title>历史未达标数据统计分析</title>
+    <link rel="stylesheet" type="text/css" href="../easyui/themes/bootstrap/easyui.css"/>
+    <link rel="stylesheet" type="text/css" href="../easyui/themes/icon.css"/>
+    <script type="text/javascript" src="../js/jquery.min.js"></script>
+    <script type="text/javascript" src="../js/echarts.min.js"></script>
+    <script type="text/javascript" src="../easyui/jquery.easyui.min.js"></script>
+    <script type="text/javascript" src="../easyui/easyui-lang-zh_CN.js"></script>
+</head>
+<body style="height: 100%; margin: 0;padding: 10px;">
+<div id="searchDiv">
+    <table>
+        <tr>
+            <td width="150" align="right">
+                <a href="#" onclick="selectYearOrMonth('year')" class="easyui-linkbutton" style="width: 50px;" data-options="toggle:true,group:'g1',selected:true">年</a>
+                <a href="#" onclick="selectYearOrMonth('month')" class="easyui-linkbutton" style="width: 50px;" data-options="toggle:true,group:'g1'">月</a>
+            </td>
+            <td width="100" align="right">采集单位：</td>
+            <td>
+                <select id="departCodeSelect" class="easyui-combobox" style="width: 150px" data-options="editable:false" name="language">
+                    <option value="1">上海市普陀区分局</option>
+                    <option value="2">真光路派出所</option>
+                </select>
+            </td>
+            <td width="100" align="right">时间范围：</td>
+            <td width="205">
+                <div id="yearSelectDiv" style="display: inline">
+                    <select id="yearSelect" style="width: 80px">
+                    </select>年
+                </div>
+                <div id="monthSelectDiv" style="display: inline">
+                    <select id="monthSelect" class="easyui-combobox" style="width: 80px" data-options="editable:false" name="language">
+                        <option value="01">01</option>
+                        <option value="02">02</option>
+                        <option value="03">03</option>
+                        <option value="04">04</option>
+                        <option value="05">05</option>
+                        <option value="06">06</option>
+                        <option value="07">07</option>
+                        <option value="08">08</option>
+                        <option value="09">09</option>
+                        <option value="10">10</option>
+                        <option value="11">11</option>
+                        <option value="12">12</option>
+                    </select>月
+                </div>
+            </td>
+            <td>
+                <a href="#" id="search" class="easyui-linkbutton" data-options="toggle:true">查询</a>
+            </td>
+        </tr>
+    </table>
+</div>
+<div id="container" style="height: 80%"></div>
+<script type="text/javascript">
+    var curType = "year";
+    $(function(){
+        var totalHeight = document.body.clientHeight;
+        //设置图表高度
+        $('#container').height(totalHeight-$('#searchDiv').height()-10);
+        $('#yearSelect').combobox({
+            valueField: 'id',
+            textField: 'text',
+            editable: false
+        });
+
+        // //设置年份选择下拉框数据
+        var date=new Date;
+        var curYear=date.getFullYear();
+        var themecombo2 = [];
+        for(var i=curYear;i>(curYear-30);i--){
+            themecombo2.push({ "text": i, "id": i});
+        }
+        $("#yearSelect").combobox("loadData", themecombo2);
+        $("#yearSelect ").combobox('select', curYear);
+        $('#monthSelectDiv').hide();
+
+        loadData();
+        //加载数据
+        function loadData(){
+            var dataStr = $('#yearSelect').combobox('getValue');
+            if(curType == 'month'){
+                dataStr += "-" + $('#monthSelect').combobox('getValue');
+            }
+            var departCode = $('#departCodeSelect').combobox('getValue');
+            $.ajax({
+                url: "statistics/historyImageSubstandardStatistics",
+                data: {
+                    'dateStr' : dataStr,
+                    'departCode' : departCode
+                },
+                success : function (result) {
+                    generateChart(result);
+                }
+            });
+        }
+
+        //生成图表
+        function generateChart(result) {
+            var dom = document.getElementById("container");
+            var myChart = echarts.init(dom);
+            var app = {};
+            var title = "【" + $('#yearSelect').combobox('getValue') + "年";
+            if(curType == 'month'){
+                title += $('#monthSelect').combobox('getValue') + "月";
+            }
+            title += "】采集未达标";
+            option = null;
+            option = {
+                title: {
+                    text: title
+                },
+                tooltip : {
+                    trigger: 'axis',
+                    axisPointer: {
+                        type: 'cross',
+                        label: {
+                            backgroundColor: '#6a7985'
+                        }
+                    }
+                },
+                xAxis: {
+                    type: 'category',
+                    boundaryGap: false,
+                    data: result.xAxisData
+                },
+                yAxis: {
+                    min: 0,
+                    max: 100,
+                    type: 'value',
+                    axisLabel: {
+                        show: true,
+                        interval: 'auto',
+                        formatter: '{value} %'
+                    },
+                },
+                color:['#00BFFF'],
+                series: [{
+                    // areaStyle: {normal: {}},
+                    data: result.yAxisData,
+                    // label: {
+                    //     normal: {
+                    //         show: true,
+                    //         position: 'top'
+                    //     }
+                    // },
+                    type: 'line'
+                }]
+            };
+            if (option && typeof option === "object") {
+                myChart.setOption(option, true);
+            }
+        }
+
+        $("#search").on("click",function(){
+            loadData();
+        });
+    });
+
+    function selectYearOrMonth(flag) {
+        curType = flag;
+        if(flag == 'year'){
+            $('#monthSelectDiv').hide();
+        }else{
+            $('#monthSelectDiv').show();
+        }
+    }
+</script>
+</body>
+</html>
