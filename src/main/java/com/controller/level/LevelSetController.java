@@ -46,11 +46,33 @@ public class LevelSetController {
             HttpResult httpResult = HttpComponent.rpc_post(config.getApiUrl() + "/PersonLevelSetPage",HttpComponent.registerKryo(personLevelBean));
             if(httpResult.getSuccess()){
                 resultMap.put("success",true);
+                resultMap.put("message","设置成功");
                 resultMap.put("result",httpResult.getResult());
             }else{
                 throw new Exception(httpResult.getMessage());
             }
 
+        }catch(Exception ex){
+            resultMap.put("success",false);
+            resultMap.put("message",ex.getMessage());
+        }
+        return resultMap;
+    }
+
+
+
+    @RequestMapping(value = "/isSetPersonLevel",method = RequestMethod.GET)
+    @ResponseBody
+    public Map<String,Object> isSetPersonLevel(){
+        Map<String,Object> resultMap = new HashMap<>();
+        try{
+            HttpResult httpResult = HttpComponent.rpc_get(config.getApiUrl() + "/CheckSetPersonLevelPage");
+            if(httpResult.getSuccess()){
+                resultMap.put("success",true);
+                resultMap.put("result",httpResult.getResult());
+            }else{
+                throw new Exception(httpResult.getMessage());
+            }
         }catch(Exception ex){
             resultMap.put("success",false);
             resultMap.put("message",ex.getMessage());

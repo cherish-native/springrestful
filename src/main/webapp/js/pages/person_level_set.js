@@ -288,14 +288,16 @@ jQuery(function($){
             && strMinAge.length <=0
             && strMaxAge.length <=0
             && strCriminalRecord.length <=0){
-            alert("设置完成! 所有设置项均未选择,所有被捺印人均为C级")
+            if(!isSetLevel()){
+                alert("所有设置项均未选择,所有被捺印人默认均为C级")
+            }
             return
         }
 
         $.ajax(
             "/pages/main/level/personLevelSet"
             , {
-                async: true
+                async: false
                 , cache: false
                 , dataType: "json"
                 , data: params
@@ -303,7 +305,7 @@ jQuery(function($){
                 , success: function (data, textStatus, xhr) {
                     if (textStatus == "success") {
                         if(data.success){
-                            alert("设置成功")
+                            alert(data.message)
                             window.location.reload()
                         }
                         else {
@@ -321,3 +323,33 @@ jQuery(function($){
     })
 
 })
+
+function isSetLevel(){
+
+    var bStr = false
+    $.ajax(
+        "/pages/main/level/isSetPersonLevel"
+        , {
+            async: false
+            , cache: false
+            , dataType: "json"
+            , type: "GET"
+            , success: function (data, textStatus, xhr) {
+                if (textStatus == "success") {
+                    if(data.success){
+                        if(data.result > 0){
+                            bStr = true
+                        }
+                    }else {
+                        alert(data.message)
+                    }
+                }
+            }
+            , error:function(XMLHttpRequest, textStatus, errorThrown){
+                console.log(textStatus)
+                console.log(errorThrown)
+            }
+        }
+    );
+    return bStr;
+}
