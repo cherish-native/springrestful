@@ -6,6 +6,7 @@ import com.esotericsoftware.kryo.serializers.BeanSerializer;
 import org.apache.http.HttpStatus;
 import org.apache.http.client.config.RequestConfig;
 import org.apache.http.client.methods.CloseableHttpResponse;
+import org.apache.http.client.methods.HttpGet;
 import org.apache.http.client.methods.HttpPost;
 import org.apache.http.entity.ByteArrayEntity;
 import org.apache.http.impl.client.CloseableHttpClient;
@@ -41,12 +42,23 @@ public class HttpComponent {
     private static CloseableHttpClient httpClient = HttpClients.custom().setDefaultRequestConfig(defaultRequestConfig).build();
 
     public static HttpResult rpc_post(String url,byte[] bytes) throws IOException {
-
         HttpResult httpResult = new HttpResult();
         HttpPost httpPost = new HttpPost(url);
-
         httpPost.setEntity(new ByteArrayEntity(bytes));
         CloseableHttpResponse closeableHttpResponse = httpClient.execute(httpPost);
+        buildHttpResult(httpResult,closeableHttpResponse);
+        return httpResult;
+    }
+
+    public static HttpResult rpc_get(String url) throws IOException{
+        HttpResult httpResult = new HttpResult();
+        HttpGet httpGet = new HttpGet(url);
+        CloseableHttpResponse closeableHttpResponse = httpClient.execute(httpGet);
+        buildHttpResult(httpResult,closeableHttpResponse);
+        return httpResult;
+    }
+
+    private static HttpResult buildHttpResult(HttpResult httpResult,CloseableHttpResponse closeableHttpResponse) throws IOException {
         if(closeableHttpResponse.getStatusLine().getStatusCode() == HttpStatus.SC_OK){
 
             ObjectMapper mapper = new ObjectMapper();
