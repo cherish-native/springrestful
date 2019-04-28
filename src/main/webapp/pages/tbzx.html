@@ -8,102 +8,148 @@
 <script type="text/javascript" src="../js/echarts-gl.min.js"></script>
 <script type="text/javascript">
 	$(function(){
+		var responseData = null;
+	    var dataArray = [
+            {name: '长寿所', value:0},
+            {name: '甘泉所', value:0},
+            {name: '石泉所', value:0},
+            {name: '真如所', value:0},
+            {name: '白玉所', value:0},
+            {name: '东新所', value:0},
+            {name: '宜川所', value:0},
+            {name: '中山所', value:0},
+            {name: '曹杨所', value:0},
+            {name: '万里所', value:0},
+            {name: '长风所', value:0},
+            {name: '真光所', value:0},
+            {name: '长征所', value:0},
+            {name: '桃浦所', value:0},
+            {name: '白丽所', value:0}
+        ];
+		//获取地图数据
+		$.ajax({
+            url: "statistics/imageQualityStatisticsDay",
+            success : function (result) {
+                for(var i=0;i<dataArray.length;i++){
+                    var name = dataArray[i].name;
+                    var obj = result[name];
+                    if(obj){
+                        dataArray[i].value = obj.scoreAverage;
+					}
+				}
+                responseData = result;
+                // var seriesData = result.series;
+                // for(var i=0;i<seriesData.length;i++){
+                //     series[i].data = seriesData[i];
+                // }
+                showMap();
+            }
+        });
 
+		//展示地图
+	    function showMap(){
+            var dom = document.getElementById("container");
+            var myChart = echarts.init(dom);
+            var app = {};
+            option = null;
+            myChart.showLoading();
+            $.get('../js/map/json/putuo.json', function (geoJson) {
+
+                myChart.hideLoading();
+
+                echarts.registerMap('putuo', geoJson);
+
+                myChart.setOption(option = {
+                    title: {
+                        text: '上海市普陀区'
+                    },
+                    tooltip: {
+                        trigger: 'item',
+                        formatter: function (params) {
+							var obj = responseData[params.name]
+                            var result = params.name+'<br/>';
+							if(obj){
+                                result += '平均分:' + obj.scoreAverage + '<br/>';
+                                result += '总数:' + obj.count + '<br/>';
+                                result += '优秀:' + obj.countLevelA + '<br/>';
+                                result += '良好:' + obj.countLevelB + '<br/>';
+                                result += '一般:' + obj.countLevelC + '<br/>';
+                                result += '较差:' + obj.countLevelD + '<br/>';
+                                result += '很差:' + obj.countLevelE + '<br/>';
+							}else{
+                                result += '平均分:0<br/>';
+                                result += '总数:0<br/>';
+                                result += '优秀:0<br/>';
+                                result += '良好:0<br/>';
+                                result += '一般:0<br/>';
+                                result += '较差:0<br/>';
+                                result += '很差:0<br/>';
+							}
+                            return result;
+                        }
+                    },
+                    toolbox: {
+                        show: true,
+                        orient: 'vertical',
+                        left: 'right',
+                        top: 'center',
+                        feature: {
+                            dataView: {readOnly: false},
+                            restore: {},
+                            saveAsImage: {}
+                        }
+                    },
+                    visualMap: {
+                        min: 0,
+                        max: 100,
+                        text:['高','低'],
+                        realtime: false,
+                        calculable: true,
+                        inRange: {
+                            color: ['red', 'orange', 'yellow', 'green', 'lightskyblue']
+                        }
+                    },
+                    series: [
+                        {
+                            name: '上海市普陀区捺印数据质量',
+                            type: 'map',
+                            mapType: 'putuo', // 自定义扩展图表类型
+                            itemStyle:{
+                                normal:{label:{show:true}},
+                                emphasis:{label:{show:true}}
+                            },
+                            data: dataArray,
+                            // 自定义名称映射
+                            nameMap: {
+                                'changshou': '长寿所',
+                                'ganquan': '甘泉所',
+                                'shiquan': '石泉所',
+                                'zhenru': '真如所',
+                                'baiyu': '白玉所',
+                                'dongxin': '东新所',
+                                'yichuan': '宜川所',
+                                'zhongshan': '中山所',
+                                'caoyang': '曹杨所',
+                                'wanli': '万里所',
+                                'changfeng': '长风所',
+                                'zhenguang': '真光所',
+                                'changzheng': '长征所',
+                                'taopu': '桃浦所',
+                                'baili': '白丽所'
+                            }
+                        }
+                    ]
+                });
+            });;
+            if (option && typeof option === "object") {
+                myChart.setOption(option, true);
+            }
+		}
         var totalHeight = window.screen.availHeight;
         //设置图表高度
         $('#container').height(totalHeight - 300);
 
-        var dom = document.getElementById("container");
-        var myChart = echarts.init(dom);
-        var app = {};
-        option = null;
-        myChart.showLoading();
-        $.get('../js/map/json/putuo.json', function (geoJson) {
 
-            myChart.hideLoading();
-
-            echarts.registerMap('putuo', geoJson);
-
-            myChart.setOption(option = {
-                title: {
-                    text: '上海市普陀区'
-                },
-                tooltip: {
-                    trigger: 'item',
-                    formatter: '{b}<br/>平均分:{c}<br/>总数:260<br/>优秀:180<br/>良好:40<br/>一般:30<br/>较差:5<br/>很差:5'
-                },
-                toolbox: {
-                    show: true,
-                    orient: 'vertical',
-                    left: 'right',
-                    top: 'center',
-                    feature: {
-                        dataView: {readOnly: false},
-                        restore: {},
-                        saveAsImage: {}
-                    }
-                },
-                visualMap: {
-                    min: 0,
-                    max: 100,
-                    text:['高','低'],
-                    realtime: false,
-                    calculable: true,
-                    inRange: {
-                        color: ['red', 'orange', 'yellow', 'green', 'lightskyblue']
-                    }
-                },
-                series: [
-                    {
-                        name: '上海市普陀区捺印数据质量',
-                        type: 'map',
-                        mapType: 'putuo', // 自定义扩展图表类型
-                        itemStyle:{
-                            normal:{label:{show:true}},
-                            emphasis:{label:{show:true}}
-                        },
-                        data:[
-							{name: '长寿所', value: 100},
-							{name: '甘泉所', value: 5},
-							{name: '石泉所', value:3},
-							{name: '真如所', value:20},
-							{name: '白玉所', value:36},
-							{name: '东新所', value:25},
-							{name: '宜川所', value:35},
-							{name: '中山所', value:66},
-							{name: '曹杨所', value:55},
-							{name: '万里所', value:33},
-							{name: '长风所', value:86},
-							{name: '真光所', value:72},
-							{name: '长征所', value:53},
-							{name: '桃浦所', value:39},
-							{name: '白丽所', value:89}
-						],
-                        // 自定义名称映射
-                        nameMap: {
-                            'changshou': '长寿所',
-                            'ganquan': '甘泉所',
-                            'shiquan': '石泉所',
-                            'zhenru': '真如所',
-                            'baiyu': '白玉所',
-                            'dongxin': '东新所',
-                            'yichuan': '宜川所',
-                            'zhongshan': '中山所',
-                            'caoyang': '曹杨所',
-                            'wanli': '万里所',
-                            'changfeng': '长风所',
-                            'zhenguang': '真光所',
-                            'changzheng': '长征所',
-                            'taopu': '桃浦所',
-                            'baili': '白丽所'
-                        }
-                    }
-                ]
-            });
-        });;
-        if (option && typeof option === "object") {
-            myChart.setOption(option, true);
-        }
 	})
 </script>
 </head>

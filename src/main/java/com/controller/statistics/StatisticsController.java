@@ -1,5 +1,8 @@
 package com.controller.statistics;
 
+import com.service.StatisticService;
+import com.util.DateUtil;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
@@ -14,6 +17,20 @@ import java.util.*;
 @RequestMapping(value = "/pages/statistics")
 public class StatisticsController {
 
+    @Autowired
+    private StatisticService statisticService;
+
+    /**
+     * 获取每日图像质量统计（首页地图展示）
+     * @return
+     */
+    @RequestMapping("/imageQualityStatisticsDay")
+    @ResponseBody
+    public Map<String,Object> getImageQualityStatisticsDay(){
+        int date = Integer.parseInt(DateUtil.getDateStr(new Date(), DateUtil.PATTERN_YYYYMMDD));
+        Map<String, Object> result = statisticService.getImageQualityStatisticsDay(date);
+        return result;
+    }
 
     /**
      * 历史图像质量统计
