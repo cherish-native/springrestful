@@ -25,23 +25,7 @@ public class StatisticServiceImpl implements StatisticService {
         List<StatisticQualityDay> statisticQualityDays = statisticQualityDayDao.findByStatisticTime(date);
         if(statisticQualityDays != null && statisticQualityDays.size() > 0){
             for(StatisticQualityDay statisticQualityDay : statisticQualityDays){
-                StatisticQualityDay temp = (StatisticQualityDay)tempMap.get(statisticQualityDay.getDepartName());
-                if(temp == null){
-                    tempMap.put(statisticQualityDay.getDepartName(), statisticQualityDay);
-                }else{
-                    //非空表示同时存在强制通过和非强制通过的数据，需统计总数和平均分
-                    float totalScore = statisticQualityDay.getCount() * Float.parseFloat(statisticQualityDay.getScoreAverage());
-                    float totalScoreTemp = statisticQualityDay.getCount() * Float.parseFloat(temp.getScoreAverage());
-                    int scoreAverage = (int)((totalScore + totalScoreTemp) / (statisticQualityDay.getCount() + temp.getCount()));
-                    temp.setCount(statisticQualityDay.getCount() + temp.getCount());
-                    temp.setScoreAverage(scoreAverage+"");
-                    temp.setCountLevelA(temp.getCountLevelA() + statisticQualityDay.getCountLevelA());
-                    temp.setCountLevelB(temp.getCountLevelB() + statisticQualityDay.getCountLevelB());
-                    temp.setCountLevelC(temp.getCountLevelC() + statisticQualityDay.getCountLevelC());
-                    temp.setCountLevelD(temp.getCountLevelD() + statisticQualityDay.getCountLevelD());
-                    temp.setCountLevelE(temp.getCountLevelE() + statisticQualityDay.getCountLevelE());
-                    tempMap.put(statisticQualityDay.getDepartName(), temp);
-                }
+                tempMap.put(statisticQualityDay.getDepartName(), statisticQualityDay);
             }
         }
         return tempMap;

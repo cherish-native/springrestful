@@ -53,9 +53,13 @@ public class StatisticQualityDay {
      */
     private Integer countLevelE;
     /**
-     * 是否强制通过 0:否 1:是
+     * 强制通过总数
      */
-    private Integer isCompelPass;
+    private Integer isCompelPassCount;
+    /**
+     * 非强制通过总数
+     */
+    private Integer unCompelPassCount;
     /**
      * 总数
      */
@@ -167,13 +171,22 @@ public class StatisticQualityDay {
         return countLevelE;
     }
 
-    public void setIsCompelPass(Integer isCompelPass) {
-        this.isCompelPass = isCompelPass;
+    public void setIsCompelPassCount(Integer isCompelPassCount) {
+        this.isCompelPassCount = isCompelPassCount;
     }
 
-    @Column(name = "is_compel_pass")
-    public Integer getIsCompelPass() {
-        return isCompelPass;
+    @Column(name = "is_compel_pass_count")
+    public Integer getIsCompelPassCount() {
+        return isCompelPassCount;
+    }
+
+    public void setUnCompelPassCount(Integer unCompelPassCount) {
+        this.unCompelPassCount = unCompelPassCount;
+    }
+
+    @Column(name = "un_compel_pass_count")
+    public Integer getUnCompelPassCount() {
+        return unCompelPassCount;
     }
 
     public void setCount(Integer count) {
