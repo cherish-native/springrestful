@@ -9,6 +9,7 @@ import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
 
+import javax.servlet.http.HttpServletRequest;
 import java.text.SimpleDateFormat;
 import java.util.*;
 
@@ -40,8 +41,8 @@ public class StatisticsController extends BaseController {
      */
     @RequestMapping("/gatherQualityExamineList")
     @ResponseBody
-    public DataGridReturn gatherQualityExamineList(String departCode, String beginDate, String endDate) throws Exception {
-        return statisticService.getGatherQualityExamineList(departCode, beginDate, endDate, getPagination());
+    public DataGridReturn gatherQualityExamineList(String departCode, String beginDate, String endDate, HttpServletRequest request) throws Exception {
+        return statisticService.getGatherQualityExamineList(departCode, beginDate, endDate, getPagination(request));
     }
 
     /**

@@ -11,14 +11,11 @@ import javax.servlet.http.HttpServletRequest;
 
 public class BaseController {
 
-    @Autowired
-    private HttpServletRequest request;
-
     /**
      * 获取分页信息
      * @return
      */
-    public Pageable getPagination(){
+    public Pageable getPagination(HttpServletRequest request){
         String pageStr = request.getParameter("page");
         String sizeStr = request.getParameter("rows");
         int page = 0;
