@@ -8,8 +8,17 @@
     <script type="text/javascript" src="/easyui/jquery.min.js"></script>
     <script type="text/javascript" src="/easyui/jquery.easyui.min.js"></script>
     <script type="text/javascript" src="/easyui/easyui-lang-zh_CN.js"></script>
+    <script type="text/javascript" src="/js/index.js"></script>
     <script>
         $(function(){
+            var size = {
+                width : document.documentElement.clientWidth,
+                height : document.documentElement.clientHeight
+            }
+
+            function fixWidthWithOptWidth(percent) {
+                return  Math.round((Number(size.width-optwidth)) * percent);
+            }
 
             $("#search").on("click",function(){
                 var beginDate = $('#beginDate').datebox('getValue');
@@ -32,7 +41,7 @@
                 width : document.documentElement.clientWidth,
                 height : document.documentElement.clientHeight
             };
-
+            optwidth = 0;
             $('#departCodeSelect').combobox({
                 url: 'sysDepart/fuzzySearchDepart',  //远程访问服务器端的地址
                 editable: false,  //设置文本区域不能被编辑
@@ -47,14 +56,14 @@
                 height:size.height - $('#searchDiv').height() - 20,
                 columns:[[
                     {field:"id",title:"ID",hidden:true},
-                    {field:"departName",title:"采集单位"},
-                    {field:"gatheruserName",title:"采集人"},
-                    {field:"count",title:"采集总量"},
-                    {field:"countLevelA",title:"优秀"},
-                    {field:"countLevelB",title:"良好"},
-                    {field:"countLevelC",title:"一般"},
-                    {field:"countLevelD",title:"较差"},
-                    {field:"countLevelE",title:"很差"}
+                    {field:"departName",title:"采集单位",width:fixWidthWithOptWidth(0.25)},
+                    {field:"gatheruserName",title:"采集人",width:fixWidthWithOptWidth(0.15)},
+                    {field:"count",title:"采集总量",width:fixWidthWithOptWidth(0.09)},
+                    {field:"countLevelA",title:"优秀",width:fixWidthWithOptWidth(0.09)},
+                    {field:"countLevelB",title:"良好",width:fixWidthWithOptWidth(0.09)},
+                    {field:"countLevelC",title:"一般",width:fixWidthWithOptWidth(0.09)},
+                    {field:"countLevelD",title:"较差",width:fixWidthWithOptWidth(0.09)},
+                    {field:"countLevelE",title:"很差",width:fixWidthWithOptWidth(0.09)}
                 ]],
                 pagination : false,
                 rownumbers:true
