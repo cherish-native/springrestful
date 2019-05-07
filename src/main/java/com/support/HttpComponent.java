@@ -65,7 +65,7 @@ public class HttpComponent {
             HashMap<String,Object> hashMap = mapper.readValue(EntityUtils.toString(closeableHttpResponse.getEntity()), HashMap.class);
             if(Boolean.valueOf(hashMap.get("success").toString())){
                 httpResult.setSuccess(true);
-                httpResult.setResult(hashMap.get("result").toString());
+                httpResult.setResult(hashMap.get("result"));
             }else{
                 httpResult.setSuccess(false);
                 httpResult.setMessage(hashMap.get("message").toString());

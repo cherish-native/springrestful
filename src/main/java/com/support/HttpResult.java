@@ -4,10 +4,10 @@ package com.support;
  * @author <a href="yuchen_1997_200486@126.com">yuchen</a>.
  * @since 2019/3/28
  */
-public class HttpResult {
+public class HttpResult<T> {
 
     public boolean success;
-    public String result;
+    public T result;
     public String message;
 
     public boolean getSuccess() {
@@ -18,11 +18,11 @@ public class HttpResult {
         this.success = success;
     }
 
-    public String getResult() {
+    public T getResult() {
         return result;
     }
 
-    public void setResult(String result) {
+    public void setResult(T result) {
         this.result = result;
     }
 
