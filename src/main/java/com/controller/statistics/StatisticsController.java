@@ -1,5 +1,7 @@
 package com.controller.statistics;
 
+import com.controller.BaseController;
+import com.entity.vo.DataGridReturn;
 import com.service.StatisticService;
 import com.util.DateUtil;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -15,7 +17,7 @@ import java.util.*;
  */
 @Controller
 @RequestMapping(value = "/pages/statistics")
-public class StatisticsController {
+public class StatisticsController extends BaseController {
 
     @Autowired
     private StatisticService statisticService;
@@ -30,6 +32,16 @@ public class StatisticsController {
         int date = Integer.parseInt(DateUtil.getDateStr(new Date(), DateUtil.PATTERN_YYYYMMDD));
         Map<String, Object> result = statisticService.getImageQualityStatisticsDay(date);
         return result;
+    }
+
+    /**
+     * 采集质量考核列表
+     * @return
+     */
+    @RequestMapping("/gatherQualityExamineList")
+    @ResponseBody
+    public DataGridReturn gatherQualityExamineList(String departCode, String beginDate, String endDate) throws Exception {
+        return statisticService.getGatherQualityExamineList(departCode, beginDate, endDate, getPagination());
     }
 
     /**

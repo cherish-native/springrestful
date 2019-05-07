@@ -1,0 +1,91 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <title>采集质量考核</title>
+    <link rel="stylesheet" type="text/css" href="/easyui/themes/bootstrap/easyui.css"/>
+    <link rel="stylesheet" type="text/css" href="/easyui/themes/icon.css"/>
+    <script type="text/javascript" src="/easyui/jquery.min.js"></script>
+    <script type="text/javascript" src="/easyui/jquery.easyui.min.js"></script>
+    <script type="text/javascript" src="/easyui/easyui-lang-zh_CN.js"></script>
+    <script>
+        $(function(){
+
+            $("#search").on("click",function(){
+                var beginDate = $('#beginDate').datebox('getValue');
+                var endDate = $('#endDate').datebox('getValue');
+                var queryParams = {
+                    "beginDate": beginDate,
+                    "endDate" : endDate,
+                    "departCode" :$('#departCodeSelect').combobox('getValue')
+                };
+                $('#gatherQualityList').datagrid('load',queryParams);
+            });
+
+            $("#reset").on("click",function(){
+                $('#beginDate').datebox('setValue', '');
+                $('#endDate').datebox('setValue', '');
+                $('#departCodeSelect').combobox('setValue', '');
+            });
+
+            var size = {
+                width : document.documentElement.clientWidth,
+                height : document.documentElement.clientHeight
+            };
+
+            $('#departCodeSelect').combobox({
+                url: 'sysDepart/fuzzySearchDepart',  //远程访问服务器端的地址
+                editable: false,  //设置文本区域不能被编辑
+                valueField: 'id',  //显示数据的键的值
+                textField: 'text' //显示数据的文本的值
+            })
+
+            //加载列表
+            $('#gatherQualityList').datagrid({
+                url:'statistics/gatherQualityExamineList',
+                width:size.width-20,
+                height:size.height - $('#searchDiv').height() - 20,
+                columns:[[
+                    {field:"id",title:"ID",hidden:true},
+                    {field:"departName",title:"采集单位"},
+                    {field:"gatheruserName",title:"采集人"},
+                    {field:"count",title:"采集总量"},
+                    {field:"countLevelA",title:"优秀"},
+                    {field:"countLevelB",title:"良好"},
+                    {field:"countLevelC",title:"一般"},
+                    {field:"countLevelD",title:"较差"},
+                    {field:"countLevelE",title:"很差"}
+                ]],
+                pagination : false,
+                rownumbers:true
+            });
+
+        });
+    </script>
+</head>
+<body>
+<div id="searchDiv">
+    <table>
+        <tr>
+            <td width="100" align="right">采集单位：</td>
+            <td>
+                <select id="departCodeSelect" style="width: 150px">
+                </select>
+            </td>
+            <td width="100" align="right">时间范围：</td>
+            <td width="350">
+                <input id="beginDate" data-options="editable:false" class="easyui-datebox"></input> 到 <input id="endDate" data-options="editable:false"  class="easyui-datebox"></input>
+            </td>
+            <td>
+                <a href="#" id="search" class="easyui-linkbutton" data-options="toggle:true">查询</a>
+
+                <a href="#" id="reset" class="easyui-linkbutton" data-options="toggle:true">重置</a>
+            </td>
+        </tr>
+    </table>
+</div>
+<div>
+    <table id="gatherQualityList"></table>
+</div>
+</body>
+</html>
