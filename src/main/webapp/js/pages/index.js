@@ -3,7 +3,6 @@
  * @date 2019-03
  * loginIn
  */
-
 jQuery(function($) {
 
     $('#username').focus()
@@ -53,7 +52,7 @@ function login(username,password){
         return
     }else{
         $.ajax(
-            "/pages/user/login"
+            "pages/user/login"
             , {
                 async: true
                 , cache: false
@@ -63,7 +62,7 @@ function login(username,password){
                 , success: function (data, textStatus, xhr) {
                     if (textStatus == "success") {
                         if(data.success){
-                            window.location.href = "../../pages/main.html"
+                            window.location.href = "pages/main.html"
                         }
                         else {
                             alert(data.message);
