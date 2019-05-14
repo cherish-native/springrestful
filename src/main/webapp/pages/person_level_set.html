@@ -33,6 +33,9 @@
 		  <link rel="stylesheet" href="../assets/css/ace-ie.min.css" />
 		<![endif]-->
 
+		<link rel="stylesheet" type="text/css" href="../easyui/themes/bootstrap/easyui.css"/>
+		<link rel="stylesheet" type="text/css" href="../easyui/themes/icon.css"/>
+
 		<!-- inline styles related to this page -->
 		<style>
 			/* some elements used in demo only */
@@ -52,6 +55,24 @@
 				position: static;
 				margin-bottom: 5px;
 			}
+			.area_select_item {
+				height: 30px;
+				width: 100%;
+				line-height: 30px;
+				text-align: center;
+				border-bottom: 1px solid #D4D4D4;
+				cursor: pointer;
+			}
+			.area_select_td_item {
+				height: 30px;
+				line-height: 30px;
+				text-align: center;
+				border-bottom: 1px solid #D4D4D4;
+				border-right: 1px solid #D4D4D4;
+				cursor: pointer;
+			}
+			.area_select_td_item:hover { background-color: yellow}
+			.area_select_item:hover { background-color: yellow}
 		</style>
 
 		<!-- ace settings handler -->
@@ -232,76 +253,30 @@
 				<i class="ace-icon fa fa-angle-double-up icon-only bigger-110"></i>
 			</a>
 
-			<div id="hukou-dialog" style="display: none;">
-				<div class="row">
-					<span id="selected" class="help-block"></span>
-				</div>
-				<div class="row">
-					<div class="col-xs-12">
-						<div class="col-md-2">
-							<div class="widget-body">
-								<div class="widget-main">
-									<p><button class="btn" id="huabei">华北地区</button></p>
-									<p><button class="btn" id="dongbei">东北地区</button></p>
-									<p><button class="btn" id="huadong">华东地区</button></p>
-									<p><button class="btn" id="huazhonghuanan">华中华南地区</button></p>
-									<p><button class="btn" id="xinan">西南地区</button></p>
-									<p><button class="btn" id="xibei">西北地区</button></p>
-									<p><button class="btn" id="gangaotai">港澳台地区</button></p>
-								</div>
-							</div>
-						</div>
 
-						<div class="col-md-10">
-							<div class="row">
-									<div class="col-md-4">
-										<div class="widget-body">
-											<div class="widget-main" id="optionBtn">
-												<p>
-													<span>
-														<button class="btn" id="btn1" style="display: none"></button>
-														<button class="btn" id="btn2" style="display: none"></button>
-														<button class="btn" id="btn3" style="display: none"></button>
-													</span>
-												</p>
-												<p>
-													<span>
-														<button class="btn" id="btn4" style="display: none"></button>
-														<button class="btn" id="btn5" style="display: none"></button>
-														<button class="btn" id="btn6" style="display: none"></button>
-													</span>
-												</p>
-												<p>
-													<button class="btn" id="btn7" style="display: none"></button>
-												</p>
-											</div>
-										</div>
-									</div>
+			<div id="hukou-dialog"  class="easyui-dialog" closed="true">
+				<div class="easyui-layout" style="height: 100%;">
+					<div data-options="region:'north',split:false" style="height:250px;">
+						<div class="easyui-layout" style="width: 100%;height: 100%">
+							<div data-options="region:'center',title:'已选(双击删除)'" >
+								<table id="code_area_selected_table" style="width: 100%;text-align: center">
+								</table>
+							</div>
+							<div data-options="region:'south',title:'模糊检索(下拉框中选择添加)'" style="height:100px;padding: 10px">
+								<select class="easyui-combobox" id="code_area_combo" style="width:200px;"></select>
 							</div>
 						</div>
 					</div>
-				</div><!-- /.row -->
+					<div data-options="region:'center',title:'列表选择(双击选择)'">
+						<div class="easyui-layout" style="width: 100%;height: 100%">
+							<div id="code_area_list" data-options="region:'west',split:false" style="width: 33%;height:100%;">
+							</div>
+							<div data-options="region:'center'" id="code_area_children">
+							</div>
+							<div data-options="region:'east'" id="code_area_children_3" style="width: 33%;height:100%;">
+							</div>
+						</div>
 
-				<div class="row">
-					<div class="col-xs-6">
-						<div class="col-xs-2">
-							
-						</div>
-						<div class="col-xs-2">
-							
-						</div>
-						<div class="col-xs-2">
-							
-						</div>
-						<div class="col-xs-2">
-							
-						</div>
-						<div class="col-xs-2">
-							<button class="btn btn-primary" id="okBtn">确定</button>
-						</div>
-					</div>
-					<div class="col-xs-6">
-						<button class="btn btn-primary" id="closeBtn">关闭</button>
 					</div>
 				</div>
 			</div>
@@ -508,11 +483,15 @@
 		<script src="../assets/js/jquery.flot.min.js"></script>
 		<script src="../assets/js/jquery.flot.pie.min.js"></script>
 		<script src="../assets/js/jquery.flot.resize.min.js"></script>
+		<script type="text/javascript" src="../easyui/jquery.min.js"></script>
+		<script type="text/javascript" src="../easyui/jquery.easyui.min.js"></script>
+		<script type="text/javascript" src="../easyui/easyui-lang-zh_CN.js"></script>
 
-		<!-- ace scripts -->
+
+	<!-- ace scripts -->
 		<script src="../assets/js/ace-elements.min.js"></script>
 		<script src="../assets/js/ace.min.js"></script>
-	    <script src="../js/pages/person_level_set.js"></script>
+	    <script src="../js/pages/person_level_set.js?20"></script>
 	    <script src="../js/pages/person_level_set_race.js"></script>
 	    <script src="../js/pages/person_level_set_case.js"></script>
 </html>

@@ -10,21 +10,111 @@ var addressCodeArray = []
 var regex = /^[0-9]+.?[0-9]*$/;
 
 jQuery(function($){
-    $( "#hukou-dialog-button" ).on('click', function(e) {
-        e.preventDefault();
+    var selectedCodeArea = [];
+    $("#hukou-dialog").dialog({
+        title:'请选择户籍地',
+        width:1000,
+        height:600,
+        modal:true,
+        buttons : [
+            {
+                text: "清空已选",
+                handler : function () {
+                    selectedCodeArea = [];
+                    $('#code_area_selected_table').empty();
+                }
+            },
+            {
+                text: "确定",
+                handler : function () {
+                    var selected = "";
+                    for(var i=0;i<selectedCodeArea.length;i++){
+                        selected += selectedCodeArea[i].split("-")[0] + ",";
+                    }
+                    if(selected != ''){
+                        alert(selected);
+                        $('#hukou-dialog').dialog('close')
+                    }else{
+                       alert("已选户籍地为空")
+                    }
 
-        var dialog = $( "#hukou-dialog" ).removeClass('hide').dialog({
-            modal: true,
-            title: "请选择户籍地",
-            height : "510",
-            width : "1000"
-        });
-        /**
-         dialog.data( "uiDialog" )._title = function(title) {
-								title.html( this.options.title );
-							};
-         **/
+                }
+            },
+            {
+                text : "取消",
+                handler : function () {
+                    $('#hukou-dialog').dialog('close')
+                }
+            }
+        ]
     });
+
+    $('#code_area_combo').combobox({
+        prompt:'输入关键字后自动搜索',
+        mode:'remote',
+        url:'code/fuzzySearchCodeArea',
+        editable:true,
+        hasDownArrow:false,
+        valueField:'id',
+        textField:'text',
+        onBeforeLoad: function(param){
+            if(param == null || param.q == null || param.q.replace(/ /g, '') == ''){
+                var value = $(this).combobox('getValue');
+                if(value){// 修改的时候才会出现q为空而value不为空
+                    param.id = value;
+                    return true;
+                }
+                return false;
+            }
+        },
+        onSelect : function (param) {
+            addCodeAreaToTable('code_area_selected_table', param.text, param.id);
+        }
+    });
+
+    $( "#hukou-dialog-button" ).on('click', function(e) {
+        // e.preventDefault();
+        $("#hukou-dialog").dialog("open"); // 打开dialog
+        $('#hukou-dialog').window('center');
+
+        //加载一级行政区划列表
+        var parentCodeAreaList = listParentCodeArea("");
+        if(parentCodeAreaList.length > 0){
+            var codeHtml = "";
+            for(var i=0;i<parentCodeAreaList.length;i++){
+                codeHtml += '<div class="area_select_item" fullname="' + parentCodeAreaList[i].name + '" code="'+ parentCodeAreaList[i].code +'">' + parentCodeAreaList[i].name + '</div>'
+            }
+            $('#code_area_list').html(codeHtml);
+            $('#code_area_list .area_select_item').on("click",function(){
+                $('#code_area_children').empty();
+                $('#code_area_children_3').empty();
+                codeAreaItemClick('code_area_children', this);
+            });
+
+            $('#code_area_list .area_select_item').on("dblclick",function(){
+                addCodeAreaToTable('code_area_selected_table', $(this).attr('fullname'), $(this).attr('code'));
+            });
+        }
+    });
+
+    function codeAreaItemClick(divid,ele){
+        var parentCode = $(ele).attr('code');
+        var childrenCodeAreaList = listParentCodeArea(parentCode);
+        if(childrenCodeAreaList.length > 0){
+            var childrenHtml = "";
+            for(var i=0;i<childrenCodeAreaList.length;i++){
+                childrenHtml += '<div class="area_select_item" fullname="' + childrenCodeAreaList[i].name + '" code="'+ childrenCodeAreaList[i].code +'">' + childrenCodeAreaList[i].singleName + '</div>'
+            }
+            $('#' + divid).empty();
+            $('#' + divid).html(childrenHtml);
+            $('#' + divid+ ' .area_select_item').on("click",function(){
+                codeAreaItemClick('code_area_children_3', this);
+            });
+            $('#' + divid + ' .area_select_item').on("dblclick",function(){
+                addCodeAreaToTable('code_area_selected_table', $(this).attr('fullname'), $(this).attr('code'));
+            });
+        }
+    }
 
     $('#okBtn').on('click',function(e){
         e.preventDefault();
@@ -118,91 +208,6 @@ jQuery(function($){
             }
         })
     }
-
-    $("#huabei").on('click',function(e){
-        toggleClass()
-        $("#btn1").text('北京').val("11").css("display","")
-        $("#btn2").text('天津').val("12").css("display","")
-        $("#btn3").text('河北').val("13").css("display","")
-        $("#btn4").text('山西').val("14").css("display","")
-        $("#btn5").text('内蒙古').val("15").css("display","")
-        $("#btn6").text('').css("display","none")
-        $("#btn7").text('').css("display","none")
-        a()
-    });
-
-    $("#dongbei").on('click',function(e){
-        toggleClass()
-        $("#btn1").text('辽宁').val("21").css("display","")
-        $("#btn2").text('吉林').val("22").css("display","")
-        $("#btn3").text('黑龙江').val("23").css("display","")
-        $("#btn4").text('').css("display","none")
-        $("#btn5").text('').css("display","none")
-        $("#btn6").text('').css("display","none")
-        $("#btn7").text('').css("display","none")
-        a()
-    });
-
-    $("#huadong").on('click',function(e){
-        toggleClass()
-        $("#btn1").text('上海').val("31").css("display","")
-        $("#btn2").text('江苏').val("32").css("display","")
-        $("#btn3").text('浙江').val("33").css("display","")
-        $("#btn4").text('安徽').val("34").css("display","")
-        $("#btn5").text('福建').val("35").css("display","")
-        $("#btn6").text('江西').val("36").css("display","")
-        $("#btn7").text('山东').val("37").css("display","")
-        a()
-    });
-
-    $("#huazhonghuanan").on('click',function(e){
-        toggleClass()
-        $("#btn1").text('河南').val("41").css("display","")
-        $("#btn2").text('湖北').val("42").css("display","")
-        $("#btn3").text('湖南').val("43").css("display","")
-        $("#btn4").text('广东').val("44").css("display","")
-        $("#btn5").text('广西').val("45").css("display","")
-        $("#btn6").text('海南').val("46").css("display","")
-        $("#btn7").text('').css("display","none")
-        a()
-    });
-
-    $("#xinan").on('click',function(e){
-        toggleClass()
-        $("#btn1").text('重庆').val("50").css("display","")
-        $("#btn2").text('四川').val("51").css("display","")
-        $("#btn3").text('贵州').val("52").css("display","")
-        $("#btn4").text('云南').val("53").css("display","")
-        $("#btn5").text('西藏').val("54").css("display","")
-        $("#btn6").text('').css("display","none")
-        $("#btn7").text('').css("display","none")
-        a()
-    });
-
-    $("#xibei").on('click',function(e){
-        toggleClass()
-        $("#btn1").text('陕西').val("61").css("display","")
-        $("#btn2").text('甘肃').val("62").css("display","")
-        $("#btn3").text('青海').val("63").css("display","")
-        $("#btn4").text('宁夏').val("64").css("display","")
-        $("#btn5").text('新疆').val("65").css("display","")
-        $("#btn6").text('兵团').val("66").css("display","")
-        $("#btn7").text('').css("display","none")
-
-        a()
-    });
-
-    $("#gangaotai").on('click',function(e){
-        toggleClass()
-        $("#btn1").text('台湾').val("70").css("display","")
-        $("#btn2").text('香港').val("80").css("display","")
-        $("#btn3").text('澳门').val("90").css("display","")
-        $("#btn4").text('').css("display","none")
-        $("#btn5").text('').css("display","none")
-        $("#btn6").text('').css("display","none")
-        $("#btn7").text('').css("display","none")
-        a()
-    });
 
     $('#min-age').on('blur',function (e) {
         if(($('#min-age').val().trim().length>0) && !regex.test($('#min-age').val())){
@@ -320,8 +325,97 @@ jQuery(function($){
 
             }
         );
-    })
+    });
 
+    /**
+     * 加载第一级行政区划代码
+     */
+    function listParentCodeArea(parentCode) {
+        var result = [];
+        $.ajax(
+            "code/listCodeAreaByParentCode"
+            , {
+                async: false,
+                dataType: "json",
+                data: {
+                    'parentCode' : parentCode
+                }
+                , type: "POST"
+                , success: function (data) {
+                    result = data;
+                }
+                , error:function(XMLHttpRequest, textStatus, errorThrown){
+                    console.log(textStatus)
+                    console.log(errorThrown)
+                }
+
+            }
+        );
+        return result;
+    }
+
+    /**
+     * 添加行政区划到table
+     * @param tableid
+     * @param name
+     * @param code
+     */
+    function addCodeAreaToTable(tableid, name, code) {
+        if(inArray(selectedCodeArea, code+"-"+name)){
+            // alert('已选择')
+            return;
+        }else{
+            selectedCodeArea.push(code+"-"+name);
+        }
+        //计算以选择区域每一项的宽度
+        var columnCount = parseInt(($('#hukou-dialog').width()/200)+'');
+        var columnWidth = parseInt(($('#hukou-dialog').width()/columnCount+""));
+        var lastTr = $('#'+ tableid +' tr:last');
+        var curColumnCount = lastTr.find('td').length;
+        if(curColumnCount != 0 && curColumnCount < columnCount){
+            //未超过最大列数,最后一行添加一个td
+            lastTr.append('<td style="width: '+ columnWidth +'px"><div code="' + code + '" class="area_select_td_item">' + name + '</div></td>');
+        }else{
+            //已超过最大列数，添加一行一列
+            $('#'+ tableid).append('<tr><td style="width: '+ columnWidth +'px"><div code="' + code + '" class="area_select_td_item">' + name + '</div></td></tr>');
+        }
+        //找到添加的td添加双击监听
+        var lastTd = $('#'+ tableid +' tr:last td:last');
+        lastTd.on("dblclick",function(){
+            removeCodeFromTable(tableid, this);
+        });
+    }
+
+    /**
+     * 删除code
+     * @param tableid
+     * @param ele
+     */
+    function removeCodeFromTable(tableid, ele) {
+        var code = $(ele).find('div').attr('code');
+        var name = $(ele).find('div').html();
+        var newArray = [];
+        for(var i=0;i<selectedCodeArea.length;i++){
+            if(selectedCodeArea[i] != code+"-"+name){
+                newArray.push(selectedCodeArea[i]);
+            }
+        }
+        selectedCodeArea = [];
+        $('#' + tableid).empty();
+        for(var i=0;i<newArray.length;i++){
+            var codeName = newArray[i].split("-");
+            addCodeAreaToTable(tableid, codeName[1], codeName[0]);
+        }
+    }
+
+    function isInArray(arr, value){
+        for(var i=0;i<arr.length;i++){
+            if(value == arr[i]){
+                return true;
+            }
+        }
+        return false;
+    }
 })
 
 function isSetLevel(){
