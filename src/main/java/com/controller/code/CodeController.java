@@ -3,6 +3,7 @@ package com.controller.code;
 import com.entity.CodeArea;
 import com.entity.CodeCaseClass;
 import com.service.CodeAreaService;
+import com.service.CodeCaseClassService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -19,6 +20,8 @@ public class CodeController {
 
     @Autowired
     private CodeAreaService codeAreaService;
+    @Autowired
+    private CodeCaseClassService codeCaseClassService;
 
     @ResponseBody
     @RequestMapping("/listCodeAreaByParentCode")
@@ -45,10 +48,34 @@ public class CodeController {
         return result;
     }
 
+
+    /**
+     * 查询案件类别代码
+     * @param parentCode
+     * @return
+     */
     @ResponseBody
     @RequestMapping("/listCodeCaseClass")
-    public List<CodeCaseClass> listCaseClassCode(String code){
-        return null;
+    public List<CodeCaseClass> listCodeCaseClass(String parentCode){
+        return codeCaseClassService.listCodeCaseClass(parentCode);
+    }
+
+    /**
+     * 案件类别代码模糊检索
+     * @return
+     */
+    @ResponseBody
+    @RequestMapping("/fuzzySearchCodeCaseClass")
+    public List<Map<String, String>> fuzzySearchCodeCaseClass(String q){
+        List<CodeCaseClass> codeCaseClasses = codeCaseClassService.fuzzySearchCaseClassCode(q);
+        List<Map<String, String>> result = new ArrayList<>();
+        for(CodeCaseClass codeCaseClass : codeCaseClasses){
+            Map<String, String> map = new HashMap<>();
+            map.put("id", codeCaseClass.getCode());
+            map.put("text", codeCaseClass.getName());
+            result.add(map);
+        }
+        return result;
     }
 
 }
