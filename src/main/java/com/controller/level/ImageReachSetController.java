@@ -4,6 +4,7 @@ import com.dao.PersonLevelScoreDao;
 import com.dao.QualityScoreRangeDao;
 import com.entity.PersonLevelScore;
 import com.entity.QualityScoreRange;
+import com.google.common.collect.Lists;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -14,6 +15,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 @Controller
@@ -24,6 +26,28 @@ public class ImageReachSetController {
     private QualityScoreRangeDao qualityScoreRangeDao;
     @Autowired
     private PersonLevelScoreDao personLevelScoreDao;
+
+    @RequestMapping(value = "/getLevelScore",method = RequestMethod.GET)
+    @ResponseBody
+    public Map<String,Object> getLevelScore(HttpServletRequest request, HttpServletResponse response){
+        Map<String,Object> resultMap = new HashMap<>();
+        Map<String,int[]> scoreMap = new HashMap<>();
+        try{
+            List<QualityScoreRange> qualityScoreRangeList = Lists.newArrayList(qualityScoreRangeDao.findAll());
+            for(QualityScoreRange qualityScoreRange : qualityScoreRangeList){
+                scoreMap.put(String.valueOf(qualityScoreRange.getLevel()),new int[]{qualityScoreRange.getMinScore(),qualityScoreRange.getMaxScore()});
+            }
+
+            resultMap.put("success",true);
+            resultMap.put("message","ok");
+            resultMap.put("scoreMap",scoreMap);
+        }catch(Exception ex){
+            resultMap.put("success",false);
+            resultMap.put("message",ex.getMessage());
+            ex.printStackTrace();
+        }
+        return resultMap;
+    }
 
     @RequestMapping(value = "/levelScore",method = RequestMethod.POST)
     @ResponseBody
@@ -127,4 +151,28 @@ public class ImageReachSetController {
 
         return resultMap;
     }
+
+    @RequestMapping(value ="/getFingerLevel",method = RequestMethod.POST)
+    @ResponseBody
+    public Map<String,Object>  getFingerLevel(){
+        Map<String,Object> resultMap = new HashMap<>();
+        Map<String,PersonLevelScore> levelMap = new HashMap<>();
+        try{
+            List<PersonLevelScore> personLevelScoreList =  Lists.newArrayList(personLevelScoreDao.findAll());
+            for(PersonLevelScore personLevelScore :personLevelScoreList){
+                levelMap.put(personLevelScore.getLevel(),personLevelScore);
+            }
+
+            resultMap.put("success",true);
+            resultMap.put("message","ok");
+            resultMap.put("levelMap",levelMap);
+        }catch(Exception ex){
+            resultMap.put("success",false);
+            resultMap.put("message",ex.getMessage());
+            ex.printStackTrace();
+        }
+
+        return resultMap;
+    }
+
 }

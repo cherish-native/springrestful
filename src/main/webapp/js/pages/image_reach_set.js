@@ -5,6 +5,79 @@
 
 jQuery(function($) {
 
+    $.ajax(
+        "/pages/image/getLevelScore"
+        , {
+            async: false
+            , cache: false
+            , dataType: "json"
+            , data: {}
+            , type: "GET"
+            , success: function (data, textStatus) {
+                if (textStatus == "success") {
+                    if(data.success){
+                        var scoreMap = data.scoreMap
+                        $("#yx-min").val(scoreMap["1"][0])
+                        $("#yx-max").val(scoreMap["1"][1])
+                        $("#lh-min").val(scoreMap["2"][0])
+                        $("#lh-max").val(scoreMap["2"][1])
+                        $("#yb-min").val(scoreMap["3"][0])
+                        $("#yb-max").val(scoreMap["3"][1])
+                        $("#jc-min").val(scoreMap["4"][0])
+                        $("#jc-max").val(scoreMap["4"][1])
+                        $("#hc-min").val(scoreMap["5"][0])
+                        $("#hc-max").val(scoreMap["5"][1])
+                    }
+                    else {
+                        alert("获取数据失败");
+                    }
+                }
+            }
+            , error:function(XMLHttpRequest, textStatus, errorThrown){
+                console.log(textStatus)
+                console.log(errorThrown)
+            }
+        }
+    );
+
+    $.ajax(
+        "/pages/image/getFingerLevel"
+        , {
+            async: false
+            , cache: false
+            , dataType: "json"
+            , data: {}
+            , type: "POST"
+            , success: function (data, textStatus) {
+                if (textStatus == "success") {
+                    if(data.success){
+                        var levelMap = data.levelMap
+                        for(var key in levelMap) {
+                            $("#" + key.toLowerCase() +"-right-m").val(levelMap[key].rm);
+                            $("#" + key.toLowerCase() +"-right-s").val(levelMap[key].rs);
+                            $("#" + key.toLowerCase() +"-right-z").val(levelMap[key].rz);
+                            $("#" + key.toLowerCase() +"-right-h").val(levelMap[key].rh);
+                            $("#" + key.toLowerCase() +"-right-x").val(levelMap[key].rx);
+                            $("#" + key.toLowerCase() +"-left-m").val(levelMap[key].lm);
+                            $("#" + key.toLowerCase() +"-left-s").val(levelMap[key].ls);
+                            $("#" + key.toLowerCase() +"-left-z").val(levelMap[key].lz);
+                            $("#" + key.toLowerCase() +"-left-h").val(levelMap[key].lh);
+                            $("#" + key.toLowerCase() +"-left-x").val(levelMap[key].lx);
+                        }
+                    }
+                    else {
+                        alert("获取数据失败");
+
+                    }
+                }
+            }
+            , error:function(XMLHttpRequest, textStatus, errorThrown){
+                console.log(textStatus)
+                console.log(errorThrown)
+            }
+        }
+    );
+
     $(document).on('click','#set-score-btn',function(e){
         set_score()
     })
