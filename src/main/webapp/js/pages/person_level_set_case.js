@@ -6,7 +6,7 @@ jQuery(function($){
     $("#case-dialog").dialog({
         title:'请选择案件类别',
         width:1000,
-        height:600,
+        height:$('body').height() - 60,
         modal:true,
         buttons : [
             {

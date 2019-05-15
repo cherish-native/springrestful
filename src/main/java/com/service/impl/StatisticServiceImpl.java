@@ -42,26 +42,6 @@ public class StatisticServiceImpl implements StatisticService {
 
     @Override
     public DataGridReturn getGatherQualityExamineList(String departCode, String beginDate, String endDate, Pageable pageable) throws Exception {
-//        Specification<StatisticQualityDay> params = new Specification<StatisticQualityDay>() {
-//            @Override
-//            public Predicate toPredicate(Root<StatisticQualityDay> root, CriteriaQuery<?> criteriaQuery, CriteriaBuilder criteriaBuilder) {
-//                List<Predicate> predicates = new ArrayList<>();
-//                if(StringUtils.isNotEmpty(departCode)){
-//                    predicates.add(criteriaBuilder.like(root.get("departCode"),departCode+"%"));
-//                }
-//                if(StringUtils.isNotEmpty(beginDate)){
-//                    predicates.add(criteriaBuilder.ge(root.get("statisticTime"), Integer.parseInt(beginDate)));
-//                }
-//                if(StringUtils.isNotEmpty(endDate)){
-//                    predicates.add(criteriaBuilder.le(root.get("statisticTime"), Integer.parseInt(endDate)));
-//                }
-//                Predicate[] predicatesArray = new Predicate[predicates.size()];
-//                return criteriaBuilder.and(predicatesArray);
-//            }
-//        };
-//        Page<StatisticQualityDay> page = statisticQualityDayDao.findAll(params, pageable);
-//        return new DataGridReturn(page.getTotalElements(), page.getContent());
-
         StringBuilder sql = new StringBuilder();
         sql.append("     select t.depart_code departCode, t.gatheruser_name gatheruserName,")
                 .append("sum(count) count,")

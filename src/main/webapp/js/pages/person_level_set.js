@@ -14,7 +14,7 @@ jQuery(function($){
     $("#hukou-dialog").dialog({
         title:'请选择户籍地',
         width:1000,
-        height:600,
+        height:$('body').height() - 60,
         modal:true,
         buttons : [
             {
