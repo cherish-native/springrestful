@@ -4,11 +4,11 @@
         <bind>127.0.0.1:8080</bind>
     </web_config>
     <database_config>
-        <ip>192.168.1.210</ip>
-        <port>3306</port>
-        <database_name>monitor</database_name>
-        <username>root</username>
-        <password>111111</password>
+        <ip>192.168.1.213</ip>
+        <port>1521</port>
+        <database_name>oragafis</database_name>
+        <username>cherish</username>
+        <password>cherish</password>
     </database_config>
 
     <api_url>http://127.0.0.1:8081</api_url>

@@ -6,7 +6,7 @@ jQuery(function($){
     $("#case-dialog").dialog({
         title:'请选择案件类别',
         width:1000,
-        height:$('body').height() - 60,
+        height:500,
         modal:true,
         buttons : [
             {
@@ -123,7 +123,7 @@ jQuery(function($){
         $('#case-dialog').window('center');
 
         //加载一级行政区划列表
-        var parentCodeCaseClassList = listParentCodeCaseClass("");
+        var parentCodeCaseClassList = listParentCodeCaseClass("-1");
         if(parentCodeCaseClassList.length > 0){
             var codeHtml = "";
             for(var i=0;i<parentCodeCaseClassList.length;i++){

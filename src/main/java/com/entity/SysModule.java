@@ -20,7 +20,7 @@ public class SysModule {
     private String intro;
     @Column(name = "url")
     private String url;
-    @Column(name = "level")
+    @Column(name = "module_level")
     private int level;
     @Column(name = "pcode")
     private String pcode;

@@ -83,7 +83,7 @@ public class CodeArea {
         this.parentCode = parentCode;
     }
 
-    @Column(name = "level")
+    @Column(name = "code_level")
     public Integer getLevel() {
         return level;
     }

@@ -39,11 +39,11 @@ public class DataSourceConfig {
     @Bean
     public HikariDataSource dataSource(Config config){
         HikariConfig hikariConfig = new HikariConfig();
-        hikariConfig.setDriverClassName("com.mysql.jdbc.Driver");
-        hikariConfig.setJdbcUrl("jdbc:mysql://" + config.getDataBaseConfig().getIp()+":" + config.getDataBaseConfig().getPort() + "/" + config.getDataBaseConfig().getDatabase_name() + "?useUnicode=true&characterEncoding=utf8");
+        hikariConfig.setDriverClassName("oracle.jdbc.driver.OracleDriver");
+        hikariConfig.setJdbcUrl("jdbc:oracle:thin:@" + config.getDataBaseConfig().getIp()+":" + config.getDataBaseConfig().getPort() + ":" + config.getDataBaseConfig().getDatabase_name());
         hikariConfig.setUsername(config.getDataBaseConfig().getUsername());
         hikariConfig.setPassword(config.getDataBaseConfig().getPassword());
-        hikariConfig.setConnectionTestQuery("select 1");
+        hikariConfig.setConnectionTestQuery("select 1 from dual");
         hikariConfig.setAutoCommit(false);
         hikariConfig.addDataSourceProperty("cachePrepStmts", "true");
         hikariConfig.addDataSourceProperty("prepStmtCacheSize", "250");
@@ -64,10 +64,10 @@ public class DataSourceConfig {
         localContainerEntityManagerFactoryBean.setPackagesToScan("com.entity");
         Properties properties = new Properties();
         properties.setProperty("hibernate.ejb.naming_strategy","org.hibernate.cfg.ImprovedNamingStrategy");
-        properties.setProperty("hibernate.dialect","com.config.MySQL5DialectUTF8");
+        properties.setProperty("hibernate.dialect","org.hibernate.dialect.Oracle10gDialect");
         properties.setProperty("hibernate.show_sql","true");
         properties.setProperty("hibernate.format_sql","true");
-        properties.setProperty("hibernate.hbm2ddl.auto","update");
+        properties.setProperty("hibernate.hbm2ddl.auto","none");
 
         localContainerEntityManagerFactoryBean.setJpaProperties(properties);
         localContainerEntityManagerFactoryBean.setPersistenceUnitName("jpa");

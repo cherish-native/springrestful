@@ -14,7 +14,7 @@ jQuery(function($){
     $("#hukou-dialog").dialog({
         title:'请选择户籍地',
         width:1000,
-        height:$('body').height() - 60,
+        height:500,
         modal:true,
         buttons : [
             {
@@ -78,7 +78,7 @@ jQuery(function($){
         $('#hukou-dialog').window('center');
 
         //加载一级行政区划列表
-        var parentCodeAreaList = listParentCodeArea("");
+        var parentCodeAreaList = listParentCodeArea("-1");
         if(parentCodeAreaList.length > 0){
             var codeHtml = "";
             for(var i=0;i<parentCodeAreaList.length;i++){
