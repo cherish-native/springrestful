@@ -19,7 +19,7 @@ public class PersonLevelScore {
   @GeneratedValue(generator="idGenerator")
   @Column(name = "id")
   private String id;
-  @Column(name = "level")
+  @Column(name = "person_level")
   private String level;
   @Column(name = "rm")
   private int rm;
