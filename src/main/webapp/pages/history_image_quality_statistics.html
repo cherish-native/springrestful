@@ -20,9 +20,7 @@
                     </td>
                     <td width="100" align="right">采集单位：</td>
                     <td>
-                        <select id="departCodeSelect" class="easyui-combobox" style="width: 150px" data-options="editable:false" name="language">
-                            <option value="1">上海市普陀区分局</option>
-                            <option value="2">真光路派出所</option>
+                        <select id="departCodeSelect" style="width: 150px">
                         </select>
                     </td>
                     <td width="100" align="right">时间范围：</td>
@@ -116,6 +114,13 @@
                $("#yearSelect").combobox("loadData", themecombo2);
                $("#yearSelect ").combobox('select', curYear);
                $('#monthSelectDiv').hide();
+
+               $('#departCodeSelect').combobox({
+                   url: 'sysDepart/fuzzySearchDepart',  //远程访问服务器端的地址
+                   editable: false,  //设置文本区域不能被编辑
+                   valueField: 'id',  //显示数据的键的值
+                   textField: 'text' //显示数据的文本的值
+               })
 
                //加载数据
                loadData();

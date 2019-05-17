@@ -26,4 +26,10 @@ public interface StatisticService {
      * @return
      */
     DataGridReturn getGatherQualityExamineList(String departCode, String beginDate, String endDate, Pageable pageable) throws Exception;
+
+    /**
+     * 统计每日数据
+     * @param dateStr yyyyMMdd
+     */
+    void statisticDay(String dateStr);
 }

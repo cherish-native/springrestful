@@ -56,10 +56,10 @@ public class StatisticServiceImpl implements StatisticService {
             queryBuilder.appendAndWhere("t.depart_code like ?", departCode);
         }
         if(StringUtils.isNotEmpty(beginDate)){
-            queryBuilder.appendAndWhere("t.statistic_time >= ?", DateUtil.strToDate(beginDate + " 00:00:00", DateUtil.PATTERN_YYYYMMDD_WITH_HORIZONTAL_LINE));
+            queryBuilder.appendAndWhere("t.statistic_time >= ?", Integer.parseInt(beginDate.replaceAll("-", "")));
         }
         if(StringUtils.isNotEmpty(endDate)){
-            queryBuilder.appendAndWhere("t.statistic_time <= ?", DateUtil.strToDate(endDate + " 23:59:59", DateUtil.PATTERN_DATETIME));
+            queryBuilder.appendAndWhere("t.statistic_time <= ?", Integer.parseInt(endDate.replaceAll("-", "")));
         }
         queryBuilder.appendSql("group by t.depart_code, t.gatheruser_name");
         List<Map<String, Object>> list = baseDao.findListBySql(queryBuilder.getSql(), queryBuilder.getParams());
@@ -79,5 +79,69 @@ public class StatisticServiceImpl implements StatisticService {
             }
         }
         return new DataGridReturn(statisticQualityDays.size(), statisticQualityDays);
+    }
+
+    @Override
+    @Transactional(rollbackFor = Exception.class)
+    public void statisticDay(String dateStr){
+        StringBuilder sql = new StringBuilder();
+             sql.append("select t.PRINT_UNIT_CODE departCode,                                     ")
+                .append("   t.PRINTER gatheruserId,                                               ")
+                .append("   sum(case when t.QUALITY_LEVEL=1 then 1 else 0 end) countLevelA,       ")
+                .append("   sum(case when t.QUALITY_LEVEL=2 then 1 else 0 end) countLevelB,       ")
+                .append("   sum(case when t.QUALITY_LEVEL=3 then 1 else 0 end) countLevelC,       ")
+                .append("   sum(case when t.QUALITY_LEVEL=4 then 1 else 0 end) countLevelD,       ")
+                .append("   sum(case when t.QUALITY_LEVEL=5 then 1 else 0 end) countLevelE,       ")
+                .append("   sum(case when t.IS_COMPEL_PASS=1 then 1 else 0 end) isCompelPassCount,")
+                .append("   sum(case when t.IS_COMPEL_PASS=0 then 1 else 0 end) unCompelPassCount,")
+                .append("   sum(case when t.is_qualified=1 then 1 else 0 end) standardCount,      ")
+                .append("   sum(case when t.is_qualified=0 then 1 else 0 end) substandardCount,   ")
+                .append("   round(avg(t.TOTAL_SCORE), 1) scoreAverage,                            ")
+                .append("   count(*) count                                                        ")
+                .append("from (select p.PRINT_UNIT_CODE,                                          ")
+                .append("           p.PRINTER,                                                    ")
+                .append("           p.IS_COMPEL_PASS,                                             ")
+                .append("           q.TOTAL_SCORE,                                                ")
+                .append("           q.QUALITY_LEVEL,                                              ")
+                .append("           p.is_qualified                                                ")
+                .append("      from personinfo p                                                  ")
+                .append("      left join QUALITY_SCORE q                                          ")
+                .append("        on p.PERSONID = q.CARDID                                         ")
+                .append("     where p.PRINTDATE = ?                                      ")
+                .append("     ) t                                                                 ")
+                .append("group by t.PRINT_UNIT_CODE, t.PRINTER;                                   ");
+        QueryBuilder queryBuilder = new QueryBuilder(sql.toString());
+        queryBuilder.getParams().add(dateStr);
+        List<Map<String, Object>> list = baseDao.findListBySql(queryBuilder.getSql(), queryBuilder.getParams());
+        if(list != null && list.size() > 0){
+            Map<String, Object> map = null;
+            String departCode = null;
+            String gatherUserId = null;
+            Integer statisticTime = Integer.parseInt(dateStr);
+            for(int i=0;i<list.size();i++){
+                map = list.get(i);
+                departCode = StringUtils.nvlString(map.get("departCode"));
+                gatherUserId = StringUtils.nvlString(map.get("gatheruserId"));
+                StatisticQualityDay statisticQualityDay = statisticQualityDayDao.findByDepartCodeAndGatheruserIdAndStatisticTime(departCode, gatherUserId, statisticTime);
+                if(statisticQualityDay == null){
+                    statisticQualityDay = new StatisticQualityDay();
+                }
+                statisticQualityDay.setDepartCode(departCode);
+                statisticQualityDay.setGatheruserId(gatherUserId);
+                statisticQualityDay.setStatisticTime(statisticTime);
+                statisticQualityDay.setCountLevelA(StringUtils.nvlInt("countLevelA"));
+                statisticQualityDay.setCountLevelB(StringUtils.nvlInt("countLevelB"));
+                statisticQualityDay.setCountLevelC(StringUtils.nvlInt("countLevelC"));
+                statisticQualityDay.setCountLevelD(StringUtils.nvlInt("countLevelD"));
+                statisticQualityDay.setCountLevelE(StringUtils.nvlInt("countLevelE"));
+                statisticQualityDay.setIsCompelPassCount(StringUtils.nvlInt("isCompelPassCount"));
+                statisticQualityDay.setUnCompelPassCount(StringUtils.nvlInt("unCompelPassCount"));
+                statisticQualityDay.setStandardCount(StringUtils.nvlInt("standardCount"));
+                statisticQualityDay.setSubstandardCount(StringUtils.nvlInt("substandardCount"));
+                statisticQualityDay.setScoreAverage(StringUtils.nvlString("scoreAverage"));
+                statisticQualityDay.setCount(StringUtils.nvlInt("count"));
+                statisticQualityDayDao.save(statisticQualityDay);
+            }
+        }
     }
 }

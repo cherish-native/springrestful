@@ -22,7 +22,7 @@ public class BaseDaoImpl implements BaseDao{
         Query query = entityManager.createNativeQuery(sql);
         if(params != null){
             for(int i=0;i<params.size();i++){
-                query.setParameter(i, params.get(i));
+                query.setParameter((i+1), params.get(i));
             }
         }
         query.unwrap(SQLQuery.class).setResultTransformer(Transformers.ALIAS_TO_ENTITY_MAP);

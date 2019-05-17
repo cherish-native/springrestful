@@ -15,7 +15,7 @@ public class QueryBuilder {
     }
 
     public QueryBuilder appendAndWhere(String where, Object...params){
-        if(hasWhere){
+        if(!hasWhere){
             this.stringBuilder.append(" where ");
             hasWhere = true;
         }else{

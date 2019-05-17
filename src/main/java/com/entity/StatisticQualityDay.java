@@ -68,6 +68,14 @@ public class StatisticQualityDay {
      * 平均分
      */
     private String scoreAverage;
+    /**
+     * 达标总数
+     */
+    private Integer standardCount;
+    /**
+     * 不达标总数
+     */
+    private Integer substandardCount;
 
     public void setId(String id) {
         this.id = id;
@@ -205,5 +213,21 @@ public class StatisticQualityDay {
     @Column(name = "score_average")
     public String getScoreAverage() {
         return scoreAverage;
+    }
+    @Column(name = "STANDARD_COUNT")
+    public Integer getStandardCount() {
+        return standardCount;
+    }
+
+    public void setStandardCount(Integer standardCount) {
+        this.standardCount = standardCount;
+    }
+    @Column(name = "SUBSTANDARD_COUNT")
+    public Integer getSubstandardCount() {
+        return substandardCount;
+    }
+
+    public void setSubstandardCount(Integer substandardCount) {
+        this.substandardCount = substandardCount;
     }
 }

@@ -34,8 +34,20 @@ public class WorkQueue {
     private Integer workType;
     /**
      * 工作状态
+     * 状态 0：未开始 1：后台服务正在执行 2：后台服务执行完成 3:正在统计 4:统计完成
      */
     private Integer workState;
+
+    @Transient
+    public static Integer STATE_UNBEGIN = 0;
+    @Transient
+    public static Integer STATE_SERVICE_RUNNING = 1;
+    @Transient
+    public static Integer STATE_SERVICE_FINISH = 2;
+    @Transient
+    public static Integer STATE_STATISTIC_RUNNING = 3;
+    @Transient
+    public static Integer STATE_STATISTIC_FINISH = 4;
 
     @Id
     @GenericGenerator(name="idGenerator", strategy="uuid")

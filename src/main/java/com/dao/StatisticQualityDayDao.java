@@ -23,4 +23,12 @@ public interface StatisticQualityDayDao extends CrudRepository<StatisticQualityD
      */
     Page<StatisticQualityDay> findAll(Specification<StatisticQualityDay> params, Pageable pageable);
 
+    /**
+     * 根据部门编号，用户ID, 采集日期获取统计数据
+     * @param departCode
+     * @param gatheruserId
+     * @return
+     */
+    StatisticQualityDay findByDepartCodeAndGatheruserIdAndStatisticTime(String departCode, String gatheruserId, Integer statisticTime);
+
 }

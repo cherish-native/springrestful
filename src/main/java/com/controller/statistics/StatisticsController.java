@@ -1,11 +1,15 @@
 package com.controller.statistics;
 
+import com.constant.StatisticConstant;
 import com.controller.BaseController;
+import com.entity.WorkQueue;
 import com.entity.vo.DataGridReturn;
 import com.service.StatisticService;
+import com.service.WorkQueueService;
 import com.util.DateUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
 
@@ -22,6 +26,8 @@ public class StatisticsController extends BaseController {
 
     @Autowired
     private StatisticService statisticService;
+    @Autowired
+    private WorkQueueService workQueueService;
 
     /**
      * 获取每日图像质量统计（首页地图展示）
@@ -129,5 +135,14 @@ public class StatisticsController extends BaseController {
         Calendar calendar = Calendar.getInstance();
         calendar.setTime(date);
         return calendar.getActualMaximum(Calendar.DAY_OF_MONTH);
+    }
+
+    @ResponseBody
+    @RequestMapping("/changeWorkQueueState/{state}")
+    public String changeWorkQueueState(@PathVariable("state") Integer state){
+        String result = "success";
+        System.out.println(state);
+        StatisticConstant.CURSATTE = state;
+        return result;
     }
 }
