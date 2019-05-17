@@ -23,7 +23,7 @@ public class QualityScoreRange{
   private int minScore;
   @Column(name = "max_score")
   private int maxScore;
-  @Column(name = "level")
+  @Column(name = "score_level")
   private int level;
   @Column(name = "name")
   private String name;
