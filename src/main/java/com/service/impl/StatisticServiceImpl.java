@@ -43,13 +43,13 @@ public class StatisticServiceImpl implements StatisticService {
     @Override
     public DataGridReturn getGatherQualityExamineList(String departCode, String beginDate, String endDate, Pageable pageable) throws Exception {
         StringBuilder sql = new StringBuilder();
-        sql.append("     select t.depart_code departCode, t.gatheruser_name gatheruserName,")
-                .append("sum(count) count,")
-                .append("sum(t.count_level_a) countLevelA,")
-                .append("sum(t.count_level_b) countLevelB,")
-                .append("sum(t.count_level_c) countLevelC,")
-                .append("sum(t.count_level_d) countLevelD,")
-                .append("sum(t.count_level_e) countLevelE ")
+        sql.append("     select t.depart_code DEPARTCODE, t.gatheruser_name GATHERUSERNAME,")
+                .append("sum(count) COUNT,")
+                .append("sum(t.count_level_a) COUNTLEVELA,")
+                .append("sum(t.count_level_b) COUNTLEVELB,")
+                .append("sum(t.count_level_c) COUNTLEVELC,")
+                .append("sum(t.count_level_d) COUNTLEVELD,")
+                .append("sum(t.count_level_e) COUNTLEVELE ")
                 .append(" from statistic_quality_day t");
         QueryBuilder queryBuilder = new QueryBuilder(sql.toString());
         if(StringUtils.isNotEmpty(departCode)){
@@ -68,13 +68,13 @@ public class StatisticServiceImpl implements StatisticService {
             for(Map<String, Object> map : list){
                 StatisticQualityDay statisticQualityDay = new StatisticQualityDay();
                 statisticQualityDay.setDepartName(statisticQualityDay.getDepartName());
-                statisticQualityDay.setGatheruserName(StringUtils.nvlString(map.get("gatheruserName")));
-                statisticQualityDay.setCount(StringUtils.nvlInt(map.get("count")));
-                statisticQualityDay.setCountLevelA(StringUtils.nvlInt(map.get("countLevelA")));
-                statisticQualityDay.setCountLevelB(StringUtils.nvlInt(map.get("countLevelB")));
-                statisticQualityDay.setCountLevelC(StringUtils.nvlInt(map.get("countLevelC")));
-                statisticQualityDay.setCountLevelD(StringUtils.nvlInt(map.get("countLevelD")));
-                statisticQualityDay.setCountLevelE(StringUtils.nvlInt(map.get("countLevelE")));
+                statisticQualityDay.setGatheruserName(StringUtils.nvlString(map.get("GATHERUSERNAME")));
+                statisticQualityDay.setCount(StringUtils.nvlInt(map.get("COUNT")));
+                statisticQualityDay.setCountLevelA(StringUtils.nvlInt(map.get("COUNTLEVELA")));
+                statisticQualityDay.setCountLevelB(StringUtils.nvlInt(map.get("COUNTLEVELB")));
+                statisticQualityDay.setCountLevelC(StringUtils.nvlInt(map.get("COUNTLEVELC")));
+                statisticQualityDay.setCountLevelD(StringUtils.nvlInt(map.get("COUNTLEVELD")));
+                statisticQualityDay.setCountLevelE(StringUtils.nvlInt(map.get("COUNTLEVELE")));
                 statisticQualityDays.add(statisticQualityDay);
             }
         }
@@ -85,19 +85,19 @@ public class StatisticServiceImpl implements StatisticService {
     @Transactional(rollbackFor = Exception.class)
     public void statisticDay(String dateStr){
         StringBuilder sql = new StringBuilder();
-             sql.append("select t.PRINT_UNIT_CODE departCode,                                     ")
-                .append("   t.PRINTER gatheruserId,                                               ")
-                .append("   sum(case when t.QUALITY_LEVEL=1 then 1 else 0 end) countLevelA,       ")
-                .append("   sum(case when t.QUALITY_LEVEL=2 then 1 else 0 end) countLevelB,       ")
-                .append("   sum(case when t.QUALITY_LEVEL=3 then 1 else 0 end) countLevelC,       ")
-                .append("   sum(case when t.QUALITY_LEVEL=4 then 1 else 0 end) countLevelD,       ")
-                .append("   sum(case when t.QUALITY_LEVEL=5 then 1 else 0 end) countLevelE,       ")
-                .append("   sum(case when t.IS_COMPEL_PASS=1 then 1 else 0 end) isCompelPassCount,")
-                .append("   sum(case when t.IS_COMPEL_PASS=0 then 1 else 0 end) unCompelPassCount,")
-                .append("   sum(case when t.is_qualified=1 then 1 else 0 end) standardCount,      ")
-                .append("   sum(case when t.is_qualified=0 then 1 else 0 end) substandardCount,   ")
-                .append("   round(avg(t.TOTAL_SCORE), 1) scoreAverage,                            ")
-                .append("   count(*) count                                                        ")
+             sql.append("select t.PRINT_UNIT_CODE DEPARTCODE,                                     ")
+                .append("   t.PRINTER GATHERUSERID,                                               ")
+                .append("   sum(case when t.QUALITY_LEVEL=1 then 1 else 0 end) COUNTLEVELA,       ")
+                .append("   sum(case when t.QUALITY_LEVEL=2 then 1 else 0 end) COUNTLEVELB,       ")
+                .append("   sum(case when t.QUALITY_LEVEL=3 then 1 else 0 end) COUNTLEVELC,       ")
+                .append("   sum(case when t.QUALITY_LEVEL=4 then 1 else 0 end) COUNTLEVELD,       ")
+                .append("   sum(case when t.QUALITY_LEVEL=5 then 1 else 0 end) COUNTLEVELE,       ")
+                .append("   sum(case when t.IS_COMPEL_PASS=1 then 1 else 0 end) ISCOMPELPASSCOUNT,")
+                .append("   sum(case when t.IS_COMPEL_PASS=0 then 1 else 0 end) UNCOMPELPASSCOUNT,")
+                .append("   sum(case when t.is_qualified=1 then 1 else 0 end) STANDARDCOUNT,      ")
+                .append("   sum(case when t.is_qualified=0 then 1 else 0 end) SUBSTANDARDCOUNT,   ")
+                .append("   round(avg(t.TOTAL_SCORE), 1) SCOREAVERAGE,                            ")
+                .append("   count(*) COUNT                                                        ")
                 .append("from (select p.PRINT_UNIT_CODE,                                          ")
                 .append("           p.PRINTER,                                                    ")
                 .append("           p.IS_COMPEL_PASS,                                             ")
@@ -120,8 +120,8 @@ public class StatisticServiceImpl implements StatisticService {
             Integer statisticTime = Integer.parseInt(dateStr);
             for(int i=0;i<list.size();i++){
                 map = list.get(i);
-                departCode = StringUtils.nvlString(map.get("departCode"));
-                gatherUserId = StringUtils.nvlString(map.get("gatheruserId"));
+                departCode = StringUtils.nvlString(map.get("DEPARTCODE"));
+                gatherUserId = StringUtils.nvlString(map.get("GATHERUSERID"));
                 StatisticQualityDay statisticQualityDay = statisticQualityDayDao.findByDepartCodeAndGatheruserIdAndStatisticTime(departCode, gatherUserId, statisticTime);
                 if(statisticQualityDay == null){
                     statisticQualityDay = new StatisticQualityDay();
@@ -129,17 +129,17 @@ public class StatisticServiceImpl implements StatisticService {
                 statisticQualityDay.setDepartCode(departCode);
                 statisticQualityDay.setGatheruserId(gatherUserId);
                 statisticQualityDay.setStatisticTime(statisticTime);
-                statisticQualityDay.setCountLevelA(StringUtils.nvlInt("countLevelA"));
-                statisticQualityDay.setCountLevelB(StringUtils.nvlInt("countLevelB"));
-                statisticQualityDay.setCountLevelC(StringUtils.nvlInt("countLevelC"));
-                statisticQualityDay.setCountLevelD(StringUtils.nvlInt("countLevelD"));
-                statisticQualityDay.setCountLevelE(StringUtils.nvlInt("countLevelE"));
-                statisticQualityDay.setIsCompelPassCount(StringUtils.nvlInt("isCompelPassCount"));
-                statisticQualityDay.setUnCompelPassCount(StringUtils.nvlInt("unCompelPassCount"));
-                statisticQualityDay.setStandardCount(StringUtils.nvlInt("standardCount"));
-                statisticQualityDay.setSubstandardCount(StringUtils.nvlInt("substandardCount"));
-                statisticQualityDay.setScoreAverage(StringUtils.nvlString("scoreAverage"));
-                statisticQualityDay.setCount(StringUtils.nvlInt("count"));
+                statisticQualityDay.setCountLevelA(StringUtils.nvlInt("COUNTLEVELA"));
+                statisticQualityDay.setCountLevelB(StringUtils.nvlInt("COUNTLEVELB"));
+                statisticQualityDay.setCountLevelC(StringUtils.nvlInt("COUNTLEVELC"));
+                statisticQualityDay.setCountLevelD(StringUtils.nvlInt("COUNTLEVELD"));
+                statisticQualityDay.setCountLevelE(StringUtils.nvlInt("COUNTLEVELE"));
+                statisticQualityDay.setIsCompelPassCount(StringUtils.nvlInt("ISCOMPELPASSCOUNT"));
+                statisticQualityDay.setUnCompelPassCount(StringUtils.nvlInt("UNCOMPELPASSCOUNT"));
+                statisticQualityDay.setStandardCount(StringUtils.nvlInt("STANDARDCOUNT"));
+                statisticQualityDay.setSubstandardCount(StringUtils.nvlInt("SUBSTANDARDCOUNT"));
+                statisticQualityDay.setScoreAverage(StringUtils.nvlString("SCOREAVERAGE"));
+                statisticQualityDay.setCount(StringUtils.nvlInt("COUNT"));
                 statisticQualityDayDao.save(statisticQualityDay);
             }
         }
