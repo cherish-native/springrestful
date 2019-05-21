@@ -77,6 +77,11 @@ public class StatisticQualityDay {
      */
     private Integer substandardCount;
 
+    /**
+     * 未达标率
+     */
+    private String substandardPercent;
+
     public void setId(String id) {
         this.id = id;
     }
@@ -229,5 +234,14 @@ public class StatisticQualityDay {
 
     public void setSubstandardCount(Integer substandardCount) {
         this.substandardCount = substandardCount;
+    }
+
+    @Transient
+    public String getSubstandardPercent() {
+        return substandardPercent;
+    }
+
+    public void setSubstandardPercent(String substandardPercent) {
+        this.substandardPercent = substandardPercent;
     }
 }

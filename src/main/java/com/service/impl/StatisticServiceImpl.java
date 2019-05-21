@@ -4,8 +4,10 @@ import com.constant.Constant;
 import com.dao.BaseDao;
 import com.dao.StatisticQualityDayDao;
 import com.entity.StatisticQualityDay;
+import com.entity.SysDepart;
 import com.entity.vo.DataGridReturn;
 import com.service.StatisticService;
+import com.service.SysDepartService;
 import com.util.DateUtil;
 import com.util.QueryBuilder;
 import com.util.StringUtils;
@@ -14,6 +16,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.text.DecimalFormat;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -27,6 +30,8 @@ public class StatisticServiceImpl implements StatisticService {
     private StatisticQualityDayDao statisticQualityDayDao;
     @Autowired
     private BaseDao baseDao;
+    @Autowired
+    private SysDepartService sysDepartService;
 
     @Override
     public Map<String, Object> getImageQualityStatisticsDay(int date) {
@@ -69,6 +74,7 @@ public class StatisticServiceImpl implements StatisticService {
                 StatisticQualityDay statisticQualityDay = new StatisticQualityDay();
                 statisticQualityDay.setDepartName(statisticQualityDay.getDepartName());
                 statisticQualityDay.setGatheruserName(StringUtils.nvlString(map.get("GATHERUSERNAME")));
+                statisticQualityDay.setDepartCode(StringUtils.nvlString(map.get("DEPARTCODE")));
                 statisticQualityDay.setCount(StringUtils.nvlInt(map.get("COUNT")));
                 statisticQualityDay.setCountLevelA(StringUtils.nvlInt(map.get("COUNTLEVELA")));
                 statisticQualityDay.setCountLevelB(StringUtils.nvlInt(map.get("COUNTLEVELB")));
@@ -92,8 +98,8 @@ public class StatisticServiceImpl implements StatisticService {
                 .append("   sum(case when t.QUALITY_LEVEL=3 then 1 else 0 end) COUNTLEVELC,       ")
                 .append("   sum(case when t.QUALITY_LEVEL=4 then 1 else 0 end) COUNTLEVELD,       ")
                 .append("   sum(case when t.QUALITY_LEVEL=5 then 1 else 0 end) COUNTLEVELE,       ")
-                .append("   sum(case when t.IS_COMPEL_PASS=1 then 1 else 0 end) ISCOMPELPASSCOUNT,")
-                .append("   sum(case when t.IS_COMPEL_PASS=0 then 1 else 0 end) UNCOMPELPASSCOUNT,")
+//                .append("   sum(case when t.IS_COMPEL_PASS=1 then 1 else 0 end) ISCOMPELPASSCOUNT,")
+                .append("   sum(case when t.IS_COMPEL_PASS='00000000000000000000' then 1 else 0 end) UNCOMPELPASSCOUNT,")
                 .append("   sum(case when t.is_qualified=1 then 1 else 0 end) STANDARDCOUNT,      ")
                 .append("   sum(case when t.is_qualified=0 then 1 else 0 end) SUBSTANDARDCOUNT,   ")
                 .append("   round(avg(t.TOTAL_SCORE), 1) SCOREAVERAGE,                            ")
@@ -109,7 +115,7 @@ public class StatisticServiceImpl implements StatisticService {
                 .append("        on p.PERSONID = q.CARDID                                         ")
                 .append("     where p.PRINTDATE = ?                                      ")
                 .append("     ) t                                                                 ")
-                .append("group by t.PRINT_UNIT_CODE, t.PRINTER;                                   ");
+                .append("group by t.PRINT_UNIT_CODE, t.PRINTER                                   ");
         QueryBuilder queryBuilder = new QueryBuilder(sql.toString());
         queryBuilder.getParams().add(dateStr);
         List<Map<String, Object>> list = baseDao.findListBySql(queryBuilder.getSql(), queryBuilder.getParams());
@@ -127,21 +133,69 @@ public class StatisticServiceImpl implements StatisticService {
                     statisticQualityDay = new StatisticQualityDay();
                 }
                 statisticQualityDay.setDepartCode(departCode);
+                statisticQualityDay.setDepartName(Constant.codeAndNameDB.get(departCode));
                 statisticQualityDay.setGatheruserId(gatherUserId);
+                statisticQualityDay.setGatheruserName(gatherUserId);
                 statisticQualityDay.setStatisticTime(statisticTime);
-                statisticQualityDay.setCountLevelA(StringUtils.nvlInt("COUNTLEVELA"));
-                statisticQualityDay.setCountLevelB(StringUtils.nvlInt("COUNTLEVELB"));
-                statisticQualityDay.setCountLevelC(StringUtils.nvlInt("COUNTLEVELC"));
-                statisticQualityDay.setCountLevelD(StringUtils.nvlInt("COUNTLEVELD"));
-                statisticQualityDay.setCountLevelE(StringUtils.nvlInt("COUNTLEVELE"));
-                statisticQualityDay.setIsCompelPassCount(StringUtils.nvlInt("ISCOMPELPASSCOUNT"));
-                statisticQualityDay.setUnCompelPassCount(StringUtils.nvlInt("UNCOMPELPASSCOUNT"));
-                statisticQualityDay.setStandardCount(StringUtils.nvlInt("STANDARDCOUNT"));
-                statisticQualityDay.setSubstandardCount(StringUtils.nvlInt("SUBSTANDARDCOUNT"));
-                statisticQualityDay.setScoreAverage(StringUtils.nvlString("SCOREAVERAGE"));
-                statisticQualityDay.setCount(StringUtils.nvlInt("COUNT"));
+                statisticQualityDay.setCountLevelA(StringUtils.nvlInt(map.get("COUNTLEVELA")));
+                statisticQualityDay.setCountLevelB(StringUtils.nvlInt(map.get("COUNTLEVELB")));
+                statisticQualityDay.setCountLevelC(StringUtils.nvlInt(map.get("COUNTLEVELC")));
+                statisticQualityDay.setCountLevelD(StringUtils.nvlInt(map.get("COUNTLEVELD")));
+                statisticQualityDay.setCountLevelE(StringUtils.nvlInt(map.get("COUNTLEVELE")));
+//                statisticQualityDay.setIsCompelPassCount(StringUtils.nvlInt("ISCOMPELPASSCOUNT"));
+                statisticQualityDay.setCount(StringUtils.nvlInt(map.get("COUNT")));
+                statisticQualityDay.setUnCompelPassCount(StringUtils.nvlInt(map.get("UNCOMPELPASSCOUNT")));
+                statisticQualityDay.setIsCompelPassCount(statisticQualityDay.getCount() - statisticQualityDay.getUnCompelPassCount());
+                statisticQualityDay.setStandardCount(StringUtils.nvlInt(map.get("STANDARDCOUNT")));
+                statisticQualityDay.setSubstandardCount(StringUtils.nvlInt(map.get("SUBSTANDARDCOUNT")));
+                statisticQualityDay.setScoreAverage(StringUtils.nvlString(map.get("SCOREAVERAGE")));
+
                 statisticQualityDayDao.save(statisticQualityDay);
             }
         }
+    }
+
+    @Override
+    public DataGridReturn gatherSubstandardExamineList(String departCode, String beginDate, String endDate, Pageable pagination) {
+        StringBuilder sql = new StringBuilder();
+        sql.append("     select t.depart_code DEPARTCODE, t.gatheruser_name GATHERUSERNAME,")
+                .append("sum(count) COUNT,")
+                .append("sum(t.substandard_count) SUBSTANDARDCOUNT")
+                .append(" from statistic_quality_day t");
+        QueryBuilder queryBuilder = new QueryBuilder(sql.toString());
+        if(StringUtils.isNotEmpty(departCode)){
+            queryBuilder.appendAndWhere("t.depart_code like ?", departCode);
+        }
+        if(StringUtils.isNotEmpty(beginDate)){
+            queryBuilder.appendAndWhere("t.statistic_time >= ?", Integer.parseInt(beginDate.replaceAll("-", "")));
+        }
+        if(StringUtils.isNotEmpty(endDate)){
+            queryBuilder.appendAndWhere("t.statistic_time <= ?", Integer.parseInt(endDate.replaceAll("-", "")));
+        }
+        queryBuilder.appendSql("group by t.depart_code, t.gatheruser_name");
+        List<Map<String, Object>> list = baseDao.findListBySql(queryBuilder.getSql(), queryBuilder.getParams());
+        List<StatisticQualityDay> statisticQualityDays = new ArrayList<>();
+        if(list != null){
+            DecimalFormat df = new DecimalFormat("0.00");//格式化小数
+            for(Map<String, Object> map : list){
+                StatisticQualityDay statisticQualityDay = new StatisticQualityDay();
+                statisticQualityDay.setDepartName(Constant.codeAndNameDB.get(StringUtils.nvlString(map.get("DEPARTCODE"))));
+                statisticQualityDay.setGatheruserName(StringUtils.nvlString(map.get("GATHERUSERNAME")));
+                statisticQualityDay.setDepartCode(StringUtils.nvlString(map.get("DEPARTCODE")));
+                statisticQualityDay.setCount(StringUtils.nvlInt(map.get("COUNT")));
+                statisticQualityDay.setSubstandardCount(StringUtils.nvlInt(map.get("SUBSTANDARDCOUNT")));
+                statisticQualityDay.setSubstandardPercent(df.format((float)statisticQualityDay.getSubstandardCount()/statisticQualityDay.getCount()*100) + "%");
+                statisticQualityDays.add(statisticQualityDay);
+            }
+        }
+        return new DataGridReturn(statisticQualityDays.size(), statisticQualityDays);
+    }
+
+    @Override
+    public DataGridReturn gatherSubstandardExamineDetailList(String departCode, String beginDate, String endDate, Pageable pagination) {
+        StringBuilder sql = new StringBuilder();
+        QueryBuilder queryBuilder = new QueryBuilder(sql.toString());
+        List<Map<String,Object>> list = baseDao.findListBySql(queryBuilder.getSql(), queryBuilder.getParams());
+        return null;
     }
 }

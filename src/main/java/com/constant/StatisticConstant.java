@@ -10,6 +10,6 @@ public class StatisticConstant {
     /**
      * 当前统计服务状态，在更改定级配置和质量评级配置时会更改此状态
      */
-    public static Integer CURSATTE = WorkQueue.STATE_UNBEGIN;
+    public static Integer CURSTATE = WorkQueue.STATE_UNBEGIN;
 
 }

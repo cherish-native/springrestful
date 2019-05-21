@@ -32,4 +32,24 @@ public interface StatisticService {
      * @param dateStr yyyyMMdd
      */
     void statisticDay(String dateStr);
+
+    /**
+     * 采集未达标列表
+     * @param departCode
+     * @param beginDate
+     * @param endDate
+     * @param pagination
+     * @return
+     */
+    DataGridReturn gatherSubstandardExamineList(String departCode, String beginDate, String endDate, Pageable pagination);
+
+    /**
+     * 采集未达标详细列表
+     * @param departCode
+     * @param beginDate
+     * @param endDate
+     * @param pagination
+     * @return
+     */
+    DataGridReturn gatherSubstandardExamineDetailList(String departCode, String beginDate, String endDate, Pageable pagination);
 }
