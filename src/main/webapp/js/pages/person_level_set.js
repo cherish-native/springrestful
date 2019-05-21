@@ -32,7 +32,14 @@ jQuery(function($){
                         selected += selectedCodeArea[i].split("-")[0] + ",";
                     }
                     if(selected != ''){
-                        alert(selected);
+                        // alert(selected);
+                        $('#hukouCode_value').val(selected)
+                        var a = new Array()
+                        $('#code_area_selected_table').find('.area_select_td_item').each(function(){
+                            a.push($(this).html())
+                        })
+                        a = a.join(';')
+                        $('#hukou-input').val(a)
                         $('#hukou-dialog').dialog('close')
                     }else{
                        alert("已选户籍地为空")
@@ -230,69 +237,16 @@ jQuery(function($){
     
     $('#set-btn').on('click',function (e) {
 
-        var strAddressCode = ""
-        var strRaceCode = ""
-        var strCaseCode = ""
-        var strGender = ""
-        var strMinAge = ""
-        var strMaxAge = ""
-        var strCriminalRecord = ""
-
-        if(addressCodeArray.length > 0){
-            var length = addressCodeArray.length
-            for(var i=0; i<length;i++){
-                strAddressCode += addressCodeArray[i] + ","
-            }
-        }
-
-        if(raceCodeArray.length > 0){
-            var length = raceCodeArray.length
-            for(var i=0;i<length;i++){
-                strRaceCode += raceCodeArray[i]+ ","
-            }
-        }
-
-        if(caseCodeArray.length > 0){
-            var length = caseCodeArray.length
-            for(var i=0;i<length;i++){
-                strCaseCode += caseCodeArray[i]+ ","
-            }
-        }
-
-        if($('#gender').val() != '-1'){
-            strGender = $('#gender').val()
-        }
-
-        if($('#min-age').val().trim() != ''){
-            strMinAge = $('#min-age').val().trim()
-        }
-
-        if($('#max-age').val().trim() != ''){
-            strMaxAge = $('#max-age').val().trim()
-        }
-
-        if($('#criminal-record-input').val() != '-1'){
-            strCriminalRecord = $('#criminal-record-input').val()
-        }
-
+        var strAddressCode = $('#hukouCode_value').val()
+        var strCaseCode = $('#caseCode_value').val()
 
         var params = {
             addressCode:strAddressCode,
-            raceCode:strRaceCode,
             caseCode:strCaseCode,
-            gender:strGender,
-            minAge:strMinAge,
-            maxAge:strMaxAge,
-            criminalRecord:strCriminalRecord
         }
 
         if(strAddressCode.length <=0
-            && strRaceCode.length <=0
-            && strCaseCode.length <=0
-            && strGender.length <=0
-            && strMinAge.length <=0
-            && strMaxAge.length <=0
-            && strCriminalRecord.length <=0){
+            && strCaseCode.length <=0){
             if(!isSetLevel()){
                 alert("所有设置项均未选择,所有被捺印人默认均为C级")
             }
