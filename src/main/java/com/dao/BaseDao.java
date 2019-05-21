@@ -1,5 +1,8 @@
 package com.dao;
 
+import com.entity.vo.DataGridReturn;
+import org.springframework.data.domain.Pageable;
+
 import java.io.Serializable;
 import java.util.List;
 import java.util.Map;
@@ -13,6 +16,15 @@ public interface BaseDao {
      * @return
      */
     List<Map<String, Object>>  findListBySql(String sql, List<Object> params);
+
+    /**
+     * 分页查询
+     * @param sql
+     * @param params
+     * @param pageable
+     * @return
+     */
+    DataGridReturn pageQuery(String sql, List<Object> params, Pageable pageable);
 
     /**
      * 拼接查询sql
