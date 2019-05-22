@@ -6,6 +6,7 @@ import com.dao.StatisticQualityDayDao;
 import com.entity.StatisticQualityDay;
 import com.entity.SysDepart;
 import com.entity.vo.DataGridReturn;
+import com.entity.vo.PersonVo;
 import com.service.StatisticService;
 import com.service.SysDepartService;
 import com.util.DateUtil;
@@ -192,10 +193,54 @@ public class StatisticServiceImpl implements StatisticService {
     }
 
     @Override
-    public DataGridReturn gatherSubstandardExamineDetailList(String departCode, String beginDate, String endDate, Pageable pagination) {
-        StringBuilder sql = new StringBuilder();
+    public DataGridReturn gatherSubstandardExamineDetailList(String departCode, String gatheruserName, String beginDate, String endDate, Pageable pagination) {
+        StringBuilder sql = new StringBuilder("SELECT q.*,t.personid,t.name, t.idcard,t.person_level,t.printdate FROM personinfo t left join quality_score q on t.personid = q.cardid ");
         QueryBuilder queryBuilder = new QueryBuilder(sql.toString());
-        List<Map<String,Object>> list = baseDao.findListBySql(queryBuilder.getSql(), queryBuilder.getParams());
-        return null;
+        queryBuilder.appendAndWhere(" t.printdate is not null ", null);
+        if(StringUtils.isNotEmpty(departCode)){
+            queryBuilder.appendAndWhere(" t.print_unit_code = ? ", departCode);
+        }
+        if(StringUtils.isNotEmpty(gatheruserName)){
+            try {
+                gatheruserName = new String(gatheruserName.getBytes("ISO-8859-1"),"utf-8");
+            } catch (Exception e){
+                e.printStackTrace();
+            }
+            queryBuilder.appendAndWhere(" t.printer = ? ", gatheruserName);
+        }
+        if(StringUtils.isNotEmpty(beginDate)){
+            queryBuilder.appendAndWhere(" t.printdate >= ? ", beginDate);
+        }
+        if(StringUtils.isNotEmpty(endDate)){
+            queryBuilder.appendAndWhere(" t.printdate <= ? ", endDate);
+        }
+        DataGridReturn dataGridReturn = baseDao.pageQuery(queryBuilder.getSql(), queryBuilder.getParams(), pagination);
+        List<PersonVo> personVos = new ArrayList<>();
+        List<Map<String, Object>> list = dataGridReturn.getRows();
+        if(list != null && list.size() > 0){
+            for(Map<String, Object> map : list){
+                PersonVo personVo = new PersonVo();
+                personVo.setPersonId(StringUtils.nvlString(map.get("PERSONID")));
+                personVo.setName(StringUtils.nvlString(map.get("NAME")));
+                personVo.setIdCardNo(StringUtils.nvlString(map.get("IDCARD")));
+                personVo.setPrintDate(StringUtils.nvlString(map.get("PRINTDATE")));
+                personVo.setPersonLevel(StringUtils.nvlString(map.get("PERSON_LEVEL")));
+                personVo.setRightThumb(StringUtils.nvlInt(map.get("RMP")) + "/" + StringUtils.nvlInt(map.get("RMR")));
+                personVo.setRightIndex(StringUtils.nvlInt(map.get("RSP")) + "/" + StringUtils.nvlInt(map.get("RSR")));
+                personVo.setRightMiddle(StringUtils.nvlInt(map.get("RZP")) + "/" + StringUtils.nvlInt(map.get("RZR")));
+                personVo.setRightRing(StringUtils.nvlInt(map.get("RHP")) + "/" + StringUtils.nvlInt(map.get("RHR")));
+                personVo.setRightLittle(StringUtils.nvlInt(map.get("RXP")) + "/" + StringUtils.nvlInt(map.get("RXR")));
+                personVo.setLeftThumb(StringUtils.nvlInt(map.get("LMP")) + "/" + StringUtils.nvlInt(map.get("LMR")));
+                personVo.setLeftIndex(StringUtils.nvlInt(map.get("LSP")) + "/" + StringUtils.nvlInt(map.get("LSR")));
+                personVo.setLeftMiddle(StringUtils.nvlInt(map.get("LZP")) + "/" + StringUtils.nvlInt(map.get("LZR")));
+                personVo.setLeftRing(StringUtils.nvlInt(map.get("LHP")) + "/" + StringUtils.nvlInt(map.get("LHR")));
+                personVo.setLeftLittle(StringUtils.nvlInt(map.get("LXP")) + "/" + StringUtils.nvlInt(map.get("LXR")));
+                personVo.setImgUrl(StringUtils.nvlString(map.get("IMG_URL")));
+                personVo.setQualityLevel(StringUtils.nvlString(map.get("QUALITY_LEVEL")));
+                personVos.add(personVo);
+            }
+        }
+        dataGridReturn.setRows(personVos);
+        return dataGridReturn;
     }
 }

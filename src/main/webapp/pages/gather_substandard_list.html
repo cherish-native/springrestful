@@ -43,7 +43,7 @@
                 width : document.documentElement.clientWidth,
                 height : document.documentElement.clientHeight
             };
-            optwidth = 300;
+            optwidth = 200;
             $('#departCodeSelect').combobox({
                 url: 'sysDepart/fuzzySearchDepart',  //远程访问服务器端的地址
                 editable: false,  //设置文本区域不能被编辑
@@ -83,26 +83,36 @@
                     queryParams['endDate'] = "";
                 }
             }
-
             //加载列表
             $('#gatherQualityList').datagrid({
-                url:'statistics/gatherSubstandardExamineList',
+                url:'statistics/gatherSubstandardExamineDetailList',
                 width:size.width-20,
                 height:size.height - $('#searchDiv').height() - 60,
+                queryParams:queryParams,
                 columns:[[
-                    {field:"id",title:"ID",hidden:true},
-                    {field:"departName",title:"采集单位",width:fixWidthWithOptWidth(0.25)},
-                    {field:"gatheruserName",title:"采集人",width:fixWidthWithOptWidth(0.25)},
-                    {field:"count",title:"采集总量",width:fixWidthWithOptWidth(0.15)},
-                    {field:"substandardCount",title:"未达标数",width:fixWidthWithOptWidth(0.15)},
-                    {field:"substandardPercent",title:"未达标率",width:fixWidthWithOptWidth(0.15)},
+                    {field:"personId",title:"捺印卡号",width:fixWidthWithOptWidth(0.2)},
+                    {field:"printDate",title:"采集日期",width:fixWidthWithOptWidth(0.1)},
+                    {field:"name",title:"姓名",width:fixWidthWithOptWidth(0.05)},
+                    {field:"idCardNo",title:"身份证号",width:fixWidthWithOptWidth(0.05)},
+                    {field:"personLevel",title:"定级",width:fixWidthWithOptWidth(0.05)},
+                    {field:"qualityLevel",title:"整体",width:fixWidthWithOptWidth(0.05)},
+                    {field:"rightThumb",title:"右拇",width:fixWidthWithOptWidth(0.05)},
+                    {field:"rightIndex",title:"右食",width:fixWidthWithOptWidth(0.05)},
+                    {field:"rightMiddle",title:"右中",width:fixWidthWithOptWidth(0.05)},
+                    {field:"rightRing",title:"右环",width:fixWidthWithOptWidth(0.05)},
+                    {field:"rightLittle",title:"右小",width:fixWidthWithOptWidth(0.05)},
+                    {field:"leftThumb",title:"左拇",width:fixWidthWithOptWidth(0.05)},
+                    {field:"leftIndex",title:"左食",width:fixWidthWithOptWidth(0.05)},
+                    {field:"leftMiddle",title:"左中",width:fixWidthWithOptWidth(0.05)},
+                    {field:"leftRing",title:"左环",width:fixWidthWithOptWidth(0.05)},
+                    {field:"leftLittle",title:"左小",width:fixWidthWithOptWidth(0.05)},
                     {field:"opt",title:"操作",width:optwidth, formatter: function (value, row, index){
                         var result = '<a href="#" onclick="showDetail(\''+ row.departCode +'\',\''+ row.gatheruserName +'\')">详细信息</a>';
                             return result;
                         }
                     }
                 ]],
-                pagination : false,
+                pagination : true,
                 rownumbers:true
             });
         });

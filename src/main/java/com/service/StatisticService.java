@@ -51,5 +51,5 @@ public interface StatisticService {
      * @param pagination
      * @return
      */
-    DataGridReturn gatherSubstandardExamineDetailList(String departCode, String beginDate, String endDate, Pageable pagination);
+    DataGridReturn gatherSubstandardExamineDetailList(String departCode, String gatherUser, String beginDate, String endDate, Pageable pagination);
 }

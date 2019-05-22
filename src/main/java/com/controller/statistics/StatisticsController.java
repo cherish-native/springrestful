@@ -82,8 +82,10 @@ public class StatisticsController extends BaseController {
      * @param request
      * @return
      */
-    public DataGridReturn gatherSubstandardExamineDetailList(String departCode, String beginDate, String endDate, HttpServletRequest request){
-        return statisticService.gatherSubstandardExamineDetailList(departCode, beginDate, endDate, getPagination(request));
+    @RequestMapping("/gatherSubstandardExamineDetailList")
+    @ResponseBody
+    public DataGridReturn gatherSubstandardExamineDetailList(String departCode, String gatheruserName, String beginDate, String endDate, HttpServletRequest request){
+        return statisticService.gatherSubstandardExamineDetailList(departCode, gatheruserName, beginDate, endDate, getPagination(request));
     }
 
     /**
