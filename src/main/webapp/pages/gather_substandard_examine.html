@@ -89,7 +89,7 @@
          * @param gatherUserId
          */
         function showDetail(departCode,gatheruserName){
-            var url = "gather_substandard_list.html?departCode="+departCode+"&gatheruserName="+gatheruserName;
+            var url = "gather_substandard_list.html?departCode="+departCode+"&gatheruserName="+encodeURI(gatheruserName);
             var beginDate = $('#beginDate').datebox('getValue');
             url += "&beginDate=" + beginDate;
             var endDate = $('#endDate').datebox('getValue');

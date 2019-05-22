@@ -215,4 +215,22 @@ public class StatisticsController extends BaseController {
         }
         return result;
     }
+
+    /**
+     * 获取指纹图像
+     * @param imgPath 图像文件夹路径
+     * @param personId 捺印卡号
+     * @param fgpCase 0：滚动 1：平面
+     * @param fgp 指纹 1-10
+     * @param type 图像类型 1：指纹原图  2：红白图
+     * @param request
+     */
+    @RequestMapping("/showFingerImage/{imgPath}/{personId}/{fgpCase}/{fgp}/{type}")
+    @ResponseBody
+    public void showFingerImage(@PathVariable("imgPath") String imgPath, @PathVariable("personId") String personId,@PathVariable("fgpCase") int fgpCase, @PathVariable("fgp") int fgp,
+                                @PathVariable("type") int type, HttpServletRequest request){
+        System.out.println(personId);
+        System.out.println(fgpCase);
+        System.out.println(fgp);
+    }
 }

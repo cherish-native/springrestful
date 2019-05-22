@@ -8,7 +8,15 @@
     <script type="text/javascript" src="../easyui/jquery.min.js"></script>
     <script type="text/javascript" src="../easyui/jquery.easyui.min.js"></script>
     <script type="text/javascript" src="../easyui/easyui-lang-zh_CN.js"></script>
-    <script type="text/javascript" src="../js/index.js?1"></script>
+    <script type="text/javascript" src="../js/index.js?2"></script>
+    <style>
+        .showFingerImageClass{
+            text-decoration: none
+        }
+        .showFingerImageClass:hover{
+            background-color: yellow;
+        }
+    </style>
     <script>
         $(function(){
             //获取参数
@@ -43,7 +51,7 @@
                 width : document.documentElement.clientWidth,
                 height : document.documentElement.clientHeight
             };
-            optwidth = 200;
+            optwidth = 50;
             $('#departCodeSelect').combobox({
                 url: 'sysDepart/fuzzySearchDepart',  //远程访问服务器端的地址
                 editable: false,  //设置文本区域不能被编辑
@@ -96,35 +104,94 @@
                     {field:"idCardNo",title:"身份证号",width:fixWidthWithOptWidth(0.05)},
                     {field:"personLevel",title:"定级",width:fixWidthWithOptWidth(0.05)},
                     {field:"qualityLevel",title:"整体",width:fixWidthWithOptWidth(0.05)},
-                    {field:"rightThumb",title:"右拇",width:fixWidthWithOptWidth(0.05)},
-                    {field:"rightIndex",title:"右食",width:fixWidthWithOptWidth(0.05)},
-                    {field:"rightMiddle",title:"右中",width:fixWidthWithOptWidth(0.05)},
-                    {field:"rightRing",title:"右环",width:fixWidthWithOptWidth(0.05)},
-                    {field:"rightLittle",title:"右小",width:fixWidthWithOptWidth(0.05)},
-                    {field:"leftThumb",title:"左拇",width:fixWidthWithOptWidth(0.05)},
-                    {field:"leftIndex",title:"左食",width:fixWidthWithOptWidth(0.05)},
-                    {field:"leftMiddle",title:"左中",width:fixWidthWithOptWidth(0.05)},
-                    {field:"leftRing",title:"左环",width:fixWidthWithOptWidth(0.05)},
-                    {field:"leftLittle",title:"左小",width:fixWidthWithOptWidth(0.05)},
-                    {field:"opt",title:"操作",width:optwidth, formatter: function (value, row, index){
-                        var result = '<a href="#" onclick="showDetail(\''+ row.departCode +'\',\''+ row.gatheruserName +'\')">详细信息</a>';
-                            return result;
-                        }
-                    }
+                    {field:"rightThumb",title:"右拇",width:fixWidthWithOptWidth(0.05),formatter: function (value, row, index){
+                        return getSHowImageCellValue(value, row.imgUrl, row.personId, 1);
+                    }},
+                    {field:"rightIndex",title:"右食",width:fixWidthWithOptWidth(0.05),formatter: function (value, row, index){
+                            return getSHowImageCellValue(value, row.imgUrl, row.personId, 2);
+                        }},
+                    {field:"rightMiddle",title:"右中",width:fixWidthWithOptWidth(0.05),formatter: function (value, row, index){
+                            return getSHowImageCellValue(value, row.imgUrl, row.personId, 3);
+                        }},
+                    {field:"rightRing",title:"右环",width:fixWidthWithOptWidth(0.05),formatter: function (value, row, index){
+                            return getSHowImageCellValue(value, row.imgUrl, row.personId, 4);
+                        }},
+                    {field:"rightLittle",title:"右小",width:fixWidthWithOptWidth(0.05),formatter: function (value, row, index){
+                            return getSHowImageCellValue(value, row.imgUrl, row.personId, 5);
+                        }},
+                    {field:"leftThumb",title:"左拇",width:fixWidthWithOptWidth(0.05),formatter: function (value, row, index){
+                            return getSHowImageCellValue(value, row.imgUrl, row.personId, 6);
+                        }},
+                    {field:"leftIndex",title:"左食",width:fixWidthWithOptWidth(0.05),formatter: function (value, row, index){
+                            return getSHowImageCellValue(value, row.imgUrl, row.personId, 7);
+                        }},
+                    {field:"leftMiddle",title:"左中",width:fixWidthWithOptWidth(0.05),formatter: function (value, row, index){
+                            return getSHowImageCellValue(value, row.imgUrl, row.personId, 8);
+                        }},
+                    {field:"leftRing",title:"左环",width:fixWidthWithOptWidth(0.05),formatter: function (value, row, index){
+                            return getSHowImageCellValue(value, row.imgUrl, row.personId, 9);
+                        }},
+                    {field:"leftLittle",title:"左小",width:fixWidthWithOptWidth(0.05),formatter: function (value, row, index){
+                            return getSHowImageCellValue(value, row.imgUrl, row.personId, 10);
+                        }}
                 ]],
                 pagination : true,
-                rownumbers:true
+                rownumbers:true,
+                onBeforeSelect:function(){
+                    return false;
+                },
+            });
+
+            //图像展示框，宽高比为2:1
+            var imageSize = size.height - 185;
+            imageSize = imageSize > (size.width - 200)/2?(size.width - 200)/2:imageSize;
+            if(imageSize > 640){
+                imageSize = 640;
+            }
+            var dialogHeight = imageSize + 90;
+            var dialogWidth = imageSize*2 + 20;
+            $('#layoutDiv div').height(imageSize);
+            $('#layoutDiv div').width(imageSize);
+            // $('#imageDialogLayout img').height(dialogHeight);
+            // $('#imageDialogLayout img').width(dialogWidth/2-50);
+            $("#image-dialog").dialog({
+                title:'指纹图像查看',
+                width:dialogWidth,
+                height:dialogHeight,
+                modal:true,
+                buttons : [
+                    {
+                        text : "关闭",
+                        handler : function () {
+                            $('#image-dialog').dialog('close')
+                        }
+                    }
+                ]
             });
         });
 
-        /**
-         * 展示详细信息
-         * @param departCode
-         * @param gatherUserId
-         */
-        function showDetail(personId){
-            // alert(departCode)
-            // alert(gatheruserName);
+        function getSHowImageCellValue(value, imgUrl, personId, fgp){
+            var result = value;
+            imgUrl = "imageUrl";
+            if(value){
+                var scoreArr = value.split('/');
+                result = '<a href="#" class="showFingerImageClass" onclick="showImage(\'' + imgUrl + '\',\'' + personId + '\',\'0\',\''+ fgp +'\');">&nbsp;' + scoreArr[0] + '&nbsp;</a>';
+                result += "/";
+                result += '<a href="#" class="showFingerImageClass" onclick="showImage(\'' + imgUrl + '\',\'' + personId + '\',\'1\',\''+ fgp +'\');">&nbsp;' + scoreArr[0] + '&nbsp;</a>';
+            }
+            return result;
+        }
+
+        function showImage(imagePath,personId,fgpCase,fgp){
+            var url = "";
+            if(imagePath != ''){
+                url = "statistics/showFingerImage/"+imagePath+"/"+personId+"/"+fgpCase+"/"+fgp;
+            }
+            var fingerName = getFingerName(fgpCase, fgp);
+            $('#image-dialog').panel({title: fingerName});
+            // $('#imgOriginal').attr('src', '')
+            $("#image-dialog").dialog("open"); // 打开dialog
+            $('#image-dialog').window('center');
         }
 
         function addTab(title, url){
@@ -164,6 +231,23 @@
 <div>
     <table id="gatherQualityList"></table>
 </div>
-
+<div id="image-dialog"  class="easyui-dialog" closed="true" style="display: none;">
+    <div id="layoutDiv">
+        <div id="divOriginal" style="float: left;">
+            <img src="http://c.hiphotos.baidu.com/zhidao/pic/item/6f061d950a7b0208a117373a69d9f2d3562cc80b.jpg" id="imgOriginal" style="width: 100%;height: 100%;border-right: 1px solid grey">
+        </div>
+        <div id="divRedAndWhith" style="float: left;">
+            <img src="http://a.hiphotos.baidu.com/zhidao/pic/item/9358d109b3de9c82e929a8e66781800a19d8430e.jpg" id="imgRedAndWhith" style="width: 100%;height: 100%">
+        </div>
+        <!--<div id="imageDialogLayout" class="easyui-layout" style="height: 100%;">-->
+            <!--<div data-options="region:'west',split:false" style="height:100%;width: 50%">-->
+                <!--<img id="imgOriginal" src="12313123123">-->
+            <!--</div>-->
+            <!--<div id="dialogCenter" data-options="region:'center'">-->
+                <!--<img id="imgRedAndWhite" src="12313123123">-->
+            <!--</div>-->
+        <!--</div>-->
+    </div>
+</div>
 </body>
 </html>

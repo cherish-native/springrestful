@@ -202,7 +202,7 @@ public class StatisticServiceImpl implements StatisticService {
         }
         if(StringUtils.isNotEmpty(gatheruserName)){
             try {
-                gatheruserName = new String(gatheruserName.getBytes("ISO-8859-1"),"utf-8");
+                gatheruserName = java.net.URLDecoder.decode(gatheruserName,"utf-8");
             } catch (Exception e){
                 e.printStackTrace();
             }
