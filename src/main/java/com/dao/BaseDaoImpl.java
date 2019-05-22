@@ -82,4 +82,16 @@ public class BaseDaoImpl implements BaseDao{
             return sql;
         }
     }
+
+    @Override
+    public int updateBySql(String sql, List<Object> params) {
+        Query query = entityManager.createQuery(sql);
+        if(params != null){
+            for(int i=0;i<params.size();i++){
+                query.setParameter(i+1,params.get(i));
+            }
+        }
+        int result = query.executeUpdate();  //修改记录数
+        return  result;
+    }
 }

@@ -1,6 +1,7 @@
 package com.service.impl;
 
 
+import com.dao.BaseDao;
 import com.dao.CaseDimenDao;
 import com.dao.HuKouDimenDao;
 import com.dao.PersonLevelDao;
@@ -25,6 +26,8 @@ public class PersonLevelSetServiceImpl implements PersonLevelSetService {
     private CaseDimenDao caseDimenDao;
     @Autowired
     private PersonLevelDao personLevelDao;
+    @Autowired
+    private BaseDao baseDao;
 
     @Override
     @Transactional(rollbackFor = Exception.class)
@@ -66,5 +69,11 @@ public class PersonLevelSetServiceImpl implements PersonLevelSetService {
             }
         }
 
+    }
+
+    @Override
+    public int updatePersonLevel() {
+        int result = baseDao.updateBySql("update personinfo set person_level ='' ",null);
+        return result;
     }
 }

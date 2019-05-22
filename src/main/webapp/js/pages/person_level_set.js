@@ -239,10 +239,12 @@ jQuery(function($){
 
         var strAddressCode = $('#hukouCode_value').val()
         var strCaseCode = $('#caseCode_value').val()
+        var repeat = $('input[name="repeat"]:checked').val();
 
         var params = {
             addressCode:strAddressCode,
             caseCode:strCaseCode,
+            repeat:repeat
         }
 
         if(strAddressCode.length <=0

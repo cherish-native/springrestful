@@ -39,6 +39,13 @@ public class WorkQueue {
     private Integer workState;
 
     @Transient
+    public static Integer TYPE_PERSON_LEVEL = 0;        //人员定级
+    @Transient
+    public static Integer TYPE_IMG_LEVEL = 1;           //人员等级设置
+    @Transient
+    public static Integer TYPE_IMG_LEVEL_SCORE = 2;     //图像质量等级范围设置
+
+    @Transient
     public static Integer STATE_UNBEGIN = 0;
     @Transient
     public static Integer STATE_SERVICE_RUNNING = 1;

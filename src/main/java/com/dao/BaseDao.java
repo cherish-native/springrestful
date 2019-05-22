@@ -33,4 +33,12 @@ public interface BaseDao {
      * @return
      */
     String appendWhere(String sql, List<String> whereSqls);
+
+    /**
+     * 根据sql更新
+     * @param sql
+     * @param params
+     * @return
+     */
+    int updateBySql(String sql, List<Object> params);
 }
