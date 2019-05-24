@@ -7,9 +7,10 @@ import com.entity.WorkQueue;
 import com.entity.vo.DataGridReturn;
 import com.service.StatisticService;
 import com.service.WorkQueueService;
-import com.sun.deploy.net.protocol.chrome.ChromeURLConnection;
 import com.util.DateUtil;
 import com.util.FileUtil;
+import com.util.StringUtils;
+
 import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
@@ -142,14 +143,11 @@ public class StatisticsController extends BaseController {
         }
         //纵坐标数据，模拟数据
         List<String[]> yAxisData = new ArrayList<>();
-        for(int i=0;i<5;i++){
-            String[] yAxisDataItem = new String[xAxisCount];
-            for(int j=0;j<yAxisDataItem.length;j++){
-                Random rand = new Random();
-                yAxisDataItem[j] = rand.nextInt(100)+1+"";
-            }
-            yAxisData.add(yAxisDataItem);
-        }
+//        for(int i=0;i<5;i++){
+//            String[] yAxisDataItem = new String[xAxisCount];
+//            yAxisData.add(yAxisDataItem);
+//        }
+    	yAxisData = statisticService.getGatherQualityCount(dateStr,xAxisCount,departCode);
         result.put("xAxisData", xAxisData);
         result.put("series", yAxisData);
         return result;
@@ -166,7 +164,11 @@ public class StatisticsController extends BaseController {
     @RequestMapping("/historyImageSubstandardStatistics")
     @ResponseBody
     public Map<String,Object> historyImageSubstandardStatistics(String departCode,String dateStr) throws Exception{
-        Map<String,Object> result = new HashMap<>();
+         String[] departCodeList = null ;
+         if(StringUtils.isNotEmpty(departCode)){
+             departCodeList = departCode.split(",");
+         }
+    	Map<String,Object> result = new HashMap<>();
         //横坐标数据
         int xAxisCount = 12;
         String xAxisSuffix = "月";
@@ -178,12 +180,20 @@ public class StatisticsController extends BaseController {
         for(int i=0;i<xAxisCount;i++){
             xAxisData[i] = (i+1)+xAxisSuffix;
         }
+        List<String[]> yAxisData = new ArrayList<>();
+/*        if(StringUtils.isNotEmpty(departCodeList)){
+        	for(int a=0; a<3;a++){
+            	String[] yAxisDataItem = new String[xAxisCount];
+	        	 for(int i=0;i<xAxisCount;i++){
+	                 Random rand = new Random();
+	                 yAxisDataItem[i] = rand.nextInt(99)+1+".5";
+	        	 }
+                 yAxisData.add(yAxisDataItem);
 
-        String[] yAxisData = new String[xAxisCount];
-        for(int i=0;i<yAxisData.length;i++){
-            Random rand = new Random();
-            yAxisData[i] = rand.nextInt(99)+1+".5";
-        }
+        	}
+        }*/
+    	yAxisData = statisticService.getGatherQualityCount(dateStr,xAxisCount,departCode);
+
         result.put("xAxisData", xAxisData);
         result.put("yAxisData", yAxisData);
         return result;
