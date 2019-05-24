@@ -18,13 +18,7 @@
                 <a href="#" onclick="selectYearOrMonth('year')" class="easyui-linkbutton" style="width: 50px;" data-options="toggle:true,group:'g1',selected:true">年</a>
                 <a href="#" onclick="selectYearOrMonth('month')" class="easyui-linkbutton" style="width: 50px;" data-options="toggle:true,group:'g1'">月</a>
             </td>
-            <td width="100" align="right">采集单位：</td>
-            <td>
-                <select id="departCodeSelect" class="easyui-combobox" style="width: 150px" data-options="editable:false" name="language">
-                    <option value="1">上海市普陀区分局</option>
-                    <option value="2">真光路派出所</option>
-                </select>
-            </td>
+
             <td width="100" align="right">时间范围：</td>
             <td width="205">
                 <div id="yearSelectDiv" style="display: inline">
@@ -54,7 +48,16 @@
         </tr>
     </table>
 </div>
-<div id="container" style="height: 80%"></div>
+<div class="easyui-layout" style="width: 100%;height: 100%">
+    <div data-options="region:'center'" id="code_caseclass_children1" style="height: 100%">
+        <div id="container" style="height: 80%;width: 90%"></div>
+    </div>
+    <div data-options="region:'east'" id="code_caseclass_children2" style="width: 15%;height:100%">
+		<span>采集单位：</span>
+		<div id="departCK" >	
+		</div>
+    </div>
+</div>
 <script type="text/javascript">
     var curType = "year";
     $(function(){
@@ -77,89 +80,118 @@
         $("#yearSelect").combobox("loadData", themecombo2);
         $("#yearSelect ").combobox('select', curYear);
         $('#monthSelectDiv').hide();
-
+		loadDepart();
         loadData();
-        //加载数据
-        function loadData(){
-            var dataStr = $('#yearSelect').combobox('getValue');
-            if(curType == 'month'){
-                dataStr += "-" + $('#monthSelect').combobox('getValue');
-            }
-            var departCode = $('#departCodeSelect').combobox('getValue');
-            $.ajax({
-                url: "statistics/historyImageSubstandardStatistics",
-                data: {
-                    'dateStr' : dataStr,
-                    'departCode' : departCode
-                },
-                success : function (result) {
-                    generateChart(result);
-                }
-            });
-        }
 
-        //生成图表
-        function generateChart(result) {
-            var dom = document.getElementById("container");
-            var myChart = echarts.init(dom);
-            var app = {};
-            var title = "【" + $('#yearSelect').combobox('getValue') + "年";
-            if(curType == 'month'){
-                title += $('#monthSelect').combobox('getValue') + "月";
-            }
-            title += "】采集未达标";
-            option = null;
-            option = {
-                title: {
-                    text: title
-                },
-                tooltip : {
-                    trigger: 'axis',
-                    axisPointer: {
-                        type: 'cross',
-                        label: {
-                            backgroundColor: '#6a7985'
-                        }
-                    }
-                },
-                xAxis: {
-                    type: 'category',
-                    boundaryGap: false,
-                    data: result.xAxisData
-                },
-                yAxis: {
-                    min: 0,
-                    max: 100,
-                    type: 'value',
-                    axisLabel: {
-                        show: true,
-                        interval: 'auto',
-                        formatter: '{value} %'
-                    },
-                },
-                color:['#00BFFF'],
-                series: [{
-                    // areaStyle: {normal: {}},
-                    data: result.yAxisData,
-                    // label: {
-                    //     normal: {
-                    //         show: true,
-                    //         position: 'top'
-                    //     }
-                    // },
-                    type: 'line'
-                }]
-            };
-            if (option && typeof option === "object") {
-                myChart.setOption(option, true);
-            }
-        }
+        function loadDepart(){
+    		$.ajax({
+ 			        type:"POST",
+ 			        url:"sysDepart/fuzzySearchDepart",
+ 			        success:function(data){
+ 							console.log(data[1]);
+ 							var listHtml ='';
+ 							for(var i =0;i<data.length;i++){
+	 							listHtml += "<input id='"+data[i].id+"' type='checkbox' name='departCode' onchange='loadData()' /> <label for='"+data[i].id+"'>"+data[i].text+"</label><br/>";
+ 							}
+ 						    $("#departCK").html(listHtml); 
 
+ 				        },
+ 				        error:function(jqXHR){
+ 				           alert("发生错误："+ jqXHR.status);
+ 				        }
+ 				});
+        }
         $("#search").on("click",function(){
             loadData();
         });
     });
+    //加载数据
+    function loadData(){
+        var dataStr = $('#yearSelect').combobox('getValue');
+        if(curType == 'month'){
+            dataStr += "-" + $('#monthSelect').combobox('getValue');
+        }
+        var departCode = "";
+		$.each($('input:checkbox:checked'),function(){
+			departCode +=$(this).attr('id')+",";
+        }); 
+        $.ajax({
+            url: "statistics/historyImageSubstandardStatistics",
+            data: {
+                'dateStr' : dataStr,
+                'departCode' : departCode
+            },
+            success : function (result) {
+                generateChart(result);
+            }
+        });
+    }
+    //生成图表
+    function generateChart(result) {
+        var dom = document.getElementById("container");
+        var myChart = echarts.init(dom);
+        var app = {};
+        var title = "【" + $('#yearSelect').combobox('getValue') + "年";
+        if(curType == 'month'){
+            title += $('#monthSelect').combobox('getValue') + "月";
+        }
+        var yAxisDataArray = [];
+        for(var i =0;i<result.yAxisData.length;i++){
+        	var   yAxisData = {}
+/*         	name:'邮件营销',
+            type:'line',
+            data:[120, 132, 101, 134, 90, 230, 210]
+            data: result.yAxisData[0]*/
+        	yAxisData.name = i;
+        	yAxisData.type = "line";
+        	yAxisData.data = result.yAxisData[i];
+        	yAxisDataArray.push(yAxisData);
+        }
+    	console.log(yAxisDataArray);
 
+        title += "】采集未达标";
+        option = null;
+        option = {
+            title: {
+                text: title
+            },
+            tooltip : {
+                trigger: 'axis',
+                axisPointer: {
+                    type: 'cross',
+                    label: {
+                        backgroundColor: '#6a7985'
+                    }
+                }
+            },
+            xAxis: {
+                type: 'category',
+                boundaryGap: false,
+                data: result.xAxisData
+            },
+            yAxis: {
+                min: 0,
+                max: 100,
+                type: 'value',
+                axisLabel: {
+                    show: true,
+                    interval: 'auto',
+                    formatter: '{value} %'
+                },
+            },
+            color:['#00BFFF'],
+            series:yAxisDataArray/*  [{
+            	name:'邮件营销',
+                type:'line',
+                data:[120, 132, 101, 134, 90, 230, 210]
+                data: result.yAxisData[0],
+                type: 'line'
+            }] */
+        };
+        if (option && typeof option === "object") {
+            myChart.setOption(option, true);
+        }
+    }
     function selectYearOrMonth(flag) {
         curType = flag;
         if(flag == 'year'){
