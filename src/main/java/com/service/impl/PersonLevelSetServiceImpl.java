@@ -1,19 +1,19 @@
 package com.service.impl;
 
 
-import com.dao.BaseDao;
-import com.dao.CaseDimenDao;
-import com.dao.HuKouDimenDao;
-import com.dao.PersonLevelDao;
+import com.dao.*;
 import com.entity.CaseDimen;
 import com.entity.HuKouDimen;
 import com.entity.PersonLevel;
+import com.entity.PersonLevelScore;
 import com.service.PersonLevelSetService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.Date;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.UUID;
 
 @Service
@@ -28,6 +28,8 @@ public class PersonLevelSetServiceImpl implements PersonLevelSetService {
     private PersonLevelDao personLevelDao;
     @Autowired
     private BaseDao baseDao;
+    @Autowired
+    private PersonLevelScoreDao personLevelScoreDao;
 
     @Override
     @Transactional(rollbackFor = Exception.class)
@@ -75,5 +77,14 @@ public class PersonLevelSetServiceImpl implements PersonLevelSetService {
     public int updatePersonLevel() {
         int result = baseDao.updateBySql("update personinfo set person_level ='' ",null);
         return result;
+    }
+
+    @Override
+    public Map<String, PersonLevelScore> getPersonLevelScoreSet() {
+        Map<String, PersonLevelScore> map = new HashMap<>();
+        map.put("A", personLevelScoreDao.findByLevel("A"));
+        map.put("B", personLevelScoreDao.findByLevel("B"));
+        map.put("C", personLevelScoreDao.findByLevel("C"));
+        return map;
     }
 }

@@ -91,6 +91,16 @@
                     queryParams['endDate'] = "";
                 }
             }
+
+            //获取分数登记配置
+            $.ajax({
+                url:'image/getAllLevelSet',
+                async : false,
+                success : function(data){
+                    // alert(data);
+                }
+            })
+
             //加载列表
             $('#gatherQualityList').datagrid({
                 url:'statistics/gatherSubstandardCompelPassDetailList',
