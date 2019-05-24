@@ -9,6 +9,8 @@ public class QueryBuilder {
     private List<Object> params = new ArrayList<>();
     private StringBuilder stringBuilder;
     private boolean hasWhere = false;
+    private boolean hasHaving = false;
+
 
     public QueryBuilder(String sql){
         this.stringBuilder = new StringBuilder(sql);
@@ -22,6 +24,22 @@ public class QueryBuilder {
             this.stringBuilder.append(" and ");
         }
         this.stringBuilder.append(where).append(" ");
+        if(params != null){
+            for(int i=0;i<params.length;i++){
+                this.params.add(params[i]);
+            }
+        }
+        return this;
+    }
+    
+    public QueryBuilder appendAndHaving(String having, Object...params){
+        if(!hasHaving){
+            this.stringBuilder.append(" having ");
+            hasHaving = true;
+        }else{
+            this.stringBuilder.append(" and ");
+        }
+        this.stringBuilder.append(having).append(" ");
         if(params != null){
             for(int i=0;i<params.length;i++){
                 this.params.add(params[i]);

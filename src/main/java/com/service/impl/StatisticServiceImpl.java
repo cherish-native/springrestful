@@ -18,7 +18,9 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.text.DecimalFormat;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -340,6 +342,178 @@ public class StatisticServiceImpl implements StatisticService {
         return dataGridReturn;
     }
 
+    @Override
+    public List<String[]> getGatherQualityCount(String dateStr,int xAxisCount,String departCode) throws Exception {
+        List<String[]> yAxisData = new ArrayList<>();
+        String[] yAxisDataA= new String[xAxisCount];
+        String[] yAxisDataB= new String[xAxisCount];
+        String[] yAxisDataC= new String[xAxisCount];
+        String[] yAxisDataD= new String[xAxisCount];
+        String[] yAxisDataE= new String[xAxisCount];
+
+        int minQueryParam;
+        int maxQueryParam;
+
+        StringBuilder sql = new StringBuilder();
+        sql.append("select sum(t.count_level_a) countLevelA,")
+                .append("sum(t.count_level_b) countLevelB,")
+                .append("sum(t.count_level_c) countLevelC,")
+                .append("sum(t.count_level_d) countLevelD,")
+                .append("sum(t.count_level_e) countLevelE, ");
+                
+        QueryBuilder queryBuilder = new QueryBuilder(sql.toString());
+        
+        if(xAxisCount==12){
+        	queryBuilder.appendSql(" substr(t.statistic_time,0,6) statistic_time");
+        	queryBuilder.appendSql(" from statistic_quality_day t");
+        	if(StringUtils.isNotEmpty(departCode)){
+            	queryBuilder.appendAndWhere(" t.depart_code = ? ", departCode);
+        	}
+            queryBuilder.appendSql("group by substr(t.statistic_time,0,6)");
+            //设置年份查询条件
+        	String year = dateStr.substring(0,4);
+            minQueryParam = Integer.parseInt(year+"01");
+            maxQueryParam = Integer.parseInt(year+"12");
+            if(StringUtils.isNotEmpty(minQueryParam)){
+                queryBuilder.appendAndHaving("substr(t.statistic_time,0,6) >= ?", minQueryParam);
+            }
+            if(StringUtils.isNotEmpty(maxQueryParam)){
+                queryBuilder.appendAndHaving("substr(t.statistic_time,0,6) <= ?", maxQueryParam);
+            }
+        }else{
+        	queryBuilder.appendSql("t.statistic_time statistic_time ");
+        	queryBuilder.appendSql(" from statistic_quality_day t");
+        	if(StringUtils.isNotEmpty(departCode)){
+            	queryBuilder.appendAndWhere(" t.depart_code = ? ", departCode);
+        	}
+            queryBuilder.appendSql("group by t.statistic_time");
+
+        	//获取当月的第一天和最后一天
+        	SimpleDateFormat sdf = new SimpleDateFormat("yyyyMMdd"); 
+            Calendar cale = Calendar.getInstance(); 
+            cale.set(Calendar.YEAR,Integer.parseInt(dateStr.substring(0,4)));
+            cale.set(Calendar.MONTH,Integer.parseInt(dateStr.substring(5,dateStr.length()))-1);           
+            int firstDay = cale.getActualMinimum(Calendar.DAY_OF_MONTH);
+            int lastDay = cale.getActualMaximum(Calendar.DAY_OF_MONTH);
+   			cale.set(Calendar.DAY_OF_MONTH, firstDay);
+   			String firstDayOfMonth = sdf.format(cale.getTime());
+            minQueryParam = Integer.parseInt(firstDayOfMonth);
+   			cale.set(Calendar.DAY_OF_MONTH, lastDay);
+   			String lastDayOfMonth = sdf.format(cale.getTime());
+            maxQueryParam = Integer.parseInt(lastDayOfMonth);
+            if(StringUtils.isNotEmpty(minQueryParam)){
+                queryBuilder.appendAndHaving("t.statistic_time >= ?", minQueryParam);
+            }
+            if(StringUtils.isNotEmpty(maxQueryParam)){
+                queryBuilder.appendAndHaving("t.statistic_time <= ?", maxQueryParam);
+            }         
+        }
+        List<Map<String, Object>> list = baseDao.findListBySql(queryBuilder.getSql(), queryBuilder.getParams());
+        if(list != null){
+            for(Map<String, Object> map : list){
+            	String date = StringUtils.nvlString(map.get("STATISTIC_TIME"));
+            	int index = Integer.parseInt(date.substring(date.length()-2, date.length()));
+            	yAxisDataA[index] =StringUtils.nvlString(map.get("COUNTLEVELA"));
+            	yAxisDataB[index] =StringUtils.nvlString(map.get("COUNTLEVELB"));
+            	yAxisDataC[index] =StringUtils.nvlString(map.get("COUNTLEVELC"));
+            	yAxisDataD[index] =StringUtils.nvlString(map.get("COUNTLEVELD"));
+            	yAxisDataE[index] = StringUtils.nvlString(map.get("COUNTLEVELE"));
+            }
+        }
+        yAxisData.add(yAxisDataA);
+        yAxisData.add(yAxisDataB);
+        yAxisData.add(yAxisDataC);
+        yAxisData.add(yAxisDataD);
+        yAxisData.add(yAxisDataE);	
+        return yAxisData;
+    }
+    
+    @Override
+    public List<String[]> getGatherQualitySubstandardCount(String dateStr,int xAxisCount,String departCode) throws Exception {
+        List<String[]> yAxisData = new ArrayList<>();
+        String[] yAxisDataA= new String[xAxisCount];
+        String[] yAxisDataB= new String[xAxisCount];
+        String[] yAxisDataC= new String[xAxisCount];
+        String[] yAxisDataD= new String[xAxisCount];
+        String[] yAxisDataE= new String[xAxisCount];
+
+        int minQueryParam;
+        int maxQueryParam;
+
+        StringBuilder sql = new StringBuilder();
+        sql.append("select sum(t.count_level_a) countLevelA,")
+                .append("sum(t.count_level_b) countLevelB,")
+                .append("sum(t.count_level_c) countLevelC,")
+                .append("sum(t.count_level_d) countLevelD,")
+                .append("sum(t.count_level_e) countLevelE, ");
+                
+        QueryBuilder queryBuilder = new QueryBuilder(sql.toString());
+        
+        if(xAxisCount==12){
+        	queryBuilder.appendSql(" substr(t.statistic_time,0,6) statistic_time");
+        	queryBuilder.appendSql(" from statistic_quality_day t");
+        	if(StringUtils.isNotEmpty(departCode)){
+            	queryBuilder.appendAndWhere(" t.depart_code = ? ", departCode);
+        	}
+            queryBuilder.appendSql("group by substr(t.statistic_time,0,6)");
+            //设置年份查询条件
+        	String year = dateStr.substring(0,4);
+            minQueryParam = Integer.parseInt(year+"01");
+            maxQueryParam = Integer.parseInt(year+"12");
+            if(StringUtils.isNotEmpty(minQueryParam)){
+                queryBuilder.appendAndHaving("substr(t.statistic_time,0,6) >= ?", minQueryParam);
+            }
+            if(StringUtils.isNotEmpty(maxQueryParam)){
+                queryBuilder.appendAndHaving("substr(t.statistic_time,0,6) <= ?", maxQueryParam);
+            }
+        }else{
+        	queryBuilder.appendSql("t.statistic_time statistic_time ");
+        	queryBuilder.appendSql(" from statistic_quality_day t");
+        	if(StringUtils.isNotEmpty(departCode)){
+            	queryBuilder.appendAndWhere(" t.depart_code = ? ", departCode);
+        	}
+            queryBuilder.appendSql("group by t.statistic_time");
+
+        	//获取当月的第一天和最后一天
+        	SimpleDateFormat sdf = new SimpleDateFormat("yyyyMMdd"); 
+            Calendar cale = Calendar.getInstance(); 
+            cale.set(Calendar.YEAR,Integer.parseInt(dateStr.substring(0,4)));
+            cale.set(Calendar.MONTH,Integer.parseInt(dateStr.substring(5,dateStr.length()))-1);           
+            int firstDay = cale.getActualMinimum(Calendar.DAY_OF_MONTH);
+            int lastDay = cale.getActualMaximum(Calendar.DAY_OF_MONTH);
+   			cale.set(Calendar.DAY_OF_MONTH, firstDay);
+   			String firstDayOfMonth = sdf.format(cale.getTime());
+            minQueryParam = Integer.parseInt(firstDayOfMonth);
+   			cale.set(Calendar.DAY_OF_MONTH, lastDay);
+   			String lastDayOfMonth = sdf.format(cale.getTime());
+            maxQueryParam = Integer.parseInt(lastDayOfMonth);
+            if(StringUtils.isNotEmpty(minQueryParam)){
+                queryBuilder.appendAndHaving("t.statistic_time >= ?", minQueryParam);
+            }
+            if(StringUtils.isNotEmpty(maxQueryParam)){
+                queryBuilder.appendAndHaving("t.statistic_time <= ?", maxQueryParam);
+            }         
+        }
+        List<Map<String, Object>> list = baseDao.findListBySql(queryBuilder.getSql(), queryBuilder.getParams());
+        if(list != null){
+            for(Map<String, Object> map : list){
+            	String date = StringUtils.nvlString(map.get("STATISTIC_TIME"));
+            	int index = Integer.parseInt(date.substring(date.length()-2, date.length()));
+            	yAxisDataA[index] =StringUtils.nvlString(map.get("COUNTLEVELA"));
+            	yAxisDataB[index] =StringUtils.nvlString(map.get("COUNTLEVELB"));
+            	yAxisDataC[index] =StringUtils.nvlString(map.get("COUNTLEVELC"));
+            	yAxisDataD[index] =StringUtils.nvlString(map.get("COUNTLEVELD"));
+            	yAxisDataE[index] = StringUtils.nvlString(map.get("COUNTLEVELE"));
+            }
+        }
+        yAxisData.add(yAxisDataA);
+        yAxisData.add(yAxisDataB);
+        yAxisData.add(yAxisDataC);
+        yAxisData.add(yAxisDataD);
+        yAxisData.add(yAxisDataE);	
+        return yAxisData;
+    }
+    
     private int getIsCompelPass(char r, char p){
         return (r|p)-48;
     }

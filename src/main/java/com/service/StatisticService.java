@@ -73,4 +73,21 @@ public interface StatisticService {
      * @return
      */
     DataGridReturn gatherSubstandardCompelPassDetailList(String departCode, String gatheruserName, String beginDate, String endDate, Pageable pagination);
+    /**
+     * 统计采集质量
+     * @param dateStr
+     * @param xAxisCount
+     * @return
+     * @throws Exception
+     */
+    List<String[]> getGatherQualityCount(String dateStr,int xAxisCount,String departCode) throws Exception;
+    /**
+     * 历史采集未达标统计
+     * @param dateStr
+     * @param xAxisCount
+     * @return
+     * @throws Exception
+     */
+    List<String[]> getGatherQualitySubstandardCount(String dateStr,int xAxisCount,String departCode) throws Exception;
+
 }
