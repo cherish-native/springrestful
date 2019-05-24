@@ -1,10 +1,15 @@
 package com.controller.level;
 
+import com.config.Config;
 import com.dao.PersonLevelScoreDao;
 import com.dao.QualityScoreRangeDao;
 import com.entity.PersonLevelScore;
 import com.entity.QualityScoreRange;
+import com.entity.WorkQueue;
 import com.google.common.collect.Lists;
+import com.service.WorkQueueService;
+import com.support.HttpComponent;
+import com.support.HttpResult;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -26,6 +31,10 @@ public class ImageReachSetController {
     private QualityScoreRangeDao qualityScoreRangeDao;
     @Autowired
     private PersonLevelScoreDao personLevelScoreDao;
+    @Autowired
+    private Config config;
+    @Autowired
+    private WorkQueueService workQueueService;
 
     @RequestMapping(value = "/getLevelScore",method = RequestMethod.GET)
     @ResponseBody
@@ -101,7 +110,7 @@ public class ImageReachSetController {
                 qualityScoreRangeDao.save(qualityScoreRange);
             }
             resultMap.put("success",true);
-            resultMap.put("message","ok");
+            resultMap.put("message","图像质量等级范围设置成功");
         }catch(Exception ex){
             resultMap.put("success",false);
             resultMap.put("message",ex.getMessage());
@@ -115,7 +124,8 @@ public class ImageReachSetController {
     @ResponseBody
     public Map<String,Object>  fingerLevelSet(@RequestParam("value_a[]") int[] array_a,
                                               @RequestParam("value_b[]") int[] array_b,
-                                              @RequestParam("value_c[]") int[] array_c){
+                                              @RequestParam("value_c[]") int[] array_c,
+                                              @RequestParam("repeat") int repeat){
         Map<String,Object> resultMap = new HashMap<>();
         Map<String,int[]> levelMap = new HashMap<>();
         try{
@@ -140,32 +150,30 @@ public class ImageReachSetController {
                 personLevelScoreDao.save(personLevelScore);
 
             }
-
-            resultMap.put("success",true);
-            resultMap.put("message","ok");
-        }catch(Exception ex){
-            resultMap.put("success",false);
-            resultMap.put("message",ex.getMessage());
-            ex.printStackTrace();
-        }
-
-        return resultMap;
-    }
-
-    @RequestMapping(value ="/getFingerLevel",method = RequestMethod.POST)
-    @ResponseBody
-    public Map<String,Object>  getFingerLevel(){
-        Map<String,Object> resultMap = new HashMap<>();
-        Map<String,PersonLevelScore> levelMap = new HashMap<>();
-        try{
-            List<PersonLevelScore> personLevelScoreList =  Lists.newArrayList(personLevelScoreDao.findAll());
-            for(PersonLevelScore personLevelScore :personLevelScoreList){
-                levelMap.put(personLevelScore.getLevel(),personLevelScore);
+            if(repeat == 1){
+                int[] stateArr = {1,2,3};
+                List<WorkQueue> workQueueList = workQueueService.getWorkQueueWorkState(stateArr);
+                if(workQueueList.size()>0){
+                    if(workQueueList.get(0).getWorkState()== 1){
+                        throw new Exception("设置失败，正在处理历史人员是否达标");
+                    }else{
+                        throw new Exception("设置失败，正在统计历史数据");
+                    }
+                }else {
+                    // 按照新规则判断人员指纹是否达标
+                    HttpResult httpResult = HttpComponent.rpc_get(config.getApiUrl() + "/FingerGradePage");
+                    if (httpResult.getSuccess()) {
+                        resultMap.put("success", true);
+                        resultMap.put("message", httpResult.getMessage());
+                    } else {
+                        throw new Exception(httpResult.getMessage());
+                    }
+                }
+            }else{
+                resultMap.put("success",true);
+                resultMap.put("message","人员指位等级设置成功");
             }
 
-            resultMap.put("success",true);
-            resultMap.put("message","ok");
-            resultMap.put("levelMap",levelMap);
         }catch(Exception ex){
             resultMap.put("success",false);
             resultMap.put("message",ex.getMessage());
@@ -174,5 +182,30 @@ public class ImageReachSetController {
 
         return resultMap;
     }
+
+
+
+//    @RequestMapping(value ="/getFingerLevel",method = RequestMethod.POST)
+//    @ResponseBody
+//    public Map<String,Object>  getFingerLevel(){
+//        Map<String,Object> resultMap = new HashMap<>();
+//        Map<String,PersonLevelScore> levelMap = new HashMap<>();
+//        try{
+//            List<PersonLevelScore> personLevelScoreList =  Lists.newArrayList(personLevelScoreDao.findAll());
+//            for(PersonLevelScore personLevelScore :personLevelScoreList){
+//                levelMap.put(personLevelScore.getLevel(),personLevelScore);
+//            }
+//
+//            resultMap.put("success",true);
+//            resultMap.put("message","ok");
+//            resultMap.put("levelMap",levelMap);
+//        }catch(Exception ex){
+//            resultMap.put("success",false);
+//            resultMap.put("message",ex.getMessage());
+//            ex.printStackTrace();
+//        }
+//
+//        return resultMap;
+//    }
 
 }

@@ -58,6 +58,13 @@ public class HttpComponent {
         return httpResult;
     }
 
+    public static String html_get(String url) throws IOException{
+        HttpResult httpResult = new HttpResult();
+        HttpGet httpGet = new HttpGet(url);
+        CloseableHttpResponse closeableHttpResponse = httpClient.execute(httpGet);
+        return EntityUtils.toString(closeableHttpResponse.getEntity());
+    }
+
     private static HttpResult buildHttpResult(HttpResult httpResult,CloseableHttpResponse closeableHttpResponse) throws IOException {
         if(closeableHttpResponse.getStatusLine().getStatusCode() == HttpStatus.SC_OK){
 

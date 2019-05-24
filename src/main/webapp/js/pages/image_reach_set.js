@@ -17,16 +17,18 @@ jQuery(function($) {
                 if (textStatus == "success") {
                     if(data.success){
                         var scoreMap = data.scoreMap
-                        $("#yx-min").val(scoreMap["1"][0])
-                        $("#yx-max").val(scoreMap["1"][1])
-                        $("#lh-min").val(scoreMap["2"][0])
-                        $("#lh-max").val(scoreMap["2"][1])
-                        $("#yb-min").val(scoreMap["3"][0])
-                        $("#yb-max").val(scoreMap["3"][1])
-                        $("#jc-min").val(scoreMap["4"][0])
-                        $("#jc-max").val(scoreMap["4"][1])
-                        $("#hc-min").val(scoreMap["5"][0])
-                        $("#hc-max").val(scoreMap["5"][1])
+                        if(scoreMap.length>0) {
+                            $("#yx-min").val(scoreMap["1"][0])
+                            $("#yx-max").val(scoreMap["1"][1])
+                            $("#lh-min").val(scoreMap["2"][0])
+                            $("#lh-max").val(scoreMap["2"][1])
+                            $("#yb-min").val(scoreMap["3"][0])
+                            $("#yb-max").val(scoreMap["3"][1])
+                            $("#jc-min").val(scoreMap["4"][0])
+                            $("#jc-max").val(scoreMap["4"][1])
+                            $("#hc-min").val(scoreMap["5"][0])
+                            $("#hc-max").val(scoreMap["5"][1])
+                        }
                     }
                     else {
                         alert("获取数据失败");
@@ -111,7 +113,7 @@ function set_score(){
            , success: function (data, textStatus) {
                if (textStatus == "success") {
                    if(data.success){
-                       alert("图形质量范围等级设置成功");
+                       alert(data.message);
                    }
                    else {
                        if(data.message != null) alert(data.message);
@@ -145,6 +147,7 @@ function set_image_reach(){
     value_c.map(function(index, item){
         arr_c.push(item.value);
     });
+    var repeat = $('input[name="repeat"]:checked').val();
 
     $.ajax(
         "/pages/image/fingerLevel"
@@ -152,17 +155,16 @@ function set_image_reach(){
             async: false
             , cache: false
             , dataType: "json"
-            , data: {value_a:arr_a,value_b:arr_b,value_c:arr_c}
+            , data: {value_a:arr_a,value_b:arr_b,value_c:arr_c,repeat:repeat}
             , type: "POST"
             , success: function (data, textStatus) {
                 if (textStatus == "success") {
                     if(data.success){
-                        alert("图形质量范围等级设置成功");
+                        alert(data.message);
                     }
                     else {
                         if(data.message != null) alert(data.message);
                         else alert("设置失败");
-
                     }
                 }
             }
@@ -170,7 +172,6 @@ function set_image_reach(){
                 console.log(textStatus)
                 console.log(errorThrown)
             }
-
         }
     );
 }

@@ -24,7 +24,14 @@ jQuery(function($){
                         selected += selectedCodeCaseClass[i].split("-")[0] + ",";
                     }
                     if(selected != ''){
-                        alert(selected);
+                        // alert(selected);
+                        $('#caseCode_value').val(selected)
+                        var a = new Array()
+                        $('#code_caseclass_selected_table').find('.area_select_td_item').each(function(){
+                            a.push($(this).html())
+                        })
+                        a = a.join(';')
+                        $('#case-input').val(a)
                         $('#case-dialog').dialog('close')
                     }else{
                         alert("已选案件类别为空")

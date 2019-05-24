@@ -10,4 +10,8 @@ public interface WorkQueueService {
      * @return
      */
     WorkQueue getWorkQueueById(String id);
+
+    void save(WorkQueue workQueue);
+
+    List<WorkQueue> getWorkQueueWorkState(int[] stateArr);
 }

@@ -1,0 +1,243 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>采集未达标</title>
+    <link rel="stylesheet" type="text/css" href="../easyui/themes/bootstrap/easyui.css"/>
+    <link rel="stylesheet" type="text/css" href="../easyui/themes/icon.css"/>
+    <script type="text/javascript" src="../easyui/jquery.min.js"></script>
+    <script type="text/javascript" src="../easyui/jquery.easyui.min.js"></script>
+    <script type="text/javascript" src="../easyui/easyui-lang-zh_CN.js"></script>
+    <script type="text/javascript" src="../js/index.js?2"></script>
+    <style>
+        .showFingerImageClass{
+            text-decoration: none
+        }
+        .showFingerImageClass:hover{
+            background-color: yellow;
+        }
+    </style>
+    <script>
+        $(function(){
+            //获取参数
+
+            var size = {
+                width : document.documentElement.clientWidth,
+                height : document.documentElement.clientHeight
+            }
+            
+            function fixWidthWithOptWidth(percent) {
+                return  Math.round((Number(size.width-optwidth)) * percent);
+            }
+
+            $("#search").on("click",function(){
+                var beginDate = $('#beginDate').datebox('getValue');
+                var endDate = $('#endDate').datebox('getValue');
+                var queryParams = {
+                    "beginDate": beginDate,
+                    "endDate" : endDate,
+                    "departCode" :$('#departCodeSelect').combobox('getValue')
+                };
+                $('#gatherQualityList').datagrid('load',queryParams);
+            });
+
+            $("#reset").on("click",function(){
+                $('#beginDate').datebox('setValue', '');
+                $('#endDate').datebox('setValue', '');
+                $('#departCodeSelect').combobox('setValue', '');
+            });
+
+            var size = {
+                width : document.documentElement.clientWidth,
+                height : document.documentElement.clientHeight
+            };
+            optwidth = 50;
+            $('#departCodeSelect').combobox({
+                url: 'sysDepart/fuzzySearchDepart',  //远程访问服务器端的地址
+                editable: false,  //设置文本区域不能被编辑
+                valueField: 'id',  //显示数据的键的值
+                textField: 'text' //显示数据的文本的值
+            })
+            var res = parseURL(location.href);
+            var queryParams = {};
+            if(res){
+                var departCode = res.departCode;
+                if(departCode){
+                    //禁用单选下拉列表
+                    $('#departCodeSelect').combobox({disabled:true});
+                    $('#departCodeSelect').combobox('select',departCode);
+                    queryParams['departCode'] = departCode;
+                }else{
+                    queryParams['departCode'] = "";
+                }
+                var gatheruserName = res.gatheruserName;
+                if(gatheruserName){
+                    queryParams['gatheruserName'] = gatheruserName;
+                }else{
+                    queryParams['gatheruserName'] = "";
+                }
+                var beginDate = res.beginDate;
+                if(beginDate){
+                    $('#beginDate').datebox('setValue', beginDate);
+                    queryParams['beginDate'] = beginDate;
+                }else{
+                    queryParams['beginDate'] = "";
+                }
+                var endDate = res.endDate;
+                if(endDate){
+                    $('#endDate').datebox('setValue', endDate);
+                    queryParams['endDate'] = endDate;
+                }else{
+                    queryParams['endDate'] = "";
+                }
+            }
+            //加载列表
+            $('#gatherQualityList').datagrid({
+                url:'statistics/gatherSubstandardExamineDetailList',
+                width:size.width-20,
+                height:size.height - $('#searchDiv').height() - 60,
+                queryParams:queryParams,
+                columns:[[
+                    {field:"personId",title:"捺印卡号",width:fixWidthWithOptWidth(0.2)},
+                    {field:"printDate",title:"采集日期",width:fixWidthWithOptWidth(0.1)},
+                    {field:"name",title:"姓名",width:fixWidthWithOptWidth(0.05)},
+                    {field:"idCardNo",title:"身份证号",width:fixWidthWithOptWidth(0.05)},
+                    {field:"personLevel",title:"定级",width:fixWidthWithOptWidth(0.05)},
+                    {field:"qualityLevel",title:"整体",width:fixWidthWithOptWidth(0.05)},
+                    {field:"rightThumb",title:"右拇",width:fixWidthWithOptWidth(0.05),formatter: function (value, row, index){
+                        return getSHowImageCellValue(value, row.imgUrl, row.personId, 1);
+                    }},
+                    {field:"rightIndex",title:"右食",width:fixWidthWithOptWidth(0.05),formatter: function (value, row, index){
+                            return getSHowImageCellValue(value, row.imgUrl, row.personId, 2);
+                        }},
+                    {field:"rightMiddle",title:"右中",width:fixWidthWithOptWidth(0.05),formatter: function (value, row, index){
+                            return getSHowImageCellValue(value, row.imgUrl, row.personId, 3);
+                        }},
+                    {field:"rightRing",title:"右环",width:fixWidthWithOptWidth(0.05),formatter: function (value, row, index){
+                            return getSHowImageCellValue(value, row.imgUrl, row.personId, 4);
+                        }},
+                    {field:"rightLittle",title:"右小",width:fixWidthWithOptWidth(0.05),formatter: function (value, row, index){
+                            return getSHowImageCellValue(value, row.imgUrl, row.personId, 5);
+                        }},
+                    {field:"leftThumb",title:"左拇",width:fixWidthWithOptWidth(0.05),formatter: function (value, row, index){
+                            return getSHowImageCellValue(value, row.imgUrl, row.personId, 6);
+                        }},
+                    {field:"leftIndex",title:"左食",width:fixWidthWithOptWidth(0.05),formatter: function (value, row, index){
+                            return getSHowImageCellValue(value, row.imgUrl, row.personId, 7);
+                        }},
+                    {field:"leftMiddle",title:"左中",width:fixWidthWithOptWidth(0.05),formatter: function (value, row, index){
+                            return getSHowImageCellValue(value, row.imgUrl, row.personId, 8);
+                        }},
+                    {field:"leftRing",title:"左环",width:fixWidthWithOptWidth(0.05),formatter: function (value, row, index){
+                            return getSHowImageCellValue(value, row.imgUrl, row.personId, 9);
+                        }},
+                    {field:"leftLittle",title:"左小",width:fixWidthWithOptWidth(0.05),formatter: function (value, row, index){
+                            return getSHowImageCellValue(value, row.imgUrl, row.personId, 10);
+                        }}
+                ]],
+                pagination : true,
+                rownumbers:true,
+                onBeforeSelect:function(){
+                    return false;
+                },
+            });
+
+            //图像展示框，宽高比为2:1
+            var imageSize = size.height - 185;
+            imageSize = imageSize > (size.width - 200)/2?(size.width - 200)/2:imageSize;
+            if(imageSize > 640){
+                imageSize = 640;
+            }
+            var dialogHeight = imageSize + 90;
+            var dialogWidth = imageSize*2 + 20;
+            $('#layoutDiv div').height(imageSize);
+            $('#layoutDiv div').width(imageSize);
+            // $('#imageDialogLayout img').height(dialogHeight);
+            // $('#imageDialogLayout img').width(dialogWidth/2-50);
+            $("#image-dialog").dialog({
+                title:'指纹图像查看',
+                width:dialogWidth,
+                height:dialogHeight,
+                modal:true,
+                buttons : [
+                    {
+                        text : "关闭",
+                        handler : function () {
+                            $('#image-dialog').dialog('close')
+                        }
+                    }
+                ]
+            });
+        });
+
+        function getSHowImageCellValue(value, imgUrl, personId, fgp){
+            var result = value;
+            imgUrl = "imageUrl";
+            var color = 'red';
+            if(value){
+                var scoreArr = value.split('/');
+                result = '<a href="#" style="color: '+ color +';" class="showFingerImageClass" onclick="showImage(\'' + imgUrl + '\',\'' + personId + '\',\'0\',\''+ fgp +'\');">&nbsp;' + scoreArr[0] + '&nbsp;</a>';
+                result += "/";
+                result += '<a href="#" style="color: '+ color +';" class="showFingerImageClass" onclick="showImage(\'' + imgUrl + '\',\'' + personId + '\',\'1\',\''+ fgp +'\');">&nbsp;' + scoreArr[1] + '&nbsp;</a>';
+            }
+            result = '<span style="color: '+ color +'">' + result + "</span>"
+            return result;
+        }
+
+        function showImage(imagePath,personId,fgpCase,fgp){
+            var url = "";
+            if(imagePath != ''){
+                url = "statistics/showFingerImage/"+imagePath+"/"+personId+"/"+fgpCase+"/"+fgp;
+            }
+            var fingerName = getFingerName(fgpCase, fgp);
+            $('#image-dialog').panel({title: fingerName});
+            $('#imgOriginal').attr('src', url + "/1")
+            $('#imgRedAndWhith').attr('src', url + "/2")
+            $("#image-dialog").dialog("open"); // 打开dialog
+            $('#image-dialog').window('center');
+        }
+    </script>
+</head>
+<body>
+<div id="searchDiv">
+    <table>
+        <tr>
+            <td width="100" align="right">采集单位：</td>
+            <td>
+                <select id="departCodeSelect" style="width: 150px">
+                </select>
+            </td>
+            <td width="100" align="right">时间范围：</td>
+            <td width="400">
+                <input id="beginDate" data-options="editable:false" class="easyui-datebox"></input> 到 <input id="endDate" data-options="editable:false"  class="easyui-datebox"></input>
+            </td>
+            <td>
+                <a href="#" id="search" class="easyui-linkbutton" data-options="toggle:true">查询</a>
+                <a href="#" id="reset" class="easyui-linkbutton" data-options="toggle:true">重置</a>
+            </td>
+        </tr>
+    </table>
+</div>
+<div>
+    <table id="gatherQualityList"></table>
+</div>
+<div id="image-dialog"  class="easyui-dialog" closed="true" style="display: none;">
+    <div id="layoutDiv">
+        <div id="divOriginal" style="float: left;">
+            <img src="" id="imgOriginal" style="width: 100%;height: 100%;border-right: 1px solid grey">
+        </div>
+        <div id="divRedAndWhith" style="float: left;">
+            <img src="" id="imgRedAndWhith" style="width: 100%;height: 100%">
+        </div>
+        <!--<div id="imageDialogLayout" class="easyui-layout" style="height: 100%;">-->
+            <!--<div data-options="region:'west',split:false" style="height:100%;width: 50%">-->
+                <!--<img id="imgOriginal" src="12313123123">-->
+            <!--</div>-->
+            <!--<div id="dialogCenter" data-options="region:'center'">-->
+                <!--<img id="imgRedAndWhite" src="12313123123">-->
+            <!--</div>-->
+        <!--</div>-->
+    </div>
+</div>
+</body>
+</html>

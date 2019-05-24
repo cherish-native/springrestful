@@ -24,6 +24,23 @@ var size = {
     height : document.documentElement.clientHeight
 }
 
+/**
+ * 解析页面链接
+ * @param url
+ */
+function parseURL(url){
+    var url = url.split("?")[1];
+    var para = url.split("&");
+    var len = para.length;
+    var res = {};
+    var arr = [];
+    for(var i=0;i<len;i++){
+        arr = para[i].split("=");
+        res[arr[0]] = arr[1];
+    }
+    return res;
+}
+
 function fixWidthWithOptWidth(percent) {
     return  Math.round((Number(size.width-optwidth)) * percent);
 }
@@ -195,7 +212,34 @@ function checkComboBoxValue(id){
     return result;
 }
 
-
+/**
+ * 获取指位名称
+ * @param fgpCase
+ * @param fgp
+ * @returns {string}
+ */
+function getFingerName(fgpCase, fgp){
+    var name = "";
+    if(fgpCase == 0){
+        name = "滚动";
+    }else{
+        name = "平面";
+    }
+    switch (parseInt(fgp)){
+        case 1: name += "右拇指"; break;
+        case 2: name += "右食指"; break;
+        case 3: name += "右中指"; break;
+        case 4: name += "右环指"; break;
+        case 5: name += "右小指"; break;
+        case 6: name += "左拇指"; break;
+        case 7: name += "左食指"; break;
+        case 8: name += "左中指"; break;
+        case 9: name += "左环指"; break;
+        case 10: name += "左小指"; break;
+        default: name += "未知"; break;
+    }
+    return name;
+}
 
 /**
  * 给时间框控件扩展一个清除的按钮

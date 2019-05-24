@@ -133,7 +133,7 @@
 															<p>
 																<div class="row">
 																	<label class="col-sm-1 control-label no-padding-right">户籍地:</label>
-																	<div class="col-sm-3">
+																	<div class="col-sm-6">
 																		<div class="input-group">
 																			<input class="form-control input-mask-product" type="text" id="hukou-input" disabled="disabled" value="请选择">
 																			<span class="input-group-btn">
@@ -143,42 +143,10 @@
 																			</span>
 																		</div>
 																	</div>
-
-
-																	<label class="col-sm-1 control-label no-padding-right">性别:</label>
-																	<div class="col-sm-3">
-																		<select class="chosen-select form-control" id="gender">
-																			<option value="-1">请选择</option>
-																			<option value="1">男</option>
-																			<option value="2">女</option>
-																		</select>
-																	</div>
+																	<input type="text" id="hukouCode_value" value="" hidden="hidden" />
 																</div>
 															</p>
 
-															<p>
-																<div class="row">
-																	<label class="col-sm-1 control-label no-padding-right">民族:</label>
-																	<div class="col-sm-3">
-																		<div class="input-group">
-																			<input class="form-control input-mask-product" type="text" id="race-input" disabled="disabled" value="请选择">
-																			<span class="input-group-btn">
-																				<button class="btn btn-sm btn-default"  type="button" id="race-dialog-button">
-																					<i class="ace-icon glyphicon glyphicon-plus"></i>
-																				</button>
-																			</span>
-																		</div>
-																	</div>
-
-
-																	<label class="col-sm-1 control-label no-padding-right">年龄:</label>
-																	<span>
-																		<input type="text" class="input-small" id="min-age"/>
-																		<label>-</label>
-																		<input type="text" class="input-small" id="max-age"/>
-																	</span>
-																</div>
-															</p>
 															
 														</form>
 													</p>
@@ -197,7 +165,7 @@
 															<p>
 																<div class="row">
 																	<label class="col-sm-1 control-label no-padding-right" style="width: 10.333%;">案件类别:</label>
-																	<div class="col-sm-3">
+																	<div class="col-sm-6">
 																		<div class="input-group">
 																			<input class="form-control input-mask-product" type="text" id="case-input" disabled="disabled" value="请选择">
 																			<span class="input-group-btn">
@@ -207,16 +175,7 @@
 																			</span>
 																		</div>
 																	</div>
-
-
-																	<label class="col-sm-1 control-label no-padding-right">前科:</label>
-																	<div class="col-sm-2">
-																		<select class="chosen-select form-control" id="criminal-record-input">
-																			<option value="-1">请选择</option>
-																			<option value="1">有</option>
-																			<option value="2">无</option>
-																		</select>
-																	</div>
+																	<input type="text" id="caseCode_value" value="" hidden="hidden" />
 																</div>
 															</p>
 															
@@ -224,7 +183,17 @@
 													</p>
 													<hr />
 												</div>
+
 											</div>
+                                            <div class="widget-body">
+                                                <div class="widget-main">
+                                                    <div>
+                                                        <label style="color: red;">是否对已经定级的人员以新标准重新定级:&nbsp;&nbsp;&nbsp;</label>
+                                                        <input type="radio" class="radio-inline" name="repeat" value="0" checked="checked"/> 否
+                                                        <input type="radio" class="radio-inline" name="repeat" value="1" /> 是
+                                                    </div>
+                                                </div>
+                                            </div>
 										</div>
 									</div><!-- /.col -->
 								</div><!-- /.row -->
@@ -373,16 +342,16 @@
 				<div class="row">
 					<div class="col-xs-6">
 						<div class="col-xs-2">
-							
+
 						</div>
 						<div class="col-xs-2">
-							
+
 						</div>
 						<div class="col-xs-2">
-							
+
 						</div>
 						<div class="col-xs-2">
-							
+
 						</div>
 						<div class="col-xs-2">
 							<button class="btn btn-primary" id="okBtn-race">确定</button>

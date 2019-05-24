@@ -1,6 +1,9 @@
 package com.controller.level;
 
 import com.config.Config;
+import com.entity.WorkQueue;
+import com.service.PersonLevelSetService;
+import com.service.WorkQueueService;
 import com.support.HttpComponent;
 import com.support.HttpResult;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -9,8 +12,8 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
-import java.util.HashMap;
-import java.util.Map;
+
+import java.util.*;
 
 /**
  * @author <a href="yuchen_1997_200486@126.com">yuchen</a>.
@@ -23,38 +26,57 @@ public class LevelSetController {
 
     @Autowired
     private Config config;
+    @Autowired
+    private PersonLevelSetService personLevelSetService;
+    @Autowired
+    private WorkQueueService workQueueService;
 
     @RequestMapping(value = "/personLevelSet",method = RequestMethod.POST)
     @ResponseBody
     public Map<String,Object> personLevelSet(@RequestParam("addressCode") String addressCode
-                                            ,@RequestParam("raceCode") String raceCode
                                             ,@RequestParam("caseCode") String caseCode
-                                            ,@RequestParam("gender") String gender
-                                            ,@RequestParam("minAge") String minAge
-                                            ,@RequestParam("maxAge") String maxAge
-                                            ,@RequestParam("criminalRecord") String criminalRecord){
+                                            ,@RequestParam("repeat") int repeat){
         Map<String,Object> resultMap = new HashMap<>();
         try{
-            PersonLevelBean personLevelBean = new PersonLevelBean();
-            personLevelBean.setAddressCode(addressCode);
-            personLevelBean.setRaceCode(raceCode);
-            personLevelBean.setCaseCode(caseCode);
-            personLevelBean.setGender(gender);
-            personLevelBean.setMinAge(minAge);
-            personLevelBean.setMaxAge(maxAge);
-            personLevelBean.setCriminalRecord(criminalRecord);
-            HttpResult httpResult = HttpComponent.rpc_post(config.getApiUrl() + "/PersonLevelSetPage",HttpComponent.registerKryo(personLevelBean));
-            if(httpResult.getSuccess()){
-                resultMap.put("success",true);
-                resultMap.put("message","设置成功");
-                resultMap.put("result",httpResult.getResult());
-            }else{
-                throw new Exception(httpResult.getMessage());
-            }
+            int[] stateArr = {1,2,3};
+            List<WorkQueue> workQueueList = workQueueService.getWorkQueueWorkState(stateArr);
+            if(workQueueList.size()>0){
+                if(workQueueList.get(0).getWorkState()== 1){
+                    throw new Exception("设置失败，正在处理历史人员是否达标");
+                }else{
+                    throw new Exception("设置失败，正在统计历史数据");
+                }
+            }else {
+                String[] addCodeArr = addressCode.split(",");
+                String[] caseCodeArr = caseCode.split(",");
+                personLevelSetService.personLevelSave(addCodeArr, caseCodeArr);
 
+                if (repeat == 1) {
+                    //修改personinfo的人员等级字段为空
+                    personLevelSetService.updatePersonLevel();
+                    //添加work_queue表数据
+                    WorkQueue workQueue = new WorkQueue();
+                    workQueue.setInsertTime(new Date());
+                    workQueue.setBeginTime(new Date());
+                    workQueue.setWorkType(workQueue.TYPE_IMG_LEVEL);
+                    workQueue.setWorkState(workQueue.STATE_SERVICE_RUNNING);
+                    workQueueService.save(workQueue);
+                    String result = HttpComponent.html_get("http://" +config.getWebConfig().getBind() + "/pages/statistics/changeWorkQueueState/1");
+                    if(result.equals("success")){
+                        resultMap.put("success",true);
+                        resultMap.put("message","设置成功，并计算历史数据后重新统计");
+                    }else{
+                        throw new Exception("发送changeWorkQueueState消息1失败");
+                    }
+                } else {
+                    resultMap.put("success", true);
+                    resultMap.put("message", "设置成功");
+                }
+            }
         }catch(Exception ex){
             resultMap.put("success",false);
             resultMap.put("message",ex.getMessage());
+            ex.printStackTrace();
         }
         return resultMap;
     }
@@ -79,71 +101,6 @@ public class LevelSetController {
         }
         return resultMap;
     }
-}
 
-class PersonLevelBean{
 
-    private String addressCode;
-    private String raceCode;
-    private String caseCode;
-    private String gender;
-    private String minAge;
-    private String maxAge;
-    private String criminalRecord;
-
-    public String getAddressCode() {
-        return addressCode;
-    }
-
-    public void setAddressCode(String addressCode) {
-        this.addressCode = addressCode;
-    }
-
-    public String getRaceCode() {
-        return raceCode;
-    }
-
-    public void setRaceCode(String raceCode) {
-        this.raceCode = raceCode;
-    }
-
-    public String getCaseCode() {
-        return caseCode;
-    }
-
-    public void setCaseCode(String caseCode) {
-        this.caseCode = caseCode;
-    }
-
-    public String getGender() {
-        return gender;
-    }
-
-    public void setGender(String gender) {
-        this.gender = gender;
-    }
-
-    public String getMinAge() {
-        return minAge;
-    }
-
-    public void setMinAge(String minAge) {
-        this.minAge = minAge;
-    }
-
-    public String getMaxAge() {
-        return maxAge;
-    }
-
-    public void setMaxAge(String maxAge) {
-        this.maxAge = maxAge;
-    }
-
-    public String getCriminalRecord() {
-        return criminalRecord;
-    }
-
-    public void setCriminalRecord(String criminalRecord) {
-        this.criminalRecord = criminalRecord;
-    }
 }

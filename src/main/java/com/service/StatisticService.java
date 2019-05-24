@@ -32,4 +32,45 @@ public interface StatisticService {
      * @param dateStr yyyyMMdd
      */
     void statisticDay(String dateStr);
+
+    /**
+     * 采集未达标列表
+     * @param departCode
+     * @param beginDate
+     * @param endDate
+     * @param pagination
+     * @return
+     */
+    DataGridReturn gatherSubstandardExamineList(String departCode, String beginDate, String endDate, Pageable pagination);
+
+    /**
+     * 采集未达标详细列表
+     * @param departCode
+     * @param beginDate
+     * @param endDate
+     * @param pagination
+     * @return
+     */
+    DataGridReturn gatherSubstandardExamineDetailList(String departCode, String gatherUser, String beginDate, String endDate, Pageable pagination);
+
+    /**
+     * 获取强制通过统计列表
+     * @param departCode
+     * @param beginDate
+     * @param endDate
+     * @param pagination
+     * @return
+     */
+    DataGridReturn gatherCompelPassList(String departCode, String beginDate, String endDate, Pageable pagination);
+
+    /**
+     * 强制通过详细列表
+     * @param departCode
+     * @param gatheruserName
+     * @param beginDate
+     * @param endDate
+     * @param pagination
+     * @return
+     */
+    DataGridReturn gatherSubstandardCompelPassDetailList(String departCode, String gatheruserName, String beginDate, String endDate, Pageable pagination);
 }

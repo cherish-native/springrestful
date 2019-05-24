@@ -2,11 +2,15 @@ package com.controller.statistics;
 
 import com.constant.StatisticConstant;
 import com.controller.BaseController;
+import com.entity.StatisticQualityDay;
 import com.entity.WorkQueue;
 import com.entity.vo.DataGridReturn;
 import com.service.StatisticService;
 import com.service.WorkQueueService;
+import com.sun.deploy.net.protocol.chrome.ChromeURLConnection;
 import com.util.DateUtil;
+import com.util.FileUtil;
+import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -14,8 +18,11 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
 
 import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 import java.text.SimpleDateFormat;
 import java.util.*;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 
 /**
  * 数据统计
@@ -23,6 +30,10 @@ import java.util.*;
 @Controller
 @RequestMapping(value = "/pages/statistics")
 public class StatisticsController extends BaseController {
+
+    private static Logger logger = Logger.getLogger(StatisticsController.class);
+
+    private ExecutorService executorService = Executors.newSingleThreadExecutor();
 
     @Autowired
     private StatisticService statisticService;
@@ -49,6 +60,63 @@ public class StatisticsController extends BaseController {
     @ResponseBody
     public DataGridReturn gatherQualityExamineList(String departCode, String beginDate, String endDate, HttpServletRequest request) throws Exception {
         return statisticService.getGatherQualityExamineList(departCode, beginDate, endDate, getPagination(request));
+    }
+
+    /**
+     * 采集未达标列表
+     * @param departCode
+     * @param beginDate
+     * @param endDate
+     * @param request
+     * @return
+     */
+    @ResponseBody
+    @RequestMapping("/gatherSubstandardExamineList")
+    public DataGridReturn gatherSubstandardExamineList(String departCode, String beginDate, String endDate, HttpServletRequest request){
+        return statisticService.gatherSubstandardExamineList(departCode, beginDate, endDate, getPagination(request));
+    }
+
+    /**
+     * 采集未达标详细列表
+     * @param departCode
+     * @param beginDate
+     * @param endDate
+     * @param request
+     * @return
+     */
+    @RequestMapping("/gatherSubstandardExamineDetailList")
+    @ResponseBody
+    public DataGridReturn gatherSubstandardExamineDetailList(String departCode, String gatheruserName, String beginDate, String endDate, HttpServletRequest request){
+        return statisticService.gatherSubstandardExamineDetailList(departCode, gatheruserName, beginDate, endDate, getPagination(request));
+    }
+
+    /**
+     * 获取强制通过统计列表
+     * @param departCode
+     * @param beginDate
+     * @param endDate
+     * @param request
+     * @return
+     */
+    @ResponseBody
+    @RequestMapping("/gatherCompelPassList")
+    public DataGridReturn gatherCompelPassList(String departCode, String beginDate, String endDate, HttpServletRequest request){
+        return statisticService.gatherCompelPassList(departCode, beginDate, endDate, getPagination(request));
+    }
+
+    /**
+     * 强制通过详细列表
+     * @param departCode
+     * @param gatheruserName
+     * @param beginDate
+     * @param endDate
+     * @param request
+     * @return
+     */
+    @ResponseBody
+    @RequestMapping("/gatherSubstandardCompelPassDetailList")
+    public DataGridReturn gatherSubstandardCompelPassDetailList(String departCode, String gatheruserName, String beginDate, String endDate, HttpServletRequest request){
+        return statisticService.gatherSubstandardCompelPassDetailList(departCode, gatheruserName, beginDate, endDate, getPagination(request));
     }
 
     /**
@@ -139,10 +207,75 @@ public class StatisticsController extends BaseController {
 
     @ResponseBody
     @RequestMapping("/changeWorkQueueState/{state}")
-    public String changeWorkQueueState(@PathVariable("state") Integer state){
+    public String changeWorkQueueState(@PathVariable("state") Integer state) throws Exception{
         String result = "success";
         System.out.println(state);
-        StatisticConstant.CURSATTE = state;
+        StatisticConstant.CURSTATE = state;
+        if(StatisticConstant.CURSTATE == WorkQueue.STATE_SERVICE_FINISH){
+            //后台服务执行完毕，开始执行统计
+            executorService.execute(new Runnable() {
+                @Override
+                public void run() {
+                    //开始执行统计服务
+                    try {
+                        Calendar calendar = Calendar.getInstance();
+                        int lastYear = calendar.get(Calendar.YEAR);
+                        int lastDay = Integer.parseInt(DateUtil.getDateStr(new Date(), DateUtil.PATTERN_YYYYMMDD));
+                        logger.info("开始统计");
+                        for(int year=1990;year<=lastYear;year++){
+                            for(int month=1;month<=12;month++){
+                                int dayCount = getDayCountOfMonth(year+"-"+month);
+                                for(int day=1;day<=dayCount;day++){
+                                    int curDay = Integer.parseInt(year+""+String.format("%02d", month)+String.format("%02d", day));
+                                    if(curDay<=lastDay){
+                                        statisticService.statisticDay(curDay+"");
+                                        logger.info("正在统计：" + curDay);
+                                    }else {
+                                        break;
+                                    }
+                                }
+                            }
+                        }
+                        logger.info("统计完毕");
+                    } catch (Exception e){
+                        e.printStackTrace();
+                        logger.error("统计错误", e);
+                    }
+                }
+            });
+        }
         return result;
+    }
+
+    /**
+     * 获取指纹图像
+     * @param imgPath 图像文件夹路径
+     * @param personId 捺印卡号
+     * @param fgpCase 0：滚动 1：平面
+     * @param fgp 指纹 1-10
+     * @param type 图像类型 1：指纹原图  2：红白图
+     * @param request
+     */
+    @RequestMapping("/showFingerImage/{imgPath}/{personId}/{fgpCase}/{fgp}/{type}")
+    @ResponseBody
+    public void showFingerImage(@PathVariable("imgPath") String imgPath, @PathVariable("personId") String personId, @PathVariable("fgpCase") int fgpCase, @PathVariable("fgp") int fgp,
+                                @PathVariable("type") int type, HttpServletResponse response) throws Exception{
+        String originPath = "C:\\Users\\Administrator\\Desktop\\finger01.bmp";
+        String redAndWhite = "C:\\Users\\Administrator\\Desktop\\20190522111105.bmp";
+        byte[] imageBytes = null;
+        try {
+            if(type == 1){
+                imageBytes = FileUtil.readFile(originPath);
+            }else{
+                imageBytes = FileUtil.readFile(redAndWhite);
+            }
+        } catch (Exception e){
+            e.printStackTrace();
+            imageBytes = new byte[0];
+        }
+        response.getOutputStream().write(imageBytes);
+//        System.out.println(personId);
+//        System.out.println(fgpCase);
+//        System.out.println(fgp);
     }
 }
