@@ -142,7 +142,7 @@ public class StatisticsController extends BaseController {
             xAxisData[i] = (i+1)+xAxisSuffix;
         }
         //纵坐标数据，模拟数据
-        List<String[]> yAxisData = new ArrayList<>();
+        List<int[]> yAxisData = new ArrayList<>();
 //        for(int i=0;i<5;i++){
 //            String[] yAxisDataItem = new String[xAxisCount];
 //            yAxisData.add(yAxisDataItem);
@@ -192,7 +192,7 @@ public class StatisticsController extends BaseController {
 
         	}
         }*/
-    	yAxisData = statisticService.getGatherQualityCount(dateStr,xAxisCount,departCode);
+    	//yAxisData = statisticService.getGatherQualityCount(dateStr,xAxisCount,departCode);
 
         result.put("xAxisData", xAxisData);
         result.put("yAxisData", yAxisData);

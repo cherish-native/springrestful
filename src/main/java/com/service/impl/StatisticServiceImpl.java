@@ -343,13 +343,13 @@ public class StatisticServiceImpl implements StatisticService {
     }
 
     @Override
-    public List<String[]> getGatherQualityCount(String dateStr,int xAxisCount,String departCode) throws Exception {
-        List<String[]> yAxisData = new ArrayList<>();
-        String[] yAxisDataA= new String[xAxisCount];
-        String[] yAxisDataB= new String[xAxisCount];
-        String[] yAxisDataC= new String[xAxisCount];
-        String[] yAxisDataD= new String[xAxisCount];
-        String[] yAxisDataE= new String[xAxisCount];
+    public List<int[]> getGatherQualityCount(String dateStr,int xAxisCount,String departCode) throws Exception {
+        List<int[]> yAxisData = new ArrayList<>();
+        int[] yAxisDataA= new int[xAxisCount];
+        int[] yAxisDataB= new int[xAxisCount];
+        int[] yAxisDataC= new int[xAxisCount];
+        int[] yAxisDataD= new int[xAxisCount];
+        int[] yAxisDataE= new int[xAxisCount];
 
         int minQueryParam;
         int maxQueryParam;
@@ -413,11 +413,11 @@ public class StatisticServiceImpl implements StatisticService {
             for(Map<String, Object> map : list){
             	String date = StringUtils.nvlString(map.get("STATISTIC_TIME"));
             	int index = Integer.parseInt(date.substring(date.length()-2, date.length()));
-            	yAxisDataA[index-1] =StringUtils.nvlString(map.get("COUNTLEVELA"));
-            	yAxisDataB[index-1] =StringUtils.nvlString(map.get("COUNTLEVELB"));
-            	yAxisDataC[index-1] =StringUtils.nvlString(map.get("COUNTLEVELC"));
-            	yAxisDataD[index-1] =StringUtils.nvlString(map.get("COUNTLEVELD"));
-            	yAxisDataE[index-1] = StringUtils.nvlString(map.get("COUNTLEVELE"));
+            	yAxisDataA[index-1] =StringUtils.nvlInt(map.get("COUNTLEVELA"));
+            	yAxisDataB[index-1] =StringUtils.nvlInt(map.get("COUNTLEVELB"));
+            	yAxisDataC[index-1] =StringUtils.nvlInt(map.get("COUNTLEVELC"));
+            	yAxisDataD[index-1] =StringUtils.nvlInt(map.get("COUNTLEVELD"));
+            	yAxisDataE[index-1] = StringUtils.nvlInt(map.get("COUNTLEVELE"));
             }
         }
         yAxisData.add(yAxisDataA);

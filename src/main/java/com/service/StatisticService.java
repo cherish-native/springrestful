@@ -80,7 +80,7 @@ public interface StatisticService {
      * @return
      * @throws Exception
      */
-    List<String[]> getGatherQualityCount(String dateStr,int xAxisCount,String departCode) throws Exception;
+    List<int[]> getGatherQualityCount(String dateStr,int xAxisCount,String departCode) throws Exception;
     /**
      * 历史采集未达标统计
      * @param dateStr
