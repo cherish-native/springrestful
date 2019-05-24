@@ -413,11 +413,11 @@ public class StatisticServiceImpl implements StatisticService {
             for(Map<String, Object> map : list){
             	String date = StringUtils.nvlString(map.get("STATISTIC_TIME"));
             	int index = Integer.parseInt(date.substring(date.length()-2, date.length()));
-            	yAxisDataA[index] =StringUtils.nvlString(map.get("COUNTLEVELA"));
-            	yAxisDataB[index] =StringUtils.nvlString(map.get("COUNTLEVELB"));
-            	yAxisDataC[index] =StringUtils.nvlString(map.get("COUNTLEVELC"));
-            	yAxisDataD[index] =StringUtils.nvlString(map.get("COUNTLEVELD"));
-            	yAxisDataE[index] = StringUtils.nvlString(map.get("COUNTLEVELE"));
+            	yAxisDataA[index-1] =StringUtils.nvlString(map.get("COUNTLEVELA"));
+            	yAxisDataB[index-1] =StringUtils.nvlString(map.get("COUNTLEVELB"));
+            	yAxisDataC[index-1] =StringUtils.nvlString(map.get("COUNTLEVELC"));
+            	yAxisDataD[index-1] =StringUtils.nvlString(map.get("COUNTLEVELD"));
+            	yAxisDataE[index-1] = StringUtils.nvlString(map.get("COUNTLEVELE"));
             }
         }
         yAxisData.add(yAxisDataA);
