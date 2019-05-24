@@ -46,10 +46,12 @@ public class ImageReachSetController {
             for(QualityScoreRange qualityScoreRange : qualityScoreRangeList){
                 scoreMap.put(String.valueOf(qualityScoreRange.getLevel()),new int[]{qualityScoreRange.getMinScore(),qualityScoreRange.getMaxScore()});
             }
+            if(scoreMap.size() >0 ){
+                resultMap.put("scoreMap",scoreMap);
+            }
 
             resultMap.put("success",true);
             resultMap.put("message","ok");
-            resultMap.put("scoreMap",scoreMap);
         }catch(Exception ex){
             resultMap.put("success",false);
             resultMap.put("message",ex.getMessage());
@@ -183,27 +185,27 @@ public class ImageReachSetController {
         return resultMap;
     }
 
-//    @RequestMapping(value ="/getFingerLevel",method = RequestMethod.POST)
-//    @ResponseBody
-//    public Map<String,Object>  getFingerLevel(){
-//        Map<String,Object> resultMap = new HashMap<>();
-//        Map<String,PersonLevelScore> levelMap = new HashMap<>();
-//        try{
-//            List<PersonLevelScore> personLevelScoreList =  Lists.newArrayList(personLevelScoreDao.findAll());
-//            for(PersonLevelScore personLevelScore :personLevelScoreList){
-//                levelMap.put(personLevelScore.getLevel(),personLevelScore);
-//            }
-//
-//            resultMap.put("success",true);
-//            resultMap.put("message","ok");
-//            resultMap.put("levelMap",levelMap);
-//        }catch(Exception ex){
-//            resultMap.put("success",false);
-//            resultMap.put("message",ex.getMessage());
-//            ex.printStackTrace();
-//        }
-//
-//        return resultMap;
-//    }
+    @RequestMapping(value ="/getFingerLevel",method = RequestMethod.POST)
+    @ResponseBody
+    public Map<String,Object>  getFingerLevel(){
+        Map<String,Object> resultMap = new HashMap<>();
+        Map<String,PersonLevelScore> levelMap = new HashMap<>();
+        try{
+            List<PersonLevelScore> personLevelScoreList =  Lists.newArrayList(personLevelScoreDao.findAll());
+            for(PersonLevelScore personLevelScore :personLevelScoreList){
+                levelMap.put(personLevelScore.getLevel(),personLevelScore);
+            }
+
+            resultMap.put("success",true);
+            resultMap.put("message","ok");
+            resultMap.put("levelMap",levelMap);
+        }catch(Exception ex){
+            resultMap.put("success",false);
+            resultMap.put("message",ex.getMessage());
+            ex.printStackTrace();
+        }
+
+        return resultMap;
+    }
 
 }
