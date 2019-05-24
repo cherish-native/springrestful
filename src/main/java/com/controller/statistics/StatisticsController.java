@@ -9,6 +9,7 @@ import com.service.StatisticService;
 import com.service.WorkQueueService;
 import com.sun.deploy.net.protocol.chrome.ChromeURLConnection;
 import com.util.DateUtil;
+import com.util.FileUtil;
 import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
@@ -17,6 +18,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
 
 import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 import java.text.SimpleDateFormat;
 import java.util.*;
 import java.util.concurrent.ExecutorService;
@@ -86,6 +88,35 @@ public class StatisticsController extends BaseController {
     @ResponseBody
     public DataGridReturn gatherSubstandardExamineDetailList(String departCode, String gatheruserName, String beginDate, String endDate, HttpServletRequest request){
         return statisticService.gatherSubstandardExamineDetailList(departCode, gatheruserName, beginDate, endDate, getPagination(request));
+    }
+
+    /**
+     * 获取强制通过统计列表
+     * @param departCode
+     * @param beginDate
+     * @param endDate
+     * @param request
+     * @return
+     */
+    @ResponseBody
+    @RequestMapping("/gatherCompelPassList")
+    public DataGridReturn gatherCompelPassList(String departCode, String beginDate, String endDate, HttpServletRequest request){
+        return statisticService.gatherCompelPassList(departCode, beginDate, endDate, getPagination(request));
+    }
+
+    /**
+     * 强制通过详细列表
+     * @param departCode
+     * @param gatheruserName
+     * @param beginDate
+     * @param endDate
+     * @param request
+     * @return
+     */
+    @ResponseBody
+    @RequestMapping("/gatherSubstandardCompelPassDetailList")
+    public DataGridReturn gatherSubstandardCompelPassDetailList(String departCode, String gatheruserName, String beginDate, String endDate, HttpServletRequest request){
+        return statisticService.gatherSubstandardCompelPassDetailList(departCode, gatheruserName, beginDate, endDate, getPagination(request));
     }
 
     /**
@@ -227,10 +258,24 @@ public class StatisticsController extends BaseController {
      */
     @RequestMapping("/showFingerImage/{imgPath}/{personId}/{fgpCase}/{fgp}/{type}")
     @ResponseBody
-    public void showFingerImage(@PathVariable("imgPath") String imgPath, @PathVariable("personId") String personId,@PathVariable("fgpCase") int fgpCase, @PathVariable("fgp") int fgp,
-                                @PathVariable("type") int type, HttpServletRequest request){
-        System.out.println(personId);
-        System.out.println(fgpCase);
-        System.out.println(fgp);
+    public void showFingerImage(@PathVariable("imgPath") String imgPath, @PathVariable("personId") String personId, @PathVariable("fgpCase") int fgpCase, @PathVariable("fgp") int fgp,
+                                @PathVariable("type") int type, HttpServletResponse response) throws Exception{
+        String originPath = "C:\\Users\\Administrator\\Desktop\\finger01.bmp";
+        String redAndWhite = "C:\\Users\\Administrator\\Desktop\\20190522111105.bmp";
+        byte[] imageBytes = null;
+        try {
+            if(type == 1){
+                imageBytes = FileUtil.readFile(originPath);
+            }else{
+                imageBytes = FileUtil.readFile(redAndWhite);
+            }
+        } catch (Exception e){
+            e.printStackTrace();
+            imageBytes = new byte[0];
+        }
+        response.getOutputStream().write(imageBytes);
+//        System.out.println(personId);
+//        System.out.println(fgpCase);
+//        System.out.println(fgp);
     }
 }

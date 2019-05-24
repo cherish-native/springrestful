@@ -114,7 +114,7 @@ public class StatisticServiceImpl implements StatisticService {
                 .append("      from personinfo p                                                  ")
                 .append("      left join QUALITY_SCORE q                                          ")
                 .append("        on p.PERSONID = q.CARDID                                         ")
-                .append("     where p.PRINTDATE = ?                                      ")
+                .append("     where p.PRINTDATE = ? and p.PRINTER is not null                     ")
                 .append("     ) t                                                                 ")
                 .append("group by t.PRINT_UNIT_CODE, t.PRINTER                                   ");
         QueryBuilder queryBuilder = new QueryBuilder(sql.toString());
@@ -242,5 +242,105 @@ public class StatisticServiceImpl implements StatisticService {
         }
         dataGridReturn.setRows(personVos);
         return dataGridReturn;
+    }
+
+    @Override
+    public DataGridReturn gatherCompelPassList(String departCode, String beginDate, String endDate, Pageable pagination) {
+        StringBuilder sql = new StringBuilder();
+        sql.append(" select t.depart_code DEPARTCODE,                   ")
+                .append("        t.gatheruser_name GATHERUSERNAME,           ")
+                .append("        sum(count) COUNT,                           ")
+                .append("        sum(t.is_compel_pass_count) COMPELPASSCOUNT")
+                .append("   from statistic_quality_day t                     ")
+                .append("  GROUP BY t.depart_code, t.gatheruser_name         ");
+
+        QueryBuilder queryBuilder = new QueryBuilder(sql.toString());
+        if(StringUtils.isNotEmpty(departCode)){
+            queryBuilder.appendAndWhere("t.depart_code like ?", departCode);
+        }
+        if(StringUtils.isNotEmpty(beginDate)){
+            queryBuilder.appendAndWhere("t.statistic_time >= ?", Integer.parseInt(beginDate.replaceAll("-", "")));
+        }
+        if(StringUtils.isNotEmpty(endDate)){
+            queryBuilder.appendAndWhere("t.statistic_time <= ?", Integer.parseInt(endDate.replaceAll("-", "")));
+        }
+        List<Map<String, Object>> list = baseDao.findListBySql(queryBuilder.getSql(), queryBuilder.getParams());
+        List<StatisticQualityDay> statisticQualityDays = new ArrayList<>();
+        if(list != null){
+            DecimalFormat df = new DecimalFormat("0.00");//格式化小数
+            for(Map<String, Object> map : list){
+                StatisticQualityDay statisticQualityDay = new StatisticQualityDay();
+                statisticQualityDay.setDepartName(Constant.codeAndNameDB.get(StringUtils.nvlString(map.get("DEPARTCODE"))));
+                statisticQualityDay.setGatheruserName(StringUtils.nvlString(map.get("GATHERUSERNAME")));
+                statisticQualityDay.setDepartCode(StringUtils.nvlString(map.get("DEPARTCODE")));
+                statisticQualityDay.setCount(StringUtils.nvlInt(map.get("COUNT")));
+                statisticQualityDay.setIsCompelPassCount(StringUtils.nvlInt(map.get("COMPELPASSCOUNT")));
+                statisticQualityDay.setCompelPassPercent(df.format((float)statisticQualityDay.getIsCompelPassCount()/statisticQualityDay.getCount()*100) + "%");
+                statisticQualityDays.add(statisticQualityDay);
+            }
+        }
+        return new DataGridReturn(statisticQualityDays.size(), statisticQualityDays);
+    }
+
+    @Override
+    public DataGridReturn gatherSubstandardCompelPassDetailList(String departCode, String gatheruserName, String beginDate, String endDate, Pageable pagination) {
+        StringBuilder sql = new StringBuilder("SELECT q.*,t.personid,t.name, t.idcard,t.person_level,t.printdate,is_compel_pass iscompelpass FROM personinfo t left join quality_score q on t.personid = q.cardid ");
+        QueryBuilder queryBuilder = new QueryBuilder(sql.toString());
+        queryBuilder.appendAndWhere(" t.printdate is not null ", null);
+        if(StringUtils.isNotEmpty(departCode)){
+            queryBuilder.appendAndWhere(" t.print_unit_code = ? ", departCode);
+        }
+        if(StringUtils.isNotEmpty(gatheruserName)){
+            try {
+                gatheruserName = java.net.URLDecoder.decode(gatheruserName,"utf-8");
+            } catch (Exception e){
+                e.printStackTrace();
+            }
+            queryBuilder.appendAndWhere(" t.printer = ? ", gatheruserName);
+        }
+        if(StringUtils.isNotEmpty(beginDate)){
+            queryBuilder.appendAndWhere(" t.printdate >= ? ", beginDate);
+        }
+        if(StringUtils.isNotEmpty(endDate)){
+            queryBuilder.appendAndWhere(" t.printdate <= ? ", endDate);
+        }
+        DataGridReturn dataGridReturn = baseDao.pageQuery(queryBuilder.getSql(), queryBuilder.getParams(), pagination);
+        List<Map<String, Object>> list = dataGridReturn.getRows();
+        List<PersonVo> personVos = new ArrayList<>();
+        if(list != null && list.size() > 0){
+            for(Map<String, Object> map : list){
+                PersonVo personVo = new PersonVo();
+                personVo.setPersonId(StringUtils.nvlString(map.get("PERSONID")));
+                personVo.setName(StringUtils.nvlString(map.get("NAME")));
+                personVo.setIdCardNo(StringUtils.nvlString(map.get("IDCARD")));
+                personVo.setPrintDate(StringUtils.nvlString(map.get("PRINTDATE")));
+                personVo.setPersonLevel(StringUtils.nvlString(map.get("PERSON_LEVEL")));
+                String iscompelpass = StringUtils.nvlString(map.get("ISCOMPELPASS"));
+                if(StringUtils.isNotEmpty(iscompelpass)){
+                    //强制通过解析，长度为20，每一位对应一个指位 滚动右拇指--平面左小指，每位由0和1表示
+                    System.out.println(iscompelpass);
+                    for(int i=0;i<10;i++){
+                        personVo.setRightThumb(getIsCompelPass(iscompelpass.charAt(0), iscompelpass.charAt(10)) +"");
+                        personVo.setRightIndex(getIsCompelPass(iscompelpass.charAt(1), iscompelpass.charAt(11)) +"");
+                        personVo.setRightMiddle(getIsCompelPass(iscompelpass.charAt(2), iscompelpass.charAt(12)) +"");
+                        personVo.setRightRing(getIsCompelPass(iscompelpass.charAt(3), iscompelpass.charAt(13)) +"");
+                        personVo.setRightLittle(getIsCompelPass(iscompelpass.charAt(4), iscompelpass.charAt(14)) +"");
+                        personVo.setLeftThumb(getIsCompelPass(iscompelpass.charAt(5), iscompelpass.charAt(15)) +"");
+                        personVo.setLeftIndex(getIsCompelPass(iscompelpass.charAt(6), iscompelpass.charAt(16)) +"");
+                        personVo.setLeftMiddle(getIsCompelPass(iscompelpass.charAt(7), iscompelpass.charAt(17)) +"");
+                        personVo.setLeftRing(getIsCompelPass(iscompelpass.charAt(8), iscompelpass.charAt(18)) +"");
+                        personVo.setLeftLittle(getIsCompelPass(iscompelpass.charAt(9), iscompelpass.charAt(19)) +"");
+                        personVo.setImgUrl(StringUtils.nvlString(map.get("IMG_URL")));
+                    }
+                }
+                personVos.add(personVo);
+            }
+        }
+        dataGridReturn.setRows(personVos);
+        return dataGridReturn;
+    }
+
+    private int getIsCompelPass(char r, char p){
+        return (r|p)-48;
     }
 }

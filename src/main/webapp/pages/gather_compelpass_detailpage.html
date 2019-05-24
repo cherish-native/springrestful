@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>采集未达标</title>
+    <title>强制通过详细列表</title>
     <link rel="stylesheet" type="text/css" href="../easyui/themes/bootstrap/easyui.css"/>
     <link rel="stylesheet" type="text/css" href="../easyui/themes/icon.css"/>
     <script type="text/javascript" src="../easyui/jquery.min.js"></script>
@@ -93,7 +93,7 @@
             }
             //加载列表
             $('#gatherQualityList').datagrid({
-                url:'statistics/gatherSubstandardExamineDetailList',
+                url:'statistics/gatherSubstandardCompelPassDetailList',
                 width:size.width-20,
                 height:size.height - $('#searchDiv').height() - 60,
                 queryParams:queryParams,
@@ -173,17 +173,26 @@
         function getSHowImageCellValue(value, imgUrl, personId, fgp){
             var result = value;
             imgUrl = "imageUrl";
-            var color = 'red';
+            var color = 'green';
+            var text = '正常';
             if(value){
-                var scoreArr = value.split('/');
-                result = '<a href="#" style="color: '+ color +';" class="showFingerImageClass" onclick="showImage(\'' + imgUrl + '\',\'' + personId + '\',\'0\',\''+ fgp +'\');">&nbsp;' + scoreArr[0] + '&nbsp;</a>';
-                result += "/";
-                result += '<a href="#" style="color: '+ color +';" class="showFingerImageClass" onclick="showImage(\'' + imgUrl + '\',\'' + personId + '\',\'1\',\''+ fgp +'\');">&nbsp;' + scoreArr[1] + '&nbsp;</a>';
+                if(value==1){
+                    color = 'red';
+                    text = '强制通过';
+                }
+                result = '<a href="#" style="color: '+ color +';" class="showFingerImageClass" onclick="showImage(\'' + imgUrl + '\',\'' + personId + '\',\'0\',\''+ fgp +'\');">&nbsp;'
+                    + text + '&nbsp;</a>';
             }
-            result = '<span style="color: '+ color +'">' + result + "</span>"
             return result;
         }
 
+        /**
+         * 展示图像
+         * @param imagePath
+         * @param personId
+         * @param fgpCase
+         * @param fgp
+         */
         function showImage(imagePath,personId,fgpCase,fgp){
             var url = "";
             if(imagePath != ''){
