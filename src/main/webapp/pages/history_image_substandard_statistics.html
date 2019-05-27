@@ -88,7 +88,6 @@
  			        type:"POST",
  			        url:"sysDepart/fuzzySearchDepart",
  			        success:function(data){
- 							console.log(data[1]);
  							var listHtml ='';
  							for(var i =0;i<data.length;i++){
 	 							listHtml += "<input id='"+data[i].id+"' type='checkbox' name='departCode' onchange='loadData()' /> <label for='"+data[i].id+"'>"+data[i].text+"</label><br/>";
@@ -137,18 +136,13 @@
         }
         var yAxisDataArray = [];
         for(var i =0;i<result.yAxisData.length;i++){
-        	var   yAxisData = {}
-/*         	name:'邮件营销',
-            type:'line',
-            data:[120, 132, 101, 134, 90, 230, 210]
-            data: result.yAxisData[0]*/
-        	yAxisData.name = i;
+        	var yAxisData = {};
+        	yAxisData.name = result.yAxisData[i].departName;
         	yAxisData.type = "line";
-        	yAxisData.data = result.yAxisData[i];
+        	yAxisData.data = result.yAxisData[i].substandardPercent;
         	yAxisDataArray.push(yAxisData);
         }
-    	console.log(yAxisDataArray);
-
+    	
         title += "】采集未达标";
         option = null;
         option = {

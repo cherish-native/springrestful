@@ -2,6 +2,7 @@ package com.service;
 
 import com.entity.StatisticQualityDay;
 import com.entity.vo.DataGridReturn;
+import com.entity.vo.ImageSubstandardStatistics;
 import com.entity.vo.Pagination;
 import org.springframework.data.domain.Pageable;
 
@@ -88,6 +89,6 @@ public interface StatisticService {
      * @return
      * @throws Exception
      */
-    List<String[]> getGatherQualitySubstandardCount(String dateStr,int xAxisCount,String departCode) throws Exception;
+    List<ImageSubstandardStatistics> getGatherQualitySubstandardCount(String dateStr,int xAxisCount,String departCode) throws Exception;
 
 }

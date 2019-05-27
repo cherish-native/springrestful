@@ -47,6 +47,21 @@ public class QueryBuilder {
         }
         return this;
     }
+    
+    public QueryBuilder appendInOr(String where,String[] params){
+        if(!hasHaving){
+            this.stringBuilder.append(" where ");
+            hasWhere = true;
+        }else{
+            this.stringBuilder.append(" and ");
+        }
+        for(int i=0;i<params.length;i++){
+            this.stringBuilder.append(where).append(" = ? or");
+            this.params.add(params[i]);
+        }
+        stringBuilder.delete(stringBuilder.length()-2, stringBuilder.length());
+        return this;
+    }
 
     public QueryBuilder appendSql(String sql){
         this.stringBuilder.append(" ").append(sql).append(" ");

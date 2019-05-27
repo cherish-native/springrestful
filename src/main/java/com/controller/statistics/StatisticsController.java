@@ -5,6 +5,7 @@ import com.controller.BaseController;
 import com.entity.StatisticQualityDay;
 import com.entity.WorkQueue;
 import com.entity.vo.DataGridReturn;
+import com.entity.vo.ImageSubstandardStatistics;
 import com.service.StatisticService;
 import com.service.WorkQueueService;
 import com.util.DateUtil;
@@ -164,10 +165,6 @@ public class StatisticsController extends BaseController {
     @RequestMapping("/historyImageSubstandardStatistics")
     @ResponseBody
     public Map<String,Object> historyImageSubstandardStatistics(String departCode,String dateStr) throws Exception{
-         String[] departCodeList = null ;
-         if(StringUtils.isNotEmpty(departCode)){
-             departCodeList = departCode.split(",");
-         }
     	Map<String,Object> result = new HashMap<>();
         //横坐标数据
         int xAxisCount = 12;
@@ -181,7 +178,6 @@ public class StatisticsController extends BaseController {
             xAxisData[i] = (i+1)+xAxisSuffix;
         }
         List<String[]> yAxisData = new ArrayList<>();
-/*        if(StringUtils.isNotEmpty(departCodeList)){
         	for(int a=0; a<3;a++){
             	String[] yAxisDataItem = new String[xAxisCount];
 	        	 for(int i=0;i<xAxisCount;i++){
@@ -191,11 +187,12 @@ public class StatisticsController extends BaseController {
                  yAxisData.add(yAxisDataItem);
 
         	}
-        }*/
-    	//yAxisData = statisticService.getGatherQualityCount(dateStr,xAxisCount,departCode);
+        List<ImageSubstandardStatistics> y = new ArrayList<ImageSubstandardStatistics>();
+        	
+    	y = statisticService.getGatherQualitySubstandardCount(dateStr,xAxisCount,departCode);
 
         result.put("xAxisData", xAxisData);
-        result.put("yAxisData", yAxisData);
+        result.put("yAxisData", y);
         return result;
     }
 

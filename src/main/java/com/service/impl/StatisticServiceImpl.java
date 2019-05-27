@@ -6,6 +6,7 @@ import com.dao.StatisticQualityDayDao;
 import com.entity.StatisticQualityDay;
 import com.entity.SysDepart;
 import com.entity.vo.DataGridReturn;
+import com.entity.vo.ImageSubstandardStatistics;
 import com.entity.vo.PersonVo;
 import com.service.StatisticService;
 import com.service.SysDepartService;
@@ -429,33 +430,37 @@ public class StatisticServiceImpl implements StatisticService {
     }
     
     @Override
-    public List<String[]> getGatherQualitySubstandardCount(String dateStr,int xAxisCount,String departCode) throws Exception {
-        List<String[]> yAxisData = new ArrayList<>();
-        String[] yAxisDataA= new String[xAxisCount];
-        String[] yAxisDataB= new String[xAxisCount];
-        String[] yAxisDataC= new String[xAxisCount];
-        String[] yAxisDataD= new String[xAxisCount];
-        String[] yAxisDataE= new String[xAxisCount];
-
+    public List<ImageSubstandardStatistics> getGatherQualitySubstandardCount(String dateStr,int xAxisCount,String departCode) throws Exception {
+    	List<ImageSubstandardStatistics> yAxisDataList = new ArrayList<>();
+    	String[] departCodeList = null ;
+        if(StringUtils.isNotEmpty(departCode)){
+            departCodeList = departCode.split(",");
+        }else{
+        	return yAxisDataList;
+        }
+//        System.out.println(departCodeList.length);
+    	//departCode = "";
         int minQueryParam;
         int maxQueryParam;
 
         StringBuilder sql = new StringBuilder();
-        sql.append("select sum(t.count_level_a) countLevelA,")
-                .append("sum(t.count_level_b) countLevelB,")
-                .append("sum(t.count_level_c) countLevelC,")
-                .append("sum(t.count_level_d) countLevelD,")
-                .append("sum(t.count_level_e) countLevelE, ");
+        
+
+        sql.append(" select t.depart_code AS departCode,")
+        	.append("  t.depart_name AS departName,")
+        	.append("ROUND(sum(t.SUBSTANDARD_COUNT)/sum(t.COUNT),2) AS substandardPercent,");
+
                 
         QueryBuilder queryBuilder = new QueryBuilder(sql.toString());
         
         if(xAxisCount==12){
         	queryBuilder.appendSql(" substr(t.statistic_time,0,6) statistic_time");
         	queryBuilder.appendSql(" from statistic_quality_day t");
-        	if(StringUtils.isNotEmpty(departCode)){
-            	queryBuilder.appendAndWhere(" t.depart_code = ? ", departCode);
+        	if(StringUtils.isNotEmpty(departCodeList)){
+        		queryBuilder.appendInOr(" t.depart_code ", departCodeList);
         	}
-            queryBuilder.appendSql("group by substr(t.statistic_time,0,6)");
+            queryBuilder.appendSql("group by substr(t.statistic_time,0,6),t.depart_code,t.depart_name");
+
             //设置年份查询条件
         	String year = dateStr.substring(0,4);
             minQueryParam = Integer.parseInt(year+"01");
@@ -469,10 +474,10 @@ public class StatisticServiceImpl implements StatisticService {
         }else{
         	queryBuilder.appendSql("t.statistic_time statistic_time ");
         	queryBuilder.appendSql(" from statistic_quality_day t");
-        	if(StringUtils.isNotEmpty(departCode)){
-            	queryBuilder.appendAndWhere(" t.depart_code = ? ", departCode);
+        	if(StringUtils.isNotEmpty(departCodeList)){
+        		queryBuilder.appendInOr(" t.depart_code ", departCodeList);
         	}
-            queryBuilder.appendSql("group by t.statistic_time");
+            queryBuilder.appendSql("group by t.statistic_time,t.depart_code,t.depart_name");
 
         	//获取当月的第一天和最后一天
         	SimpleDateFormat sdf = new SimpleDateFormat("yyyyMMdd"); 
@@ -495,23 +500,36 @@ public class StatisticServiceImpl implements StatisticService {
             }         
         }
         List<Map<String, Object>> list = baseDao.findListBySql(queryBuilder.getSql(), queryBuilder.getParams());
+        
+        ImageSubstandardStatistics iss = null;
+        HashMap<String, Integer> departDataMap = new HashMap<String, Integer>();
+        int listIndex = 0 ;
         if(list != null){
             for(Map<String, Object> map : list){
+            	String resultDapartCode  = StringUtils.nvlString(map.get("DEPARTCODE"));
+            	String departName  = StringUtils.nvlString(map.get("DEPARTNAME"));
             	String date = StringUtils.nvlString(map.get("STATISTIC_TIME"));
-            	int index = Integer.parseInt(date.substring(date.length()-2, date.length()));
-            	yAxisDataA[index] =StringUtils.nvlString(map.get("COUNTLEVELA"));
-            	yAxisDataB[index] =StringUtils.nvlString(map.get("COUNTLEVELB"));
-            	yAxisDataC[index] =StringUtils.nvlString(map.get("COUNTLEVELC"));
-            	yAxisDataD[index] =StringUtils.nvlString(map.get("COUNTLEVELD"));
-            	yAxisDataE[index] = StringUtils.nvlString(map.get("COUNTLEVELE"));
+            	Integer yAxisDataIndex = departDataMap.get(resultDapartCode);
+            	if(yAxisDataIndex!=null){
+            		iss = yAxisDataList.get(yAxisDataIndex);
+            		int[] substandardPercent = iss.getSubstandardPercent();
+                	int index = Integer.parseInt(date.substring(date.length()-2, date.length()));
+                	substandardPercent[index-1] =(int)(StringUtils.nvlDouble(map.get("SUBSTANDARDPERCENT"))*100);
+                	iss.setSubstandardPercent(substandardPercent);
+            	}else{
+            		departDataMap.put(resultDapartCode, listIndex++);
+            		iss = new ImageSubstandardStatistics();
+            		iss.setDepartCode(resultDapartCode);
+            		iss.setDepartName(departName);
+            		int[] substandardPercent = new int[xAxisCount];
+                	int index = Integer.parseInt(date.substring(date.length()-2, date.length()));
+                	substandardPercent[index-1] =(int)(StringUtils.nvlDouble(map.get("SUBSTANDARDPERCENT"))*100);
+            		iss.setSubstandardPercent(substandardPercent);
+            		yAxisDataList.add(iss);
+            	}
             }
         }
-        yAxisData.add(yAxisDataA);
-        yAxisData.add(yAxisDataB);
-        yAxisData.add(yAxisDataC);
-        yAxisData.add(yAxisDataD);
-        yAxisData.add(yAxisDataE);	
-        return yAxisData;
+        return yAxisDataList;
     }
     
     private int getIsCompelPass(char r, char p){

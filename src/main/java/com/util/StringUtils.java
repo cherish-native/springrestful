@@ -86,6 +86,18 @@ public class StringUtils {
 	}
 	
 	/**
+	 * 对象转整数，对象为空返回0
+	 * @param o
+	 * @return
+	 */
+	public static Double nvlDouble(Object o){
+		if(o != null && !o.equals("null") && !"".equals(o)){
+			return Double.parseDouble(o+"");
+		}
+		return 0.00;
+	}
+	
+	/**
 	 * 判断对象是否为空
 	 * @author luozeqiang
 	 * @date 2017年2月23日 上午9:42:13
