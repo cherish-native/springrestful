@@ -7,6 +7,8 @@ import com.entity.PersonLevelScore;
 import com.entity.QualityScoreRange;
 import com.entity.WorkQueue;
 import com.google.common.collect.Lists;
+import com.service.PersonLevelSetService;
+import com.service.QualityScoreService;
 import com.service.WorkQueueService;
 import com.support.HttpComponent;
 import com.support.HttpResult;
@@ -16,12 +18,11 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
+
+import javax.jws.Oneway;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 @Controller
 @RequestMapping(value = "/pages/image")
@@ -35,6 +36,10 @@ public class ImageReachSetController {
     private Config config;
     @Autowired
     private WorkQueueService workQueueService;
+    @Autowired
+    private PersonLevelSetService personLevelSetService;
+    @Autowired
+    private QualityScoreService qualityScoreService;
 
     @RequestMapping(value = "/getLevelScore",method = RequestMethod.GET)
     @ResponseBody
@@ -183,7 +188,38 @@ public class ImageReachSetController {
         return resultMap;
     }
 
-
+    /**
+     * 获取所有等级相关设置
+     * @return
+     */
+    @ResponseBody
+    @RequestMapping("/getAllLevelSet")
+    public Map<String, String> getAllLevelSet(){
+        Map<String, String> result = new HashMap<>();
+        //人员等级中的每个指位等级设置
+        Map<String,PersonLevelScore> map = personLevelSetService.getPersonLevelScoreSet();
+        for(String key : map.keySet()){
+            String levelSet = "";
+            PersonLevelScore personLevelScore = map.get(key);
+            levelSet = "" + personLevelScore.getRm()+
+                personLevelScore.getRs()+
+                personLevelScore.getRz()+
+                personLevelScore.getRh()+
+                personLevelScore.getRx()+
+                personLevelScore.getLm()+
+                personLevelScore.getLs()+
+                personLevelScore.getLz()+
+                personLevelScore.getLh()+
+                personLevelScore.getLx();
+            result.put(key, levelSet);
+        }
+        //获取每个人员级别的分数设置
+        Iterable<QualityScoreRange> qualityScoreRanges = qualityScoreService.getAllQualityScoreRange();
+        for(QualityScoreRange qualityScoreRange : qualityScoreRanges){
+            result.put(qualityScoreRange.getLevel()+"", qualityScoreRange.getMinScore()+"");
+        }
+        return result;
+    }
 
 //    @RequestMapping(value ="/getFingerLevel",method = RequestMethod.POST)
 //    @ResponseBody

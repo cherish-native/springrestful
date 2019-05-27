@@ -102,37 +102,47 @@
                     {field:"printDate",title:"采集日期",width:fixWidthWithOptWidth(0.1)},
                     {field:"name",title:"姓名",width:fixWidthWithOptWidth(0.05)},
                     {field:"idCardNo",title:"身份证号",width:fixWidthWithOptWidth(0.05)},
-                    {field:"personLevel",title:"定级",width:fixWidthWithOptWidth(0.05)},
+                    {field:"personLevel",title:"定级",width:fixWidthWithOptWidth(0.05),formatter: function (value, row, index){
+                        var result = "";
+                        if(value){
+                            switch (parseInt(value)){
+                                case 1: result = "A级";break;
+                                case 2: result = "B级";break;
+                                case 2: result = "C级";break;
+                            }
+                        }
+                        return result;
+                    }},
                     {field:"qualityLevel",title:"整体",width:fixWidthWithOptWidth(0.05)},
                     {field:"rightThumb",title:"右拇",width:fixWidthWithOptWidth(0.05),formatter: function (value, row, index){
-                        return getSHowImageCellValue(value, row.imgUrl, row.personId, 1);
+                        return getSHowImageCellValue(value, row.imgUrl, row.personId, 1, row.personLevel);
                     }},
                     {field:"rightIndex",title:"右食",width:fixWidthWithOptWidth(0.05),formatter: function (value, row, index){
-                            return getSHowImageCellValue(value, row.imgUrl, row.personId, 2);
+                            return getSHowImageCellValue(value, row.imgUrl, row.personId, 2, row.personLevel);
                         }},
                     {field:"rightMiddle",title:"右中",width:fixWidthWithOptWidth(0.05),formatter: function (value, row, index){
-                            return getSHowImageCellValue(value, row.imgUrl, row.personId, 3);
+                            return getSHowImageCellValue(value, row.imgUrl, row.personId, 3, row.personLevel);
                         }},
                     {field:"rightRing",title:"右环",width:fixWidthWithOptWidth(0.05),formatter: function (value, row, index){
-                            return getSHowImageCellValue(value, row.imgUrl, row.personId, 4);
+                            return getSHowImageCellValue(value, row.imgUrl, row.personId, 4, row.personLevel);
                         }},
                     {field:"rightLittle",title:"右小",width:fixWidthWithOptWidth(0.05),formatter: function (value, row, index){
-                            return getSHowImageCellValue(value, row.imgUrl, row.personId, 5);
+                            return getSHowImageCellValue(value, row.imgUrl, row.personId, 5, row.personLevel);
                         }},
                     {field:"leftThumb",title:"左拇",width:fixWidthWithOptWidth(0.05),formatter: function (value, row, index){
-                            return getSHowImageCellValue(value, row.imgUrl, row.personId, 6);
+                            return getSHowImageCellValue(value, row.imgUrl, row.personId, 6, row.personLevel);
                         }},
                     {field:"leftIndex",title:"左食",width:fixWidthWithOptWidth(0.05),formatter: function (value, row, index){
-                            return getSHowImageCellValue(value, row.imgUrl, row.personId, 7);
+                            return getSHowImageCellValue(value, row.imgUrl, row.personId, 7, row.personLevel);
                         }},
                     {field:"leftMiddle",title:"左中",width:fixWidthWithOptWidth(0.05),formatter: function (value, row, index){
-                            return getSHowImageCellValue(value, row.imgUrl, row.personId, 8);
+                            return getSHowImageCellValue(value, row.imgUrl, row.personId, 8, row.personLevel);
                         }},
                     {field:"leftRing",title:"左环",width:fixWidthWithOptWidth(0.05),formatter: function (value, row, index){
-                            return getSHowImageCellValue(value, row.imgUrl, row.personId, 9);
+                            return getSHowImageCellValue(value, row.imgUrl, row.personId, 9, row.personLevel);
                         }},
                     {field:"leftLittle",title:"左小",width:fixWidthWithOptWidth(0.05),formatter: function (value, row, index){
-                            return getSHowImageCellValue(value, row.imgUrl, row.personId, 10);
+                            return getSHowImageCellValue(value, row.imgUrl, row.personId, 10, row.personLevel);
                         }}
                 ]],
                 pagination : true,
@@ -170,7 +180,7 @@
             });
         });
 
-        function getSHowImageCellValue(value, imgUrl, personId, fgp){
+        function getSHowImageCellValue(value, imgUrl, personId, fgp, personLevel){
             var result = value;
             imgUrl = "imageUrl";
             var color = 'red';
