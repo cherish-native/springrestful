@@ -9,6 +9,7 @@ import com.entity.vo.ImageSubstandardStatistics;
 import com.service.StatisticService;
 import com.service.WorkQueueService;
 import com.util.DateUtil;
+import com.util.FTPUtil;
 import com.util.FileUtil;
 import com.util.StringUtils;
 
@@ -261,28 +262,23 @@ public class StatisticsController extends BaseController {
      * @param fgpCase 0：滚动 1：平面
      * @param fgp 指纹 1-10
      * @param type 图像类型 1：指纹原图  2：红白图
-     * @param request
+     * @param response
      */
     @RequestMapping("/showFingerImage/{imgPath}/{personId}/{fgpCase}/{fgp}/{type}")
     @ResponseBody
     public void showFingerImage(@PathVariable("imgPath") String imgPath, @PathVariable("personId") String personId, @PathVariable("fgpCase") int fgpCase, @PathVariable("fgp") int fgp,
                                 @PathVariable("type") int type, HttpServletResponse response) throws Exception{
-        String originPath = "C:\\Users\\Administrator\\Desktop\\finger01.bmp";
-        String redAndWhite = "C:\\Users\\Administrator\\Desktop\\20190522111105.bmp";
         byte[] imageBytes = null;
         try {
             if(type == 1){
-                imageBytes = FileUtil.readFile(originPath);
+                imageBytes = FTPUtil.downFile("1","1");
             }else{
-                imageBytes = FileUtil.readFile(redAndWhite);
+                imageBytes = FTPUtil.downFile("2","2");
             }
         } catch (Exception e){
             e.printStackTrace();
             imageBytes = new byte[0];
         }
         response.getOutputStream().write(imageBytes);
-//        System.out.println(personId);
-//        System.out.println(fgpCase);
-//        System.out.println(fgp);
     }
 }

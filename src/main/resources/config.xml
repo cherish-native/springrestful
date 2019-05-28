@@ -17,5 +17,10 @@
         <connect_string>127.0.0.1:2181</connect_string>
     </zookeeper_config>
 
-
+    <ftp_config>
+        <ftpHostAddr>192.168.1.132</ftpHostAddr>
+        <ftpUserName>zchao</ftpUserName>
+        <ftpPassword>123456</ftpPassword>
+        <ftpPort>21</ftpPort>
+    </ftp_config>
 </config>
