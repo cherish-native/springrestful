@@ -18,6 +18,7 @@
         }
     </style>
     <script>
+        var levelSet;
         $(function(){
             //获取参数
 
@@ -46,7 +47,14 @@
                 $('#endDate').datebox('setValue', '');
                 $('#departCodeSelect').combobox('setValue', '');
             });
-
+            //获取分数登记配置
+            $.ajax({
+                url:'image/getAllLevelSet',
+                async : false,
+                success : function(data){
+                    levelSet = data;
+                }
+            });
             var size = {
                 width : document.documentElement.clientWidth,
                 height : document.documentElement.clientHeight
@@ -108,7 +116,7 @@
                             switch (parseInt(value)){
                                 case 1: result = "A级";break;
                                 case 2: result = "B级";break;
-                                case 2: result = "C级";break;
+                                case 3: result = "C级";break;
                             }
                         }
                         return result;
@@ -186,14 +194,52 @@
             var color = 'red';
             if(value){
                 var scoreArr = value.split('/');
-                result = '<a href="#" style="color: '+ color +';" class="showFingerImageClass" onclick="showImage(\'' + imgUrl + '\',\'' + personId + '\',\'0\',\''+ fgp +'\');">&nbsp;' + scoreArr[1] + '&nbsp;</a>';
+                var isQuality = fingerIsQuality(fgp, personLevel, scoreArr[1]);
+                if(isQuality){
+                    color = 'green';
+                }else{
+                    color = 'red';
+                }
+                result = '<a href="#" style="color: '+ color +';" class="showFingerImageClass" onclick="showImage(\'' + imgUrl + '\',\'' + personId + '\',\'0\',\''+ fgp +'\');">&nbsp;' + scoreArr[1] + '</a>';
                 result += "/";
-                result += '<a href="#" style="color: '+ color +';" class="showFingerImageClass" onclick="showImage(\'' + imgUrl + '\',\'' + personId + '\',\'1\',\''+ fgp +'\');">&nbsp;' + scoreArr[0] + '&nbsp;</a>';
+                isQuality = fingerIsQuality(fgp, personLevel, scoreArr[0]);
+                if(isQuality){
+                    color = 'green';
+                }else{
+                    color = 'red';
+                }
+                result += '<a href="#" style="color: '+ color +';" class="showFingerImageClass" onclick="showImage(\'' + imgUrl + '\',\'' + personId + '\',\'1\',\''+ fgp +'\');">&nbsp;' + scoreArr[0] + '</a>';
             }
-            result = '<span style="color: '+ color +'">' + result + "</span>"
+            result = '<span>' + result + "</span>"
             return result;
         }
 
+        function getScoreLevel(score) {
+            if(score >= levelSet[1]){
+                return 1;
+            }else if(score >= levelSet[2]){
+                return 2;
+            }else if(score >= levelSet[3]){
+                return 3;
+            }else if(score >= levelSet[4]){
+                return 4;
+            }else{
+                return 5;
+            }
+        }
+        
+        function fingerIsQuality(fgp,personLevel,Score) {
+            var result = false;
+            if(personLevel){
+                var scoreLevel = getScoreLevel(Score);
+                var fingerLevelSet = levelSet[personLevel +"" +fgp];
+                if(scoreLevel <= fingerLevelSet){
+                    result = true;
+                }
+            }
+            return result;
+        }
+        
         function showImage(imagePath,personId,fgpCase,fgp){
             var url = "";
             if(imagePath != ''){

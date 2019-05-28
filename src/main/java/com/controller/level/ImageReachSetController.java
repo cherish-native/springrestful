@@ -199,19 +199,17 @@ public class ImageReachSetController {
         //人员等级中的每个指位等级设置
         Map<String,PersonLevelScore> map = personLevelSetService.getPersonLevelScoreSet();
         for(String key : map.keySet()){
-            String levelSet = "";
             PersonLevelScore personLevelScore = map.get(key);
-            levelSet = "" + personLevelScore.getRm()+
-                personLevelScore.getRs()+
-                personLevelScore.getRz()+
-                personLevelScore.getRh()+
-                personLevelScore.getRx()+
-                personLevelScore.getLm()+
-                personLevelScore.getLs()+
-                personLevelScore.getLz()+
-                personLevelScore.getLh()+
-                personLevelScore.getLx();
-            result.put(key, levelSet);
+            result.put(key+1,personLevelScore.getRm()+"");
+            result.put(key+2,personLevelScore.getRs()+"");
+            result.put(key+3,personLevelScore.getRz()+"");
+            result.put(key+4,personLevelScore.getRh()+"");
+            result.put(key+5,personLevelScore.getRx()+"");
+            result.put(key+6,personLevelScore.getLm()+"");
+            result.put(key+7,personLevelScore.getLs()+"");
+            result.put(key+8,personLevelScore.getLz()+"");
+            result.put(key+9,personLevelScore.getLh()+"");
+            result.put(key+10,personLevelScore.getLx()+"");
         }
         //获取每个人员级别的分数设置
         Iterable<QualityScoreRange> qualityScoreRanges = qualityScoreService.getAllQualityScoreRange();

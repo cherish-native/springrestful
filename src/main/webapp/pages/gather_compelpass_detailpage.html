@@ -92,15 +92,6 @@
                 }
             }
 
-            //获取分数登记配置
-            $.ajax({
-                url:'image/getAllLevelSet',
-                async : false,
-                success : function(data){
-                    // alert(data);
-                }
-            })
-
             //加载列表
             $('#gatherQualityList').datagrid({
                 url:'statistics/gatherSubstandardCompelPassDetailList',
@@ -112,7 +103,17 @@
                     {field:"printDate",title:"采集日期",width:fixWidthWithOptWidth(0.1)},
                     {field:"name",title:"姓名",width:fixWidthWithOptWidth(0.05)},
                     {field:"idCardNo",title:"身份证号",width:fixWidthWithOptWidth(0.05)},
-                    {field:"personLevel",title:"定级",width:fixWidthWithOptWidth(0.05)},
+                    {field:"personLevel",title:"定级",width:fixWidthWithOptWidth(0.05),formatter: function (value, row, index){
+                            var result = "";
+                            if(value){
+                                switch (parseInt(value)){
+                                    case 1: result = "A级";break;
+                                    case 2: result = "B级";break;
+                                    case 3: result = "C级";break;
+                                }
+                            }
+                            return result;
+                        }},
                     {field:"qualityLevel",title:"整体",width:fixWidthWithOptWidth(0.05)},
                     {field:"rightThumb",title:"右拇",width:fixWidthWithOptWidth(0.05),formatter: function (value, row, index){
                         return getSHowImageCellValue(value, row.imgUrl, row.personId, 1);

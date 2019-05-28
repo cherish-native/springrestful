@@ -278,6 +278,8 @@ public class StatisticsController extends BaseController {
             }
         } catch (Exception e){
             e.printStackTrace();
+        }
+        if(imageBytes == null){
             imageBytes = new byte[0];
         }
         response.getOutputStream().write(imageBytes);

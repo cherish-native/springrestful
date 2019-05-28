@@ -82,9 +82,9 @@ public class PersonLevelSetServiceImpl implements PersonLevelSetService {
     @Override
     public Map<String, PersonLevelScore> getPersonLevelScoreSet() {
         Map<String, PersonLevelScore> map = new HashMap<>();
-        map.put("A", personLevelScoreDao.findByLevel("A"));
-        map.put("B", personLevelScoreDao.findByLevel("B"));
-        map.put("C", personLevelScoreDao.findByLevel("C"));
+        map.put("1", personLevelScoreDao.findByLevel("A"));
+        map.put("2", personLevelScoreDao.findByLevel("B"));
+        map.put("3", personLevelScoreDao.findByLevel("C"));
         return map;
     }
 }

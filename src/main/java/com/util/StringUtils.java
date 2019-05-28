@@ -86,15 +86,16 @@ public class StringUtils {
 	}
 
 	/**
-	 * 对象转浮点数，对象为空返回0
+	 * 对象转浮点数，对象为空返回0 保留两位小数
 	 * @param o
 	 * @return
 	 */
-	public static float nvlFloat(Object o){
+	public static String nvlFloatWithDecimal2(Object o){
 		if(o != null && !o.equals("null") && !"".equals(o)){
-			return Float.parseFloat(o+"");
+			DecimalFormat df = new DecimalFormat("#0.00");
+			return  df.format(Float.parseFloat(o+""));
 		}
-		return 0;
+		return "0.00";
 	}
 	
 	/**
