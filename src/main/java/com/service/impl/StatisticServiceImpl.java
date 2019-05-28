@@ -43,7 +43,24 @@ public class StatisticServiceImpl implements StatisticService {
         List<StatisticQualityDay> statisticQualityDays = statisticQualityDayDao.findByStatisticTime(date);
         if(statisticQualityDays != null && statisticQualityDays.size() > 0){
             for(StatisticQualityDay statisticQualityDay : statisticQualityDays){
-                tempMap.put(Constant.departCodeNameMap.get(statisticQualityDay.getDepartName()), statisticQualityDay);
+                if(StringUtils.isNotEmpty(statisticQualityDay.getScoreAverage())){
+                    StatisticQualityDay temp = (StatisticQualityDay) tempMap.get(statisticQualityDay.getDepartName());
+                    if(temp == null){
+                        tempMap.put(Constant.departCodeNameMap.get(statisticQualityDay.getDepartCode()), statisticQualityDay);
+                    }else{
+                        //计算已有的总数和平均分
+                        float totalScore = temp.getCount()*Float.parseFloat(temp.getScoreAverage()) + statisticQualityDay.getCount()*Float.parseFloat(statisticQualityDay.getScoreAverage());
+                        int count = temp.getCount() + statisticQualityDay.getCount();
+                        float averageScore = totalScore/count;
+                        temp.setCount(count);
+                        temp.setScoreAverage(averageScore+"");
+                        temp.setCountLevelA(temp.getCountLevelA()+statisticQualityDay.getCountLevelA());
+                        temp.setCountLevelA(temp.getCountLevelB()+statisticQualityDay.getCountLevelB());
+                        temp.setCountLevelA(temp.getCountLevelC()+statisticQualityDay.getCountLevelC());
+                        temp.setCountLevelA(temp.getCountLevelD()+statisticQualityDay.getCountLevelD());
+                        temp.setCountLevelA(temp.getCountLevelE()+statisticQualityDay.getCountLevelE());
+                    }
+                }
             }
         }
         return tempMap;
