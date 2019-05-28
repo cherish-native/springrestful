@@ -73,10 +73,12 @@
                     {field:"substandardCount",title:"未达标数",width:fixWidthWithOptWidth(0.15)},
                     {field:"substandardPercent",title:"未达标率",width:fixWidthWithOptWidth(0.15)},
                     {field:"opt",title:"操作",width:optwidth, formatter: function (value, row, index){
-                        var result = '<a href="#" onclick="showDetail(\''+ row.departCode +'\',\''+ row.gatheruserName +'\')">详细信息</a>';
-                            return result;
+                        if(row.substandardCount == 0){
+                            return "详细信息";
+                        }else{
+                            return '<a href="#" onclick="showDetail(\''+ row.departCode +'\',\''+ row.gatheruserName +'\')">详细信息</a>';
                         }
-                    }
+                    }}
                 ]],
                 pagination : false,
                 rownumbers:true
