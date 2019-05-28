@@ -93,7 +93,8 @@ public class StatisticServiceImpl implements StatisticService {
         if(list != null){
             for(Map<String, Object> map : list){
                 StatisticQualityDay statisticQualityDay = new StatisticQualityDay();
-                statisticQualityDay.setDepartName(statisticQualityDay.getDepartName());
+                statisticQualityDay.setDepartCode(StringUtils.nvlString(map.get("DEPARTCODE")));
+                statisticQualityDay.setDepartName(Constant.codeAndNameDB.get(statisticQualityDay.getDepartCode()));
                 statisticQualityDay.setGatheruserName(StringUtils.nvlString(map.get("GATHERUSERNAME")));
                 statisticQualityDay.setDepartCode(StringUtils.nvlString(map.get("DEPARTCODE")));
                 statisticQualityDay.setCount(StringUtils.nvlInt(map.get("COUNT")));
