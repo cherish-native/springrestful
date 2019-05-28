@@ -84,9 +84,9 @@ jQuery(function($) {
         set_score()
     })
 
-    $(document).on('click','#set-image-reach-btn',function(e){
-        set_image_reach()
-    })
+    // $(document).on('click','#set-image-reach-btn',function(e){
+    //     set_image_reach()
+    // })
 
 });
 
@@ -101,6 +101,7 @@ function set_score(){
     var jc_max = $('#jc-max').val()
     var hc_min = $('#hc-min').val()
     var hc_max = $('#hc-max').val()
+    var repeat = $('input[name="repeat"]:checked').val();
 
     $.ajax(
        "/pages/image/levelScore"
@@ -108,12 +109,12 @@ function set_score(){
            async: false
            , cache: false
            , dataType: "json"
-           , data: {yx_min:yx_min,yx_max:yx_max,lh_min:lh_min,lh_max:lh_max,yb_min:yb_min,yb_max:yb_max,jc_min:jc_min,jc_max:jc_max,hc_min:hc_min,hc_max:hc_max}
+           , data: {yx_min:yx_min,yx_max:yx_max,lh_min:lh_min,lh_max:lh_max,yb_min:yb_min,yb_max:yb_max,jc_min:jc_min,jc_max:jc_max,hc_min:hc_min,hc_max:hc_max,repeat:repeat}
            , type: "POST"
            , success: function (data, textStatus) {
                if (textStatus == "success") {
                    if(data.success){
-                       alert(data.message);
+                       set_image_reach()
                    }
                    else {
                        if(data.message != null) alert(data.message);

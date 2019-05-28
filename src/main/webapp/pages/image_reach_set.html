@@ -523,32 +523,7 @@
 								</div><!-- /.row -->
 						<!-- PAGE CONTENT ENDS -->
 
-						
-								<div class="row">
-									<div class="col-xs-12">
-										<div class="widget-body">
-											<form class="no-padding">
-													<p>
-														<div class="row">
-															<div class="col-xs-12">
-
-																<div class="col-xs-6">
-																	<label style="color: red;">是否对已校验指纹是否达标的人员以新标准重新校验:&nbsp;&nbsp;&nbsp;</label>
-																	<input type="radio" class="radio-inline" name="repeat" value="0" checked="checked"/> 否
-																	<input type="radio" class="radio-inline" name="repeat" value="1" /> 是
-																</div>
-																<div class="col-xs-2">
-																	<button class="btn" id="set-image-reach-btn">设置</button>
-																</div>
-															</div>
-														</div>
-													</p>
-											</form>
-										</div>
-									</div>
-								</div><!-- /.row -->
 						</div>
-
 
 						<!--图像质量等级范围设置-->
 						<div class="row">
@@ -596,7 +571,7 @@
 																	<input type="text" id="hc-max" class="col-xs-1 no-padding-right" style="width: 3.333%;" />
 																	&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
 
-																	<button class="btn" id="set-score-btn">设置</button>
+																	<!--<button class="btn" id="set-score-btn">设置</button>-->
 																</div>
 															</form>
 														</div>
@@ -605,17 +580,30 @@
 											</div>
 										</div>
 						</div>
-						<!--<div class="row">-->
-							<!--<div class="col-xs-6">-->
-								<!--<label style="color: red;">是否对已校验指纹是否达标的人员以新标准重新校验:&nbsp;&nbsp;&nbsp;</label>-->
-								<!--<input type="radio" class="radio-inline" name="repeat1" value="0" checked="checked"/> 否-->
-								<!--<input type="radio" class="radio-inline" name="repeat1" value="1" /> 是-->
-							<!--</div>-->
-							<!--<div class="col-xs-2">-->
-								<!--&lt;!&ndash;<button class="btn" id="set-score-btn">设置</button>&ndash;&gt;-->
-							<!--</div>-->
+						<div class="row">
+							<div class="col-xs-12">
+								<div class="widget-body">
+									<form class="no-padding">
+										<p>
+										<div class="row">
+											<div class="col-xs-12">
 
-						<!--</div>-->
+												<div class="col-xs-8">
+													<label style="color: red;">是否对已校验指纹是否达标的人员以新标准重新校验:&nbsp;&nbsp;&nbsp;</label>
+													<input type="radio" class="radio-inline" name="repeat" value="0" checked="checked"/> 否
+													<input type="radio" class="radio-inline" name="repeat" value="1" /> 是
+												</div>
+												<div class="col-xs-2">
+													<button class="btn" id="set-score-btn">设置</button>
+												</div>
+											</div>
+										</div>
+										</p>
+									</form>
+								</div>
+							</div>
+						</div><!-- /.row -->
+
 					</div><!-- /.page-content -->
 				</div>
 			</div><!-- /.main-content -->
