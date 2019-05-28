@@ -48,7 +48,6 @@ public class FTPUtil {
                 //解决中文乱码问题，两次解码
                 byte[] bytes=ff.getName().getBytes("iso-8859-1");
                 String fn=new String(bytes,"utf8");
-                System.out.println(fn);
                 if (fn.equals(filename)){
                     InputStream in = ftp.retrieveFileStream(ff.getName());
                     result = input2byte(in);

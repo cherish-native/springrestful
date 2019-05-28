@@ -186,9 +186,9 @@
             var color = 'red';
             if(value){
                 var scoreArr = value.split('/');
-                result = '<a href="#" style="color: '+ color +';" class="showFingerImageClass" onclick="showImage(\'' + imgUrl + '\',\'' + personId + '\',\'0\',\''+ fgp +'\');">&nbsp;' + scoreArr[0] + '&nbsp;</a>';
+                result = '<a href="#" style="color: '+ color +';" class="showFingerImageClass" onclick="showImage(\'' + imgUrl + '\',\'' + personId + '\',\'0\',\''+ fgp +'\');">&nbsp;' + scoreArr[1] + '&nbsp;</a>';
                 result += "/";
-                result += '<a href="#" style="color: '+ color +';" class="showFingerImageClass" onclick="showImage(\'' + imgUrl + '\',\'' + personId + '\',\'1\',\''+ fgp +'\');">&nbsp;' + scoreArr[1] + '&nbsp;</a>';
+                result += '<a href="#" style="color: '+ color +';" class="showFingerImageClass" onclick="showImage(\'' + imgUrl + '\',\'' + personId + '\',\'1\',\''+ fgp +'\');">&nbsp;' + scoreArr[0] + '&nbsp;</a>';
             }
             result = '<span style="color: '+ color +'">' + result + "</span>"
             return result;

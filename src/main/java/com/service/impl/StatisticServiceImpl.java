@@ -218,6 +218,8 @@ public class StatisticServiceImpl implements StatisticService {
         StringBuilder sql = new StringBuilder("SELECT q.*,t.personid,t.name, t.idcard,t.person_level,t.printdate FROM personinfo t left join quality_score q on t.personid = q.cardid ");
         QueryBuilder queryBuilder = new QueryBuilder(sql.toString());
         queryBuilder.appendAndWhere(" t.printdate is not null ", null);
+        //默认查询未达标数据
+        queryBuilder.appendAndWhere(" t.is_qualified = ? ", 0);
         if(StringUtils.isNotEmpty(departCode)){
             queryBuilder.appendAndWhere(" t.print_unit_code = ? ", departCode);
         }
@@ -246,16 +248,16 @@ public class StatisticServiceImpl implements StatisticService {
                 personVo.setIdCardNo(StringUtils.nvlString(map.get("IDCARD")));
                 personVo.setPrintDate(StringUtils.nvlString(map.get("PRINTDATE")));
                 personVo.setPersonLevel(StringUtils.nvlString(map.get("PERSON_LEVEL")));
-                personVo.setRightThumb(StringUtils.nvlInt(map.get("RMP")) + "/" + StringUtils.nvlInt(map.get("RMR")));
-                personVo.setRightIndex(StringUtils.nvlInt(map.get("RSP")) + "/" + StringUtils.nvlInt(map.get("RSR")));
-                personVo.setRightMiddle(StringUtils.nvlInt(map.get("RZP")) + "/" + StringUtils.nvlInt(map.get("RZR")));
-                personVo.setRightRing(StringUtils.nvlInt(map.get("RHP")) + "/" + StringUtils.nvlInt(map.get("RHR")));
-                personVo.setRightLittle(StringUtils.nvlInt(map.get("RXP")) + "/" + StringUtils.nvlInt(map.get("RXR")));
-                personVo.setLeftThumb(StringUtils.nvlInt(map.get("LMP")) + "/" + StringUtils.nvlInt(map.get("LMR")));
-                personVo.setLeftIndex(StringUtils.nvlInt(map.get("LSP")) + "/" + StringUtils.nvlInt(map.get("LSR")));
-                personVo.setLeftMiddle(StringUtils.nvlInt(map.get("LZP")) + "/" + StringUtils.nvlInt(map.get("LZR")));
-                personVo.setLeftRing(StringUtils.nvlInt(map.get("LHP")) + "/" + StringUtils.nvlInt(map.get("LHR")));
-                personVo.setLeftLittle(StringUtils.nvlInt(map.get("LXP")) + "/" + StringUtils.nvlInt(map.get("LXR")));
+                personVo.setRightThumb(StringUtils.nvlFloat(map.get("RMP")) + "/" + StringUtils.nvlFloat(map.get("RMR")));
+                personVo.setRightIndex(StringUtils.nvlFloat(map.get("RSP")) + "/" + StringUtils.nvlFloat(map.get("RSR")));
+                personVo.setRightMiddle(StringUtils.nvlFloat(map.get("RZP")) + "/" + StringUtils.nvlFloat(map.get("RZR")));
+                personVo.setRightRing(StringUtils.nvlFloat(map.get("RHP")) + "/" + StringUtils.nvlFloat(map.get("RHR")));
+                personVo.setRightLittle(StringUtils.nvlFloat(map.get("RXP")) + "/" + StringUtils.nvlFloat(map.get("RXR")));
+                personVo.setLeftThumb(StringUtils.nvlFloat(map.get("LMP")) + "/" + StringUtils.nvlFloat(map.get("LMR")));
+                personVo.setLeftIndex(StringUtils.nvlFloat(map.get("LSP")) + "/" + StringUtils.nvlFloat(map.get("LSR")));
+                personVo.setLeftMiddle(StringUtils.nvlFloat(map.get("LZP")) + "/" + StringUtils.nvlFloat(map.get("LZR")));
+                personVo.setLeftRing(StringUtils.nvlFloat(map.get("LHP")) + "/" + StringUtils.nvlFloat(map.get("LHR")));
+                personVo.setLeftLittle(StringUtils.nvlFloat(map.get("LXP")) + "/" + StringUtils.nvlFloat(map.get("LXR")));
                 personVo.setImgUrl(StringUtils.nvlString(map.get("IMG_URL")));
                 personVo.setQualityLevel(StringUtils.nvlString(map.get("QUALITY_LEVEL")));
                 personVos.add(personVo);

@@ -84,6 +84,18 @@ public class StringUtils {
 		}
 		return 0;
 	}
+
+	/**
+	 * 对象转浮点数，对象为空返回0
+	 * @param o
+	 * @return
+	 */
+	public static float nvlFloat(Object o){
+		if(o != null && !o.equals("null") && !"".equals(o)){
+			return Float.parseFloat(o+"");
+		}
+		return 0;
+	}
 	
 	/**
 	 * 对象转整数，对象为空返回0
