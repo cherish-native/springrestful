@@ -269,11 +269,12 @@ public class StatisticsController extends BaseController {
     public void showFingerImage(@PathVariable("imgPath") String imgPath, @PathVariable("personId") String personId, @PathVariable("fgpCase") int fgpCase, @PathVariable("fgp") int fgp,
                                 @PathVariable("type") int type, HttpServletResponse response) throws Exception{
         byte[] imageBytes = null;
+        int baseInt = fgpCase*10;
         try {
             if(type == 1){
-                imageBytes = FTPUtil.downFile("1","1");
+                imageBytes = FTPUtil.downFile(imgPath,personId + "_" + (baseInt+fgp) + ".bmp");
             }else{
-                imageBytes = FTPUtil.downFile("2","2");
+                imageBytes = FTPUtil.downFile(imgPath,personId + "_" + (baseInt+fgp) + ".jpg");
             }
         } catch (Exception e){
             e.printStackTrace();
