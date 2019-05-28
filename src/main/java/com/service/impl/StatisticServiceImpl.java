@@ -310,6 +310,8 @@ public class StatisticServiceImpl implements StatisticService {
         StringBuilder sql = new StringBuilder("SELECT q.*,t.personid,t.name, t.idcard,t.person_level,t.printdate,is_compel_pass iscompelpass FROM personinfo t left join quality_score q on t.personid = q.cardid ");
         QueryBuilder queryBuilder = new QueryBuilder(sql.toString());
         queryBuilder.appendAndWhere(" t.printdate is not null ", null);
+        //默认查询强制通过数据
+        queryBuilder.appendAndWhere(" t.is_compel_pass != ? ", "00000000000000000000");
         if(StringUtils.isNotEmpty(departCode)){
             queryBuilder.appendAndWhere(" t.print_unit_code = ? ", departCode);
         }
