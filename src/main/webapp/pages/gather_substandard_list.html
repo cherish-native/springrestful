@@ -231,7 +231,7 @@
         function fingerIsQuality(fgp,personLevel,Score) {
             var result = false;
             if(personLevel){
-                var scoreLevel = getScoreLevel(Score);
+                var scoreLevel = getScoreLevel(parseFloat(Score));
                 var fingerLevelSet = levelSet[personLevel +"" +fgp];
                 if(scoreLevel <= fingerLevelSet){
                     result = true;
