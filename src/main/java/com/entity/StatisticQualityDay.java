@@ -81,6 +81,10 @@ public class StatisticQualityDay {
      * 未达标率
      */
     private String substandardPercent;
+    /**
+     * 强制通过率
+     */
+    private String compelPassPercent;
 
     public void setId(String id) {
         this.id = id;
@@ -243,5 +247,14 @@ public class StatisticQualityDay {
 
     public void setSubstandardPercent(String substandardPercent) {
         this.substandardPercent = substandardPercent;
+    }
+
+    @Transient
+    public String getCompelPassPercent() {
+        return compelPassPercent;
+    }
+
+    public void setCompelPassPercent(String compelPassPercent) {
+        this.compelPassPercent = compelPassPercent;
     }
 }

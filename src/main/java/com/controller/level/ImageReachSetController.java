@@ -7,6 +7,8 @@ import com.entity.PersonLevelScore;
 import com.entity.QualityScoreRange;
 import com.entity.WorkQueue;
 import com.google.common.collect.Lists;
+import com.service.PersonLevelSetService;
+import com.service.QualityScoreService;
 import com.service.WorkQueueService;
 import com.support.HttpComponent;
 import com.support.HttpResult;
@@ -16,12 +18,11 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
+
+import javax.jws.Oneway;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 @Controller
 @RequestMapping(value = "/pages/image")
@@ -35,6 +36,10 @@ public class ImageReachSetController {
     private Config config;
     @Autowired
     private WorkQueueService workQueueService;
+    @Autowired
+    private PersonLevelSetService personLevelSetService;
+    @Autowired
+    private QualityScoreService qualityScoreService;
 
     @RequestMapping(value = "/getLevelScore",method = RequestMethod.GET)
     @ResponseBody
@@ -46,12 +51,10 @@ public class ImageReachSetController {
             for(QualityScoreRange qualityScoreRange : qualityScoreRangeList){
                 scoreMap.put(String.valueOf(qualityScoreRange.getLevel()),new int[]{qualityScoreRange.getMinScore(),qualityScoreRange.getMaxScore()});
             }
-            if(scoreMap.size() >0 ){
-                resultMap.put("scoreMap",scoreMap);
-            }
 
             resultMap.put("success",true);
             resultMap.put("message","ok");
+            resultMap.put("scoreMap",scoreMap);
         }catch(Exception ex){
             resultMap.put("success",false);
             resultMap.put("message",ex.getMessage());
@@ -205,6 +208,7 @@ public class ImageReachSetController {
         return resultMap;
     }
 
+
     private void levelScoreSet(Map<String,int[]> levelMap){
         for(Map.Entry<String,int[]> map : levelMap.entrySet()){
             PersonLevelScore personLevelScore = personLevelScoreDao.findByLevel(map.getKey());
@@ -225,5 +229,58 @@ public class ImageReachSetController {
         }
     }
 
+    /**
+     * 获取所有等级相关设置
+     * @return
+     */
+    @ResponseBody
+    @RequestMapping("/getAllLevelSet")
+    public Map<String, String> getAllLevelSet(){
+        Map<String, String> result = new HashMap<>();
+        //人员等级中的每个指位等级设置
+        Map<String,PersonLevelScore> map = personLevelSetService.getPersonLevelScoreSet();
+        for(String key : map.keySet()){
+            PersonLevelScore personLevelScore = map.get(key);
+            result.put(key+1,personLevelScore.getRm()+"");
+            result.put(key+2,personLevelScore.getRs()+"");
+            result.put(key+3,personLevelScore.getRz()+"");
+            result.put(key+4,personLevelScore.getRh()+"");
+            result.put(key+5,personLevelScore.getRx()+"");
+            result.put(key+6,personLevelScore.getLm()+"");
+            result.put(key+7,personLevelScore.getLs()+"");
+            result.put(key+8,personLevelScore.getLz()+"");
+            result.put(key+9,personLevelScore.getLh()+"");
+            result.put(key+10,personLevelScore.getLx()+"");
+        }
+        //获取每个人员级别的分数设置
+        Iterable<QualityScoreRange> qualityScoreRanges = qualityScoreService.getAllQualityScoreRange();
+        for(QualityScoreRange qualityScoreRange : qualityScoreRanges){
+            result.put(qualityScoreRange.getLevel()+"", qualityScoreRange.getMinScore()+"");
+        }
+        return result;
+    }
+
+//    @RequestMapping(value ="/getFingerLevel",method = RequestMethod.POST)
+//    @ResponseBody
+//    public Map<String,Object>  getFingerLevel(){
+//        Map<String,Object> resultMap = new HashMap<>();
+//        Map<String,PersonLevelScore> levelMap = new HashMap<>();
+//        try{
+//            List<PersonLevelScore> personLevelScoreList =  Lists.newArrayList(personLevelScoreDao.findAll());
+//            for(PersonLevelScore personLevelScore :personLevelScoreList){
+//                levelMap.put(personLevelScore.getLevel(),personLevelScore);
+//            }
+//
+//            resultMap.put("success",true);
+//            resultMap.put("message","ok");
+//            resultMap.put("levelMap",levelMap);
+//        }catch(Exception ex){
+//            resultMap.put("success",false);
+//            resultMap.put("message",ex.getMessage());
+//            ex.printStackTrace();
+//        }
+//
+//        return resultMap;
+//    }
 
 }

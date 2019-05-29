@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>采集未达标</title>
+    <title>强制通过详细列表</title>
     <link rel="stylesheet" type="text/css" href="../easyui/themes/bootstrap/easyui.css"/>
     <link rel="stylesheet" type="text/css" href="../easyui/themes/icon.css"/>
     <script type="text/javascript" src="../easyui/jquery.min.js"></script>
@@ -18,7 +18,6 @@
         }
     </style>
     <script>
-        var levelSet;
         $(function(){
             //获取参数
 
@@ -47,14 +46,7 @@
                 $('#endDate').datebox('setValue', '');
                 $('#departCodeSelect').combobox('setValue', '');
             });
-            //获取分数登记配置
-            $.ajax({
-                url:'image/getAllLevelSet',
-                async : false,
-                success : function(data){
-                    levelSet = data;
-                }
-            });
+
             var size = {
                 width : document.documentElement.clientWidth,
                 height : document.documentElement.clientHeight
@@ -99,9 +91,10 @@
                     queryParams['endDate'] = "";
                 }
             }
+
             //加载列表
             $('#gatherQualityList').datagrid({
-                url:'statistics/gatherSubstandardExamineDetailList',
+                url:'statistics/gatherSubstandardCompelPassDetailList',
                 width:size.width-20,
                 height:size.height - $('#searchDiv').height() - 60,
                 queryParams:queryParams,
@@ -111,46 +104,46 @@
                     {field:"name",title:"姓名",width:fixWidthWithOptWidth(0.05)},
                     {field:"idCardNo",title:"身份证号",width:fixWidthWithOptWidth(0.05)},
                     {field:"personLevel",title:"定级",width:fixWidthWithOptWidth(0.05),formatter: function (value, row, index){
-                        var result = "";
-                        if(value){
-                            switch (parseInt(value)){
-                                case 1: result = "A级";break;
-                                case 2: result = "B级";break;
-                                case 3: result = "C级";break;
+                            var result = "";
+                            if(value){
+                                switch (parseInt(value)){
+                                    case 1: result = "A级";break;
+                                    case 2: result = "B级";break;
+                                    case 3: result = "C级";break;
+                                }
                             }
-                        }
-                        return result;
-                    }},
+                            return result;
+                        }},
                     {field:"qualityLevel",title:"整体",width:fixWidthWithOptWidth(0.05)},
                     {field:"rightThumb",title:"右拇",width:fixWidthWithOptWidth(0.05),formatter: function (value, row, index){
-                        return getSHowImageCellValue(value, row.imgUrl, row.personId, 1, row.personLevel);
+                        return getSHowImageCellValue(value, row.imgUrl, row.personId, 1);
                     }},
                     {field:"rightIndex",title:"右食",width:fixWidthWithOptWidth(0.05),formatter: function (value, row, index){
-                            return getSHowImageCellValue(value, row.imgUrl, row.personId, 2, row.personLevel);
+                            return getSHowImageCellValue(value, row.imgUrl, row.personId, 2);
                         }},
                     {field:"rightMiddle",title:"右中",width:fixWidthWithOptWidth(0.05),formatter: function (value, row, index){
-                            return getSHowImageCellValue(value, row.imgUrl, row.personId, 3, row.personLevel);
+                            return getSHowImageCellValue(value, row.imgUrl, row.personId, 3);
                         }},
                     {field:"rightRing",title:"右环",width:fixWidthWithOptWidth(0.05),formatter: function (value, row, index){
-                            return getSHowImageCellValue(value, row.imgUrl, row.personId, 4, row.personLevel);
+                            return getSHowImageCellValue(value, row.imgUrl, row.personId, 4);
                         }},
                     {field:"rightLittle",title:"右小",width:fixWidthWithOptWidth(0.05),formatter: function (value, row, index){
-                            return getSHowImageCellValue(value, row.imgUrl, row.personId, 5, row.personLevel);
+                            return getSHowImageCellValue(value, row.imgUrl, row.personId, 5);
                         }},
                     {field:"leftThumb",title:"左拇",width:fixWidthWithOptWidth(0.05),formatter: function (value, row, index){
-                            return getSHowImageCellValue(value, row.imgUrl, row.personId, 6, row.personLevel);
+                            return getSHowImageCellValue(value, row.imgUrl, row.personId, 6);
                         }},
                     {field:"leftIndex",title:"左食",width:fixWidthWithOptWidth(0.05),formatter: function (value, row, index){
-                            return getSHowImageCellValue(value, row.imgUrl, row.personId, 7, row.personLevel);
+                            return getSHowImageCellValue(value, row.imgUrl, row.personId, 7);
                         }},
                     {field:"leftMiddle",title:"左中",width:fixWidthWithOptWidth(0.05),formatter: function (value, row, index){
-                            return getSHowImageCellValue(value, row.imgUrl, row.personId, 8, row.personLevel);
+                            return getSHowImageCellValue(value, row.imgUrl, row.personId, 8);
                         }},
                     {field:"leftRing",title:"左环",width:fixWidthWithOptWidth(0.05),formatter: function (value, row, index){
-                            return getSHowImageCellValue(value, row.imgUrl, row.personId, 9, row.personLevel);
+                            return getSHowImageCellValue(value, row.imgUrl, row.personId, 9);
                         }},
                     {field:"leftLittle",title:"左小",width:fixWidthWithOptWidth(0.05),formatter: function (value, row, index){
-                            return getSHowImageCellValue(value, row.imgUrl, row.personId, 10, row.personLevel);
+                            return getSHowImageCellValue(value, row.imgUrl, row.personId, 10);
                         }}
                 ]],
                 pagination : true,
@@ -188,58 +181,29 @@
             });
         });
 
-        function getSHowImageCellValue(value, imgUrl, personId, fgp, personLevel){
+        function getSHowImageCellValue(value, imgUrl, personId, fgp){
             var result = value;
             imgUrl = "imageUrl";
-            var color = 'red';
+            var color = 'green';
+            var text = '正常';
             if(value){
-                var scoreArr = value.split('/');
-                var isQuality = fingerIsQuality(fgp, personLevel, scoreArr[1]);
-                if(isQuality){
-                    color = 'green';
-                }else{
+                if(value==1){
                     color = 'red';
+                    text = '强制通过';
                 }
-                result = '<a href="#" style="color: '+ color +';" class="showFingerImageClass" onclick="showImage(\'' + imgUrl + '\',\'' + personId + '\',\'0\',\''+ fgp +'\');">&nbsp;' + scoreArr[1] + '</a>';
-                result += "/";
-                isQuality = fingerIsQuality(fgp, personLevel, scoreArr[0]);
-                if(isQuality){
-                    color = 'green';
-                }else{
-                    color = 'red';
-                }
-                result += '<a href="#" style="color: '+ color +';" class="showFingerImageClass" onclick="showImage(\'' + imgUrl + '\',\'' + personId + '\',\'1\',\''+ fgp +'\');">&nbsp;' + scoreArr[0] + '</a>';
+                result = '<a href="#" style="color: '+ color +';" class="showFingerImageClass" onclick="showImage(\'' + imgUrl + '\',\'' + personId + '\',\'0\',\''+ fgp +'\');">&nbsp;'
+                    + text + '&nbsp;</a>';
             }
-            result = '<span>' + result + "</span>"
             return result;
         }
 
-        function getScoreLevel(score) {
-            if(score >= levelSet[1]){
-                return 1;
-            }else if(score >= levelSet[2]){
-                return 2;
-            }else if(score >= levelSet[3]){
-                return 3;
-            }else if(score >= levelSet[4]){
-                return 4;
-            }else{
-                return 5;
-            }
-        }
-        
-        function fingerIsQuality(fgp,personLevel,Score) {
-            var result = false;
-            if(personLevel){
-                var scoreLevel = getScoreLevel(Score);
-                var fingerLevelSet = levelSet[personLevel +"" +fgp];
-                if(scoreLevel <= fingerLevelSet){
-                    result = true;
-                }
-            }
-            return result;
-        }
-        
+        /**
+         * 展示图像
+         * @param imagePath
+         * @param personId
+         * @param fgpCase
+         * @param fgp
+         */
         function showImage(imagePath,personId,fgpCase,fgp){
             var url = "";
             if(imagePath != ''){

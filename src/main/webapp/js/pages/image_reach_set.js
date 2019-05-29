@@ -17,7 +17,7 @@ jQuery(function($) {
                 if (textStatus == "success") {
                     if(data.success){
                         var scoreMap = data.scoreMap
-                        if(scoreMap != undefined) {
+                        if(scoreMap.length>0) {
                             $("#yx-min").val(scoreMap["1"][0])
                             $("#yx-max").val(scoreMap["1"][1])
                             $("#lh-min").val(scoreMap["2"][0])

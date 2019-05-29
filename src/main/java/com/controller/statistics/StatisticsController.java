@@ -5,10 +5,14 @@ import com.controller.BaseController;
 import com.entity.StatisticQualityDay;
 import com.entity.WorkQueue;
 import com.entity.vo.DataGridReturn;
+import com.entity.vo.ImageSubstandardStatistics;
 import com.service.StatisticService;
 import com.service.WorkQueueService;
-import com.sun.deploy.net.protocol.chrome.ChromeURLConnection;
 import com.util.DateUtil;
+import com.util.FTPUtil;
+import com.util.FileUtil;
+import com.util.StringUtils;
+
 import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
@@ -17,6 +21,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
 
 import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 import java.text.SimpleDateFormat;
 import java.util.*;
 import java.util.concurrent.ExecutorService;
@@ -89,6 +94,35 @@ public class StatisticsController extends BaseController {
     }
 
     /**
+     * 获取强制通过统计列表
+     * @param departCode
+     * @param beginDate
+     * @param endDate
+     * @param request
+     * @return
+     */
+    @ResponseBody
+    @RequestMapping("/gatherCompelPassList")
+    public DataGridReturn gatherCompelPassList(String departCode, String beginDate, String endDate, HttpServletRequest request){
+        return statisticService.gatherCompelPassList(departCode, beginDate, endDate, getPagination(request));
+    }
+
+    /**
+     * 强制通过详细列表
+     * @param departCode
+     * @param gatheruserName
+     * @param beginDate
+     * @param endDate
+     * @param request
+     * @return
+     */
+    @ResponseBody
+    @RequestMapping("/gatherSubstandardCompelPassDetailList")
+    public DataGridReturn gatherSubstandardCompelPassDetailList(String departCode, String gatheruserName, String beginDate, String endDate, HttpServletRequest request){
+        return statisticService.gatherSubstandardCompelPassDetailList(departCode, gatheruserName, beginDate, endDate, getPagination(request));
+    }
+
+    /**
      * 历史图像质量统计
      * @param departCode 部门编码
      * @param dateStr 统计时间段，分为 yyyy 和 yyyy-MM
@@ -110,15 +144,12 @@ public class StatisticsController extends BaseController {
             xAxisData[i] = (i+1)+xAxisSuffix;
         }
         //纵坐标数据，模拟数据
-        List<String[]> yAxisData = new ArrayList<>();
-        for(int i=0;i<5;i++){
-            String[] yAxisDataItem = new String[xAxisCount];
-            for(int j=0;j<yAxisDataItem.length;j++){
-                Random rand = new Random();
-                yAxisDataItem[j] = rand.nextInt(100)+1+"";
-            }
-            yAxisData.add(yAxisDataItem);
-        }
+        List<int[]> yAxisData = new ArrayList<>();
+//        for(int i=0;i<5;i++){
+//            String[] yAxisDataItem = new String[xAxisCount];
+//            yAxisData.add(yAxisDataItem);
+//        }
+    	yAxisData = statisticService.getGatherQualityCount(dateStr,xAxisCount,departCode);
         result.put("xAxisData", xAxisData);
         result.put("series", yAxisData);
         return result;
@@ -135,7 +166,7 @@ public class StatisticsController extends BaseController {
     @RequestMapping("/historyImageSubstandardStatistics")
     @ResponseBody
     public Map<String,Object> historyImageSubstandardStatistics(String departCode,String dateStr) throws Exception{
-        Map<String,Object> result = new HashMap<>();
+    	Map<String,Object> result = new HashMap<>();
         //横坐标数据
         int xAxisCount = 12;
         String xAxisSuffix = "月";
@@ -147,14 +178,22 @@ public class StatisticsController extends BaseController {
         for(int i=0;i<xAxisCount;i++){
             xAxisData[i] = (i+1)+xAxisSuffix;
         }
+        List<String[]> yAxisData = new ArrayList<>();
+        	for(int a=0; a<3;a++){
+            	String[] yAxisDataItem = new String[xAxisCount];
+	        	 for(int i=0;i<xAxisCount;i++){
+	                 Random rand = new Random();
+	                 yAxisDataItem[i] = rand.nextInt(99)+1+".5";
+	        	 }
+                 yAxisData.add(yAxisDataItem);
 
-        String[] yAxisData = new String[xAxisCount];
-        for(int i=0;i<yAxisData.length;i++){
-            Random rand = new Random();
-            yAxisData[i] = rand.nextInt(99)+1+".5";
-        }
+        	}
+        List<ImageSubstandardStatistics> y = new ArrayList<ImageSubstandardStatistics>();
+        	
+    	y = statisticService.getGatherQualitySubstandardCount(dateStr,xAxisCount,departCode);
+
         result.put("xAxisData", xAxisData);
-        result.put("yAxisData", yAxisData);
+        result.put("yAxisData", y);
         return result;
     }
 
@@ -223,14 +262,26 @@ public class StatisticsController extends BaseController {
      * @param fgpCase 0：滚动 1：平面
      * @param fgp 指纹 1-10
      * @param type 图像类型 1：指纹原图  2：红白图
-     * @param request
+     * @param response
      */
     @RequestMapping("/showFingerImage/{imgPath}/{personId}/{fgpCase}/{fgp}/{type}")
     @ResponseBody
-    public void showFingerImage(@PathVariable("imgPath") String imgPath, @PathVariable("personId") String personId,@PathVariable("fgpCase") int fgpCase, @PathVariable("fgp") int fgp,
-                                @PathVariable("type") int type, HttpServletRequest request){
-        System.out.println(personId);
-        System.out.println(fgpCase);
-        System.out.println(fgp);
+    public void showFingerImage(@PathVariable("imgPath") String imgPath, @PathVariable("personId") String personId, @PathVariable("fgpCase") int fgpCase, @PathVariable("fgp") int fgp,
+                                @PathVariable("type") int type, HttpServletResponse response) throws Exception{
+        byte[] imageBytes = null;
+        int baseInt = fgpCase*10;
+        try {
+            if(type == 1){
+                imageBytes = FTPUtil.downFile(imgPath,personId + "_" + (baseInt+fgp) + ".bmp");
+            }else{
+                imageBytes = FTPUtil.downFile(imgPath,personId + "_" + (baseInt+fgp) + ".jpg");
+            }
+        } catch (Exception e){
+            e.printStackTrace();
+        }
+        if(imageBytes == null){
+            imageBytes = new byte[0];
+        }
+        response.getOutputStream().write(imageBytes);
     }
 }

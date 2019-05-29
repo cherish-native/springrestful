@@ -103,7 +103,6 @@
                    textField: 'text',
                    editable: false
                });
-
                // //设置年份选择下拉框数据
                var date=new Date;
                var curYear=date.getFullYear();
@@ -114,109 +113,107 @@
                $("#yearSelect").combobox("loadData", themecombo2);
                $("#yearSelect ").combobox('select', curYear);
                $('#monthSelectDiv').hide();
-
                $('#departCodeSelect').combobox({
                    url: 'sysDepart/fuzzySearchDepart',  //远程访问服务器端的地址
                    editable: false,  //设置文本区域不能被编辑
                    valueField: 'id',  //显示数据的键的值
                    textField: 'text' //显示数据的文本的值
                })
-
                //加载数据
                loadData();
-               function loadData(){
-                   var param = [];
-                   var dataStr = $('#yearSelect').combobox('getValue');
-                   if(curType == 'month'){
-                       dataStr += "-" + $('#monthSelect').combobox('getValue');
-                   }
-                   var departCode = $('#departCodeSelect').combobox('getValue');
-                   $.ajax({
-                       url: "statistics/historyImageQualityStatistics",
-                       data: {
-                           'dateStr' : dataStr,
-                           'departCode' : departCode
-                       },
-                       success : function (result) {
-                           var seriesData = result.series;
-                           for(var i=0;i<seriesData.length;i++){
-                               series[i].data = seriesData[i];
-                           }
-                           generateChart(result);
-                       }
-                   });
-               }
-
-               //生成图像
-               function generateChart(result) {
-                   var dom = document.getElementById("container");
-                   var myChart = echarts.init(dom);
-                   var app = {};
-                   var title = "【" + $('#yearSelect').combobox('getValue') + "年";
-                   if(curType == 'month'){
-                       title += $('#monthSelect').combobox('getValue') + "月";
-                   }
-                   title += "】采集质量";
-                   option = null;
-                   option = {
-                       title: {
-                           text: title
-                       },
-                       tooltip : {
-                           trigger: 'axis',
-                           axisPointer: {
-                               type: 'cross',
-                               label: {
-                                   backgroundColor: '#6a7985'
-                               }
-                           }
-                       },
-                       color:['blue','green','yellow','orange','red'],
-                       legend: {
-                           data:['优秀','良好','一般','较差','很差']
-                       },
-                       toolbox: {
-                           feature: {
-                               saveAsImage: {}
-                           }
-                       },
-                       grid: {
-                           left: '3%',
-                           right: '4%',
-                           bottom: '3%',
-                           containLabel: true
-                       },
-                       xAxis : [
-                           {
-                               type : 'category',
-                               boundaryGap : false,
-                               data : result.xAxisData
-                           }
-                       ],
-                       yAxis : [
-                           {
-                               type : 'value'
-                           }
-                       ],
-                       series : series
-                   };
-                   if (option && typeof option === "object") {
-                       myChart.setOption(option, true);
-                   }
-               }
-
+               /*===========================================================*/
                $("#search").on("click",function(){
                    loadData();
                });
            });
-            function selectYearOrMonth(flag) {
-                curType = flag;
-                if(flag == 'year'){
-                    $('#monthSelectDiv').hide();
-                }else{
-                    $('#monthSelectDiv').show();
-                }
+		function loadData(){
+		    var param = [];
+		    var dataStr = $('#yearSelect').combobox('getValue');
+		    if(curType == 'month'){
+		        dataStr += "-" + $('#monthSelect').combobox('getValue');
+		    }
+		    var departCode = $('#departCodeSelect').combobox('getValue');
+		    $.ajax({
+		        url: "statistics/historyImageQualityStatistics",
+		        data: {
+		            'dateStr' : dataStr,
+		            'departCode' : departCode
+		        },
+		        success : function (result) {
+		            var seriesData = result.series;
+		            for(var i=0;i<seriesData.length;i++){
+		                series[i].data = seriesData[i];
+		            }
+		            generateChart(result);
+		        }
+		    });
+		}
+        //生成图像
+        function generateChart(result) {
+            var dom = document.getElementById("container");
+            var myChart = echarts.init(dom);
+            var app = {};
+            var title = "【" + $('#yearSelect').combobox('getValue') + "年";
+            if(curType == 'month'){
+                title += $('#monthSelect').combobox('getValue') + "月";
             }
+            title += "】采集质量";
+            option = null;
+            option = {
+                title: {
+                    text: title
+                },
+                tooltip : {
+                    trigger: 'axis',
+                    axisPointer: {
+                        type: 'cross',
+                        label: {
+                            backgroundColor: '#6a7985'
+                        }
+                    }
+                },
+                color:['blue','green','yellow','orange','red'],
+                legend: {
+                    data:['优秀','良好','一般','较差','很差']
+                },
+                toolbox: {
+                    feature: {
+                        saveAsImage: {}
+                    }
+                },
+                grid: {
+                    left: '3%',
+                    right: '4%',
+                    bottom: '3%',
+                    containLabel: true
+                },
+                xAxis : [
+                    {
+                        type : 'category',
+                        boundaryGap : false,
+                        data : result.xAxisData
+                    }
+                ],
+                yAxis : [
+                    {
+                        type : 'value'
+                    }
+                ],
+                series : series
+            };
+            if (option && typeof option === "object") {
+                myChart.setOption(option, true);
+            }
+        }
+
+		function selectYearOrMonth(flag) {
+		    curType = flag;
+		    if(flag == 'year'){
+		        $('#monthSelectDiv').hide();
+		    }else{
+		        $('#monthSelectDiv').show();
+		    }
+		}
        </script>
    </body>
 </html>

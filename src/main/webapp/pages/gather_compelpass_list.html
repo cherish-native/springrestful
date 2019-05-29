@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>采集未达标</title>
+    <title>强制通过统计</title>
     <link rel="stylesheet" type="text/css" href="../easyui/themes/bootstrap/easyui.css"/>
     <link rel="stylesheet" type="text/css" href="../easyui/themes/icon.css"/>
     <script type="text/javascript" src="../easyui/jquery.min.js"></script>
@@ -53,7 +53,7 @@
 
             //加载列表
             $('#gatherQualityList').datagrid({
-                url:'statistics/gatherSubstandardExamineList',
+                url:'statistics/gatherCompelPassList',
                 width:size.width-20,
                 height:size.height - $('#searchDiv').height() - 60,
                 columns:[[
@@ -70,10 +70,10 @@
                     },
                     {field:"gatheruserName",title:"采集人",width:fixWidthWithOptWidth(0.25)},
                     {field:"count",title:"采集总量",width:fixWidthWithOptWidth(0.15)},
-                    {field:"substandardCount",title:"未达标数",width:fixWidthWithOptWidth(0.15)},
-                    {field:"substandardPercent",title:"未达标率",width:fixWidthWithOptWidth(0.15)},
+                    {field:"isCompelPassCount",title:"强制通过数",width:fixWidthWithOptWidth(0.15)},
+                    {field:"compelPassPercent",title:"强制通过比率",width:fixWidthWithOptWidth(0.15)},
                     {field:"opt",title:"操作",width:optwidth, formatter: function (value, row, index){
-                        if(row.substandardCount == 0){
+                        if(row.isCompelPassCount == 0){
                             return "详细信息";
                         }else{
                             return '<a href="#" onclick="showDetail(\''+ row.departCode +'\',\''+ row.gatheruserName +'\')">详细信息</a>';
@@ -91,12 +91,12 @@
          * @param gatherUserId
          */
         function showDetail(departCode,gatheruserName){
-            var url = "gather_substandard_list.html?departCode="+departCode+"&gatheruserName="+encodeURI(gatheruserName);
+            var url = "gather_compelpass_detailpage.html?departCode="+departCode+"&gatheruserName="+encodeURI(gatheruserName);
             var beginDate = $('#beginDate').datebox('getValue');
             url += "&beginDate=" + beginDate;
             var endDate = $('#endDate').datebox('getValue');
             url += "&endDate=" + endDate;
-            addTab("采集未达标详细【" + gatheruserName + "】" ,url);
+            addTab("强制通过详细【" + gatheruserName + "】" ,url);
         }
 
         function addTab(title, url){
@@ -115,7 +115,7 @@
 </head>
 <body>
 <div id="substandard_examine_tab" class="easyui-tabs" style="width:100%;height:100%;" data-options="fit:true">
-    <div title="采集未达标">
+    <div title="强制通过">
         <div id="searchDiv">
             <table>
                 <tr>

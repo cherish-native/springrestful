@@ -84,6 +84,31 @@ public class StringUtils {
 		}
 		return 0;
 	}
+
+	/**
+	 * 对象转浮点数，对象为空返回0 保留两位小数
+	 * @param o
+	 * @return
+	 */
+	public static String nvlFloatWithDecimal2(Object o){
+		if(o != null && !o.equals("null") && !"".equals(o)){
+			DecimalFormat df = new DecimalFormat("#0.00");
+			return  df.format(Float.parseFloat(o+""));
+		}
+		return "0.00";
+	}
+	
+	/**
+	 * 对象转整数，对象为空返回0
+	 * @param o
+	 * @return
+	 */
+	public static Double nvlDouble(Object o){
+		if(o != null && !o.equals("null") && !"".equals(o)){
+			return Double.parseDouble(o+"");
+		}
+		return 0.00;
+	}
 	
 	/**
 	 * 判断对象是否为空

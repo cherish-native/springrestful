@@ -3,6 +3,7 @@ package com;
 
 
 import com.config.Config;
+import com.util.FTPUtil;
 import com.zaxxer.hikari.HikariConfig;
 import com.zaxxer.hikari.HikariDataSource;
 import org.springframework.context.annotation.*;
@@ -33,6 +34,8 @@ public class DataSourceConfig {
     @Bean
     public Config config(){
         Config config = JAXB.unmarshal(getClass().getResourceAsStream("/config.xml"), Config.class);
+        //设置FTP相关配置
+        FTPUtil.setConfig(config.getFtpConfig());
         return config;
     }
 

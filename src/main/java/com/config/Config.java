@@ -17,6 +17,8 @@ public class Config {
 
     private String apiUrl;
 
+    private FTPConfig ftpConfig;
+
     @XmlElement(name = "web_config")
     public WebConfig getWebConfig() {
         return webConfig;
@@ -51,5 +53,14 @@ public class Config {
 
     public void setApiUrl(String apiUrl) {
         this.apiUrl = apiUrl;
+    }
+
+    @XmlElement(name = "ftp_config")
+    public FTPConfig getFtpConfig() {
+        return ftpConfig;
+    }
+
+    public void setFtpConfig(FTPConfig ftpConfig) {
+        this.ftpConfig = ftpConfig;
     }
 }
