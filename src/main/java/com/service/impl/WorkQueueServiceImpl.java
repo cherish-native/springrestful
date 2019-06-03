@@ -7,6 +7,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -28,6 +29,7 @@ public class WorkQueueServiceImpl implements WorkQueueService {
     }
 
     @Override
+    @Transactional(rollbackFor = Exception.class)
     public void save(WorkQueue workQueue) {
         workQueueDao.save(workQueue);
     }
@@ -56,6 +58,17 @@ public class WorkQueueServiceImpl implements WorkQueueService {
         };
         Page<WorkQueue> page = workQueueDao.findAll(params,pageable);
         return page.getContent();
+    }
+
+    @Override
+    public WorkQueue getLastWorkQueue() {
+        Sort sort = new Sort(Sort.Direction.DESC, "insertTime");
+        List<WorkQueue> workQueueList = workQueueDao.findByOrderByInsertTimeAsc();
+        if(workQueueList != null && workQueueList.size() > 0){
+            return workQueueList.get(0);
+        }else{
+            return null;
+        }
     }
 
 }

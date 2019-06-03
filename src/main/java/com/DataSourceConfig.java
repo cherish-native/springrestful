@@ -70,7 +70,7 @@ public class DataSourceConfig {
         Properties properties = new Properties();
         properties.setProperty("hibernate.ejb.naming_strategy","org.hibernate.cfg.ImprovedNamingStrategy");
         properties.setProperty("hibernate.dialect","org.hibernate.dialect.Oracle10gDialect");
-        properties.setProperty("hibernate.show_sql","true");
+        properties.setProperty("hibernate.show_sql","false");
         properties.setProperty("hibernate.format_sql","true");
         properties.setProperty("hibernate.hbm2ddl.auto","none");
 

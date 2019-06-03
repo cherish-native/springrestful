@@ -12,4 +12,6 @@ public class StatisticConstant {
      */
     public static Integer CURSTATE = WorkQueue.STATE_UNBEGIN;
 
+    public final static Integer beginYear = 1990;
+
 }

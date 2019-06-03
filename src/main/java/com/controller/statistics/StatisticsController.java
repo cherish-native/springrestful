@@ -217,40 +217,56 @@ public class StatisticsController extends BaseController {
     @RequestMapping("/changeWorkQueueState/{state}")
     public String changeWorkQueueState(@PathVariable("state") Integer state) throws Exception{
         String result = "success";
-        System.out.println(state);
-        StatisticConstant.CURSTATE = state;
-        if(StatisticConstant.CURSTATE == WorkQueue.STATE_SERVICE_FINISH){
-            //后台服务执行完毕，开始执行统计
-            executorService.execute(new Runnable() {
-                @Override
-                public void run() {
-                    //开始执行统计服务
-                    try {
-                        Calendar calendar = Calendar.getInstance();
-                        int lastYear = calendar.get(Calendar.YEAR);
-                        int lastDay = Integer.parseInt(DateUtil.getDateStr(new Date(), DateUtil.PATTERN_YYYYMMDD));
-                        logger.info("开始统计");
-                        for(int year=1990;year<=lastYear;year++){
-                            for(int month=1;month<=12;month++){
-                                int dayCount = getDayCountOfMonth(year+"-"+month);
-                                for(int day=1;day<=dayCount;day++){
-                                    int curDay = Integer.parseInt(year+""+String.format("%02d", month)+String.format("%02d", day));
-                                    if(curDay<=lastDay){
-                                        statisticService.statisticDay(curDay+"");
-                                        logger.info("正在统计：" + curDay);
-                                    }else {
-                                        break;
+        WorkQueue currentWorkQueue = workQueueService.getLastWorkQueue();
+        if(currentWorkQueue != null && currentWorkQueue.getWorkState() != WorkQueue.STATE_STATISTIC_FINISH){
+            StatisticConstant.CURSTATE = state;
+            currentWorkQueue.setWorkState(state);
+            workQueueService.save(currentWorkQueue);
+            logger.info("修改状态，ID:" + currentWorkQueue.getId() + "curSate:"+ currentWorkQueue.getWorkState() +",state:" + state);
+            if(state == WorkQueue.STATE_SERVICE_FINISH){
+                if(StatisticConstant.CURSTATE == state){
+                    //后台服务执行完毕，开始执行统计
+                    executorService.execute(new Runnable() {
+                        @Override
+                        public void run() {
+                            //开始执行统计服务
+                            try {
+                                StatisticConstant.CURSTATE = WorkQueue.STATE_STATISTIC_RUNNING;
+                                Calendar calendar = Calendar.getInstance();
+                                int lastYear = calendar.get(Calendar.YEAR);
+                                int lastDay = Integer.parseInt(DateUtil.getDateStr(new Date(), DateUtil.PATTERN_YYYYMMDD));
+                                logger.info("开始统计");
+                                currentWorkQueue.setWorkState(WorkQueue.STATE_STATISTIC_RUNNING);
+                                workQueueService.save(currentWorkQueue);
+                                for(int year=StatisticConstant.beginYear;year<=lastYear;year++){
+                                    for(int month=1;month<=12;month++){
+                                        int dayCount = getDayCountOfMonth(year+"-"+month);
+                                        for(int day=1;day<=dayCount;day++){
+                                            int curDay = Integer.parseInt(year+""+String.format("%02d", month)+String.format("%02d", day));
+                                            if(curDay<=lastDay){
+                                                statisticService.statisticDay(curDay+"");
+                                                logger.info("正在统计：" + curDay);
+                                            }else {
+                                                break;
+                                            }
+                                        }
                                     }
                                 }
+                                logger.info("统计完毕");
+                                currentWorkQueue.setWorkState(WorkQueue.STATE_STATISTIC_FINISH);
+                                currentWorkQueue.setEndTime(new Date());
+                                workQueueService.save(currentWorkQueue);
+                                StatisticConstant.CURSTATE = WorkQueue.STATE_STATISTIC_FINISH;
+                            } catch (Exception e){
+                                e.printStackTrace();
+                                logger.error("统计错误", e);
                             }
                         }
-                        logger.info("统计完毕");
-                    } catch (Exception e){
-                        e.printStackTrace();
-                        logger.error("统计错误", e);
-                    }
+                    });
                 }
-            });
+            }
+        }else{
+            result = "change workstate fail";
         }
         return result;
     }

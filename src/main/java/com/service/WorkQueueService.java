@@ -14,4 +14,10 @@ public interface WorkQueueService {
     void save(WorkQueue workQueue);
 
     List<WorkQueue> getWorkQueueWorkState(int[] stateArr);
+
+    /**
+     * 获取工作队列中的最后一个任务
+     * @return
+     */
+    WorkQueue getLastWorkQueue();
 }
