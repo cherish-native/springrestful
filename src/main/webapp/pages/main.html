@@ -264,7 +264,7 @@
             function setMain(url){
                 if(url!="#"){
                     var main = document.getElementById('main')
-                    main.innerHTML = "<iframe border='none' style='border:0;' scrolling='no' id='urlIframe' onload='reinitIframe()' width='100%'  src='" + url + "'></iframe>"
+                    main.innerHTML = "<iframe border='none' style='border:0;' scrolling='no' id='urlIframe' onload='reinitIframe()' width='100%' height='"+ (document.body.clientHeight-180) +"px' src='" + url + "'></iframe>"
 				}
             }
 

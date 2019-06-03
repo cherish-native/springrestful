@@ -343,7 +343,6 @@ public class StatisticServiceImpl implements StatisticService {
                 String iscompelpass = StringUtils.nvlString(map.get("ISCOMPELPASS"));
                 if(StringUtils.isNotEmpty(iscompelpass)){
                     //强制通过解析，长度为20，每一位对应一个指位 滚动右拇指--平面左小指，每位由0和1表示
-                    System.out.println(iscompelpass);
                     for(int i=0;i<10;i++){
                         personVo.setRightThumb(getIsCompelPass(iscompelpass.charAt(0), iscompelpass.charAt(10)) +"");
                         personVo.setRightIndex(getIsCompelPass(iscompelpass.charAt(1), iscompelpass.charAt(11)) +"");
