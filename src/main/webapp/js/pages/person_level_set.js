@@ -256,7 +256,7 @@ jQuery(function($){
         }
 
         $.ajax(
-            "/pages/main/level/personLevelSet"
+            "main/level/personLevelSet"
             , {
                 async: false
                 , cache: false
@@ -378,7 +378,7 @@ function isSetLevel(){
 
     var bStr = false
     $.ajax(
-        "/pages/main/level/isSetPersonLevel"
+        "main/level/isSetPersonLevel"
         , {
             async: false
             , cache: false

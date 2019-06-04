@@ -6,7 +6,7 @@
 jQuery(function($) {
 
     $.ajax(
-        "/pages/image/getLevelScore"
+        "image/getLevelScore"
         , {
             async: false
             , cache: false
@@ -43,7 +43,7 @@ jQuery(function($) {
     );
 
     $.ajax(
-        "/pages/image/getFingerLevel"
+        "image/getFingerLevel"
         , {
             async: false
             , cache: false
@@ -104,7 +104,7 @@ function set_score(){
     var repeat = $('input[name="repeat"]:checked').val();
 
     $.ajax(
-       "/pages/image/levelScore"
+       "image/levelScore"
        , {
            async: false
            , cache: false
@@ -151,7 +151,7 @@ function set_image_reach(){
     var repeat = $('input[name="repeat"]:checked').val();
 
     $.ajax(
-        "/pages/image/fingerLevel"
+        "image/fingerLevel"
         , {
             async: false
             , cache: false
