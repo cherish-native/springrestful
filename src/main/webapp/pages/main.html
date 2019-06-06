@@ -270,8 +270,10 @@
 
             function reinitIframe() {
                 var iframe = document.getElementById("urlIframe");
-				var bHeight = iframe.contentWindow.document.body.scrollHeight;
-				iframe.height = bHeight;
+                var iframeWin = iframe.contentWindow || iframe.contentDocument.parentWindow;
+                if (iframeWin.document.body) {
+                    iframe.height = iframeWin.document.documentElement.scrollHeight || iframeWin.document.body.scrollHeight;
+                }
             }
 
 			function getMenuIcon(id){

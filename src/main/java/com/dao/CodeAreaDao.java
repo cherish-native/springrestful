@@ -23,4 +23,10 @@ public interface CodeAreaDao extends CrudRepository<CodeArea,String> {
      */
     Page<CodeArea> findAll(Specification<CodeArea> params, Pageable pageable);
 
+    /**
+     * 通过code查询
+     * @param code
+     */
+    CodeArea findByCode(String code);
+
 }

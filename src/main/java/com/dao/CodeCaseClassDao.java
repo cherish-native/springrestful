@@ -23,4 +23,6 @@ public interface CodeCaseClassDao extends CrudRepository<CodeCaseClass,String> {
      */
     Page<CodeCaseClass> findAll(Specification<CodeCaseClass> params, Pageable pageable);
 
+    CodeCaseClass findByCode(String code);
+
 }

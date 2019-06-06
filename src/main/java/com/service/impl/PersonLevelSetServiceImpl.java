@@ -53,22 +53,18 @@ public class PersonLevelSetServiceImpl implements PersonLevelSetService {
         personLevelDao.save(personLevel);
 
         for(String addCode :addCodeArr){
-            if(addCode != null && addCode.length()>0) {
-                HuKouDimen huKouDimen = new HuKouDimen();
-                huKouDimen.setDimenId(hukouDimenId);
-                huKouDimen.setAddressCode(addCode);
-                huKouDimen.setInputTime(new Date());
-                huKouDimenDao.save(huKouDimen);
-            }
+            HuKouDimen huKouDimen = new HuKouDimen();
+            huKouDimen.setDimenId(hukouDimenId);
+            huKouDimen.setAddressCode(addCode);
+            huKouDimen.setInputTime(new Date());
+            huKouDimenDao.save(huKouDimen);
         }
         for(String caseCode : caseCodeArr){
-            if(caseCode != null && caseCode.length()>0){
-                CaseDimen caseDimen = new CaseDimen();
-                caseDimen.setDimenId(caseDimenId);
-                caseDimen.setCaseCode(caseCode);
-                caseDimen.setInputTime(new Date());
-                caseDimenDao.save(caseDimen);
-            }
+            CaseDimen caseDimen = new CaseDimen();
+            caseDimen.setDimenId(caseDimenId);
+            caseDimen.setCaseCode(caseCode);
+            caseDimen.setInputTime(new Date());
+            caseDimenDao.save(caseDimen);
         }
 
     }

@@ -1,7 +1,8 @@
 package com.controller.level;
 
 import com.config.Config;
-import com.entity.WorkQueue;
+import com.dao.*;
+import com.entity.*;
 import com.service.PersonLevelSetService;
 import com.service.WorkQueueService;
 import com.support.HttpComponent;
@@ -30,6 +31,16 @@ public class LevelSetController {
     private PersonLevelSetService personLevelSetService;
     @Autowired
     private WorkQueueService workQueueService;
+    @Autowired
+    private PersonLevelDao personLevelDao;
+    @Autowired
+    private HuKouDimenDao huKouDimenDao;
+    @Autowired
+    private CaseDimenDao caseDimenDao;
+    @Autowired
+    private CodeAreaDao codeAreaDao;
+    @Autowired
+    private CodeCaseClassDao codeCaseClassDao;
 
     @RequestMapping(value = "/personLevelSet",method = RequestMethod.POST)
     @ResponseBody
@@ -61,13 +72,6 @@ public class LevelSetController {
                     workQueue.setWorkType(workQueue.TYPE_IMG_LEVEL);
                     workQueue.setWorkState(workQueue.STATE_SERVICE_RUNNING);
                     workQueueService.save(workQueue);
-                    String result = HttpComponent.html_get("http://" +config.getWebConfig().getBind() + "/pages/statistics/changeWorkQueueState/1");
-                    if(result.equals("success")){
-                        resultMap.put("success",true);
-                        resultMap.put("message","设置成功，并计算历史数据后重新统计");
-                    }else{
-                        throw new Exception("发送changeWorkQueueState消息1失败");
-                    }
                 } else {
                     resultMap.put("success", true);
                     resultMap.put("message", "设置成功");
@@ -82,19 +86,41 @@ public class LevelSetController {
     }
 
 
-
-    @RequestMapping(value = "/isSetPersonLevel",method = RequestMethod.GET)
+    @RequestMapping(value = "/getPersonLevel",method = RequestMethod.GET)
     @ResponseBody
-    public Map<String,Object> isSetPersonLevel(){
+    public Map<String,Object> getPersonLevel(){
         Map<String,Object> resultMap = new HashMap<>();
         try{
-            HttpResult httpResult = HttpComponent.rpc_get(config.getApiUrl() + "/CheckSetPersonLevelPage");
-            if(httpResult.getSuccess()){
-                resultMap.put("success",true);
-                resultMap.put("result",httpResult.getResult());
-            }else{
-                throw new Exception(httpResult.getMessage());
+            PersonLevel personLevel = personLevelDao.findByFlag(1);
+            List<HuKouDimen> huKouDimenList = huKouDimenDao.findByDimenId(personLevel.getHukouDimenId());
+            List<CaseDimen> caseDimenList = caseDimenDao.findByDimenId(personLevel.getCaseDimenId());
+            String addressCodes = "";
+            String caseCodes = "";
+            List<CodeArea> codeAreaList = new ArrayList();
+            List<CodeCaseClass> codeCaseClassList = new ArrayList();
+            for(HuKouDimen huKouDimen : huKouDimenList){
+                String addressCode = huKouDimen.getAddressCode();
+                CodeArea codeArea = codeAreaDao.findByCode(addressCode);
+                codeAreaList.add(codeArea);
+                if(codeArea != null) {
+                    addressCodes += codeArea.getName() + ";";
+                }
             }
+            for(CaseDimen caseDimen : caseDimenList){
+                String caseCode = caseDimen.getCaseCode();
+                CodeCaseClass codeCaseClass = codeCaseClassDao.findByCode(caseCode);
+                codeCaseClassList.add(codeCaseClass);
+                if(codeCaseClass != null){
+                    caseCodes += codeCaseClass.getName() + ";";
+                }
+            }
+
+            resultMap.put("codeAreaList", codeAreaList);
+            resultMap.put("codeCaseClassList", codeCaseClassList);
+            resultMap.put("addressCodes", addressCodes);
+            resultMap.put("caseCodes", caseCodes);
+            resultMap.put("success",true);
+            resultMap.put("message","ok");
         }catch(Exception ex){
             resultMap.put("success",false);
             resultMap.put("message",ex.getMessage());

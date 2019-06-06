@@ -233,8 +233,56 @@ jQuery(function($){
             return
         }
     })
-    
-    
+
+    /**
+     * 页面加载时查询配置
+     */
+    $.ajax(
+        "main/level/getPersonLevel"
+        , {
+            async: false
+            , cache: false
+            , dataType: "json"
+            , data: {}
+            , type: "GET"
+            , success: function (data, textStatus) {
+                if (textStatus == "success") {
+                    if(data.success){
+                        $("#hukou-input").val(data.addressCodes)
+                        $("#case-input").val(data.caseCodes)
+                        var codeAreaList = data.codeAreaList
+                        var codeCaseClassList = data.codeCaseClassList
+                        var areaCodes = ""
+                        var caseCodes = ""
+                        for(var i=0;i<codeAreaList.length;i++){
+                            if(codeAreaList[i] != null) {
+                                areaCodes += codeAreaList[i].code + ","
+                                addCodeAreaToTable('code_area_selected_table', codeAreaList[i].name, codeAreaList[i].code);
+                            }
+                        }
+                        $('#hukouCode_value').val(areaCodes)
+                        for(var j=0;j<codeCaseClassList.length;j++){
+                            if(codeCaseClassList[j] != null) {
+                                caseCodes += codeCaseClassList[j].code + ","
+                                addCodeCaseClassToTable('code_caseclass_selected_table', codeCaseClassList[j].name, codeCaseClassList[j].code);
+                            }
+                        }
+                        $('#caseCode_value').val(caseCodes)
+
+                    }
+                    else {
+                        alert("获取数据失败");
+                    }
+                }
+            }
+            , error:function(XMLHttpRequest, textStatus, errorThrown){
+                console.log(textStatus)
+                console.log(errorThrown)
+            }
+        }
+    );
+
+
     $('#set-btn').on('click',function (e) {
 
         var strAddressCode = $('#hukouCode_value').val()
@@ -249,10 +297,10 @@ jQuery(function($){
 
         if(strAddressCode.length <=0
             && strCaseCode.length <=0){
-            if(!isSetLevel()){
+            // if(!isSetLevel()){
                 alert("所有设置项均未选择,所有被捺印人默认均为C级")
-            }
-            return
+            // }
+            // return
         }
 
         $.ajax(

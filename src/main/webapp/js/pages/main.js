@@ -14,7 +14,7 @@ jQuery(function($){
 
 function getUserInfo(){
     $.ajax(
-        "/springrestful/pages/user/getUserInfo"
+        "user/getUserInfo"
         , {
             async: true
             , cache: false
@@ -27,7 +27,7 @@ function getUserInfo(){
                         $('#loginUser').text(data.rows.userName)
                     }
                     else {
-                        window.location.href = "/springrestful/index.html"
+                        window.location.href = "index.html"
                     }
                 }
             }
@@ -42,7 +42,7 @@ function getUserInfo(){
 
 function signOut() {
     $.ajax(
-        "/springrestful/pages/user/loginOut"
+        "user/loginOut"
         , {
             async: true
             , cache: false
@@ -52,7 +52,7 @@ function signOut() {
             , success: function (data, textStatus, xhr) {
                 if (textStatus == "success") {
                     if(data.success){
-                        window.location.href = "/springrestful/index.html"
+                        window.location.href = "index.html"
                     }
                     else {
                         alert(data.message);

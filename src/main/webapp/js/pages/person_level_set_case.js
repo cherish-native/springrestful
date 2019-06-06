@@ -1,5 +1,6 @@
 var case_myArray = [];
-var caseCodeArray = []
+var caseCodeArray = [];
+var addCodeCaseClassToTable;
 
 jQuery(function($){
     var selectedCodeCaseClass = [];
@@ -77,7 +78,7 @@ jQuery(function($){
      * @param name
      * @param code
      */
-    function addCodeCaseClassToTable(tableid, name, code) {
+    addCodeCaseClassToTable = function addCodeCaseClassToTable(tableid, name, code) {
         if(inArray(selectedCodeCaseClass, code+"-"+name)){
             // alert('已选择')
             return;
