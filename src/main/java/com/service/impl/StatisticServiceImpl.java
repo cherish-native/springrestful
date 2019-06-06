@@ -274,8 +274,7 @@ public class StatisticServiceImpl implements StatisticService {
                 .append("        t.gatheruser_name GATHERUSERNAME,           ")
                 .append("        sum(count) COUNT,                           ")
                 .append("        sum(t.is_compel_pass_count) COMPELPASSCOUNT")
-                .append("   from statistic_quality_day t                     ")
-                .append("  GROUP BY t.depart_code, t.gatheruser_name         ");
+                .append("   from statistic_quality_day t                     ");
 
         QueryBuilder queryBuilder = new QueryBuilder(sql.toString());
         if(StringUtils.isNotEmpty(departCode)){
@@ -287,6 +286,7 @@ public class StatisticServiceImpl implements StatisticService {
         if(StringUtils.isNotEmpty(endDate)){
             queryBuilder.appendAndWhere("t.statistic_time <= ?", Integer.parseInt(endDate.replaceAll("-", "")));
         }
+        queryBuilder.appendSql("  GROUP BY t.depart_code, t.gatheruser_name ");
         List<Map<String, Object>> list = baseDao.findListBySql(queryBuilder.getSql(), queryBuilder.getParams());
         List<StatisticQualityDay> statisticQualityDays = new ArrayList<>();
         if(list != null){
