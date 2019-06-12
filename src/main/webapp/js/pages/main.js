@@ -25,6 +25,7 @@ function getUserInfo(){
                 if (textStatus == "success") {
                     if(data.success){
                         $('#loginUser').text(data.rows.userName)
+                        $('#role').text(data.rows.role)
                     }
                     else {
                         window.location.href = "index.html"

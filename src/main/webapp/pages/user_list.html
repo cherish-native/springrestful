@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>用户列表</title>
+    <link rel="stylesheet" type="text/css" href="../easyui/themes/bootstrap/easyui.css"/>
+    <link rel="stylesheet" type="text/css" href="../easyui/themes/icon.css"/>
+    <script type="text/javascript" src="../easyui/jquery.min.js"></script>
+    <script type="text/javascript" src="../easyui/jquery.easyui.min.js"></script>
+    <script type="text/javascript" src="../easyui/easyui-lang-zh_CN.js"></script>
+    <!--<script type="text/javascript" src="../js/index.js"></script>-->
+    <script>
+        $(function(){
+            var size = {
+                width : document.documentElement.clientWidth,
+                height : document.documentElement.clientHeight
+            }
+            optwidth = 300;
+            function fixWidthWithOptWidth(percent) {
+                return  Math.round((Number(size.width-optwidth)) * percent);
+            }
+
+            //加载列表
+            $('#userList').datagrid({
+                url:'user/getUserList',
+                width:size.width-20,
+                columns:[[
+                    {field:"id",title:"ID",hidden:true},
+                    {field:"policeId",title:"警号",width:fixWidthWithOptWidth(0.15)},
+                    {field:"trueName",title:"姓名",width:fixWidthWithOptWidth(0.25)},
+                    {field:"unitCode",title:"所属单位",width:fixWidthWithOptWidth(0.25)},
+                    {field:"role",title:"角色",width:fixWidthWithOptWidth(0.15),formatter: function(value,row,index){
+                        if (value == 1){
+                            return "一级管理员";
+                        } else if(value ==2){
+                            return "二级管理员";
+                        }
+                    }},
+                    {field:"userName",title:"用户名",width:fixWidthWithOptWidth(0.15)},
+                    {field:"opt",title:"操作",width:optwidth, formatter: function (value, row, index){
+                        return '<a href="user_form.html?username='+ row.userName +'")>修改</a> &nbsp;&nbsp;&nbsp;&nbsp;'+
+                            '<a href="#" onclick="deleteUser(\''+ row.id +'\')">删除</a>';
+                    }}
+                ]],
+                pagination : false,
+                rownumbers:true
+            });
+        });
+
+        function deleteUser(id){
+            if(confirm('确定要删除该行信息?')) {
+                $.ajax(
+                    "user/deleteUser"
+                    , {
+                        async: false
+                        , cache: false
+                        , dataType: "json"
+                        , data: {id:id}
+                        , type: "POST"
+                        , success: function (data, textStatus, xhr) {
+                             if (data.success) {
+                                 window.location.reload();
+                             }
+                             else {
+                                 alert(data.message)
+                             }
+                         }
+                        , error: function (XMLHttpRequest, textStatus, errorThrown) {
+                            console.log(textStatus)
+                            console.log(errorThrown)
+                        }
+                    }
+                );
+            }
+        }
+
+    </script>
+</head>
+<body>
+<div class="easyui-tabs" style="width:100%;height:100%;" data-options="fit:true">
+    <div title="用户列表">
+        <div>
+            <table id="userList"></table>
+            <div>
+                <a href="user_form.html" class="easyui-linkbutton" data-options="iconCls:'icon-add'" style="width:80px">新增</a>
+            </div>
+        </div>
+
+    </div>
+</div>
+
+</body>
+</html>

@@ -32,6 +32,10 @@ public class SysUser {
     private int flag;
     @Column(name = "salt",length = 50)
     private String salt;
+    @Column(name = "police_id",length = 18)
+    private String policeId;
+    @Column(name = "role")
+    private int role;
 
     public String getId() {
         return id;
@@ -103,5 +107,21 @@ public class SysUser {
 
     public void setSalt(String salt) {
         this.salt = salt;
+    }
+
+    public String getPoliceId() {
+        return policeId;
+    }
+
+    public void setPoliceId(String policeId) {
+        this.policeId = policeId;
+    }
+
+    public int getRole() {
+        return role;
+    }
+
+    public void setRole(int role) {
+        this.role = role;
     }
 }

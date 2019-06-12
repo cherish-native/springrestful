@@ -2,7 +2,9 @@ package com.dao;
 
 import com.entity.SysUser;
 import org.springframework.data.repository.CrudRepository;
+import org.springframework.transaction.annotation.Transactional;
 
+import java.util.List;
 import java.util.Optional;
 
 /**
@@ -12,4 +14,9 @@ import java.util.Optional;
 public interface SysUserDao extends CrudRepository<SysUser,Integer> {
 
     Optional<SysUser> findByUserNameAndFlag(String username,int flag);
+
+    List<SysUser> findByFlag(int flag);
+
+    @Transactional
+    void deleteById(String id);
 }

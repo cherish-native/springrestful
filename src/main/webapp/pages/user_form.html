@@ -1,0 +1,270 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1" />
+    <meta charset="UTF-8">
+    <title>用户表单</title>
+    <link rel="stylesheet" href="../assets/css/bootstrap.min.css" />
+    <script src="../js/jquery.min.js"></script>
+    <script src="../assets/js/bootstrap.min.js"></script>
+
+    <style>
+        #usernameSpan,#passwordSpan{
+            position: absolute;
+            display: inline-block;
+            min-width: 200px;
+            left:100%;
+            z-index: 99;
+            padding-left: 10px;
+            top: 7px;;
+        }
+        .input-group-addon:first-child{
+            min-width:110px;
+        }
+    </style>
+    <script>
+        jQuery(function($){
+            $.ajax(
+                "sysDepart/getDepart"
+                , {
+                    async: false
+                    , cache: false
+                    , dataType: "json"
+                    , data: {}
+                    , type: "GET"
+                    , success: function (data,textStatus, xhr) {
+                        var optionHtml = "<option value=''>请选所属单位</option>"
+                        $.each(data,function(key,value){
+                            optionHtml += "<option value='"+ key +"'>"+ value +"</option>"
+                        });
+                        $("#unitcode").html(optionHtml)
+                    }
+                }
+            );
+
+            var url = document.URL;	// 获取当前页面的 url
+            var username = null
+            if(url.indexOf("?") != -1) {
+                username = url.split('?')[1].split("=")[1];
+            }
+            if(username != null && username.length>0){
+                $.ajax(
+                    "user/getUser"
+                    , {
+                        async: false
+                        , cache: false
+                        , dataType: "json"
+                        , data: {username:username}
+                        , type: "GET"
+                        , success: function (data,textStatus, xhr) {
+                            $('#policeId').val(data.policeId)
+                            $('#name').val(data.trueName)
+                            $('#username').val(data.userName)
+                            $('#password').val(data.salt)
+                            $('#password2').val(data.salt)
+                            $('#idCard').val(data.idCard)
+                            $('#unitcode').val(data.unitCode)
+                            $('#role').val(data.role)
+                        }
+                    }
+                );
+            }
+
+            $('#saveUser').on('click',function (e){
+                var policeId = $('#policeId').val()
+                var name = $('#name').val()
+                var username = $('#username').val()
+                var password = $('#password').val()
+                var idCard = $('#idCard').val()
+                var unitcode = $('#unitcode').val()
+                var role = $('#role').val()
+                if(policeId =="" || null){
+                    alert("请填写警号");
+                    return false;
+                }else if(name =="" || null){
+                    alert("请填写姓名");
+                    return false;
+                }else if(username =="" || null){
+                    alert("请填写用户名");
+                    return false;
+                }else if(password =="" || null){
+                    alert("请填写密码");
+                    return false;
+                }else if(idCard =="" || null){
+                    alert("请填写身份证号");
+                    return false;
+                }else if(unitcode =="" || null){
+                    alert("请选择所在单位");
+                    return false;
+                }
+
+                var params = {
+                    policeId :policeId,
+                    name:name,
+                    username:username,
+                    password:password,
+                    idCard:idCard,
+                    unitcode:unitcode,
+                    role:role
+                }
+
+                $.ajax(
+                    "user/saveUser"
+                    , {
+                        async: false
+                        , cache: false
+                        , dataType: "json"
+                        , data: params
+                        , type: "POST"
+                        , success: function (data, textStatus, xhr) {
+                            if (textStatus == "success") {
+                                if(data.success){
+                                    alert(data.message)
+                                    window.history.back();
+                                }
+                                else {
+                                    alert(data.message)
+                                }
+                            }
+                        }
+                        , error:function(XMLHttpRequest, textStatus, errorThrown){
+                            console.log(textStatus)
+                            console.log(errorThrown)
+                        }
+                    }
+                );
+            });
+
+        })
+        function checkPassword() {
+            var password = $('#password').val()
+            var password2 = $('#password2').val()
+            if(password == password2){
+                document.getElementById("passwordSpan").innerHTML="<font color='green'>密码输入一致</font>";
+                document.getElementById("saveUser").disabled = false;
+            }else{
+                document.getElementById("passwordSpan").innerHTML="<font color='red'>密码输入不一致</font>";
+                document.getElementById("saveUser").disabled = true;
+            }
+        }
+        function checkUsername(){
+            var username = $("#username").val()
+            $.ajax(
+                "user/checkUserName"
+                , {
+                    async: false
+                    , cache: false
+                    , dataType: "json"
+                    , data: {username: username}
+                    , type: "GET"
+                    , success: function (data,textStatus, xhr) {
+                        if(data.success){
+                            document.getElementById("usernameSpan").innerHTML="<font color='green'>"+ data.message +"</font>";
+                            document.getElementById("saveUser").disabled = false;
+                        }else{
+                            document.getElementById("usernameSpan").innerHTML="<font color='red'>"+ data.message +"</font>";
+                            document.getElementById("saveUser").disabled = true;
+                        }
+                    }
+                }
+            );
+        }
+
+    </script>
+
+</head>
+<body>
+<form class="" role="form">
+    <div class="container">
+        <div class="row" style="padding: 20px 0">
+            <h3>用户信息</h3>
+        </div>
+        <div class="row">
+            <!--前缀-->
+            <div class="form-group col-lg-5" hidden>
+                <div class="input-group">
+                    <span class="input-group-addon">ID</span>
+                    <input class="form-control" id="id" type="text" value="">
+                </div>
+            </div>
+        </div>
+        <div class="row">
+            <!--前缀-->
+            <div class="form-group col-lg-5">
+                <div class="input-group">
+                    <span class="input-group-addon">警号</span>
+                    <input class="form-control" id="policeId" type="text">
+                </div>
+            </div>
+        </div>
+        <div class="row">
+            <div class="form-group col-lg-5">
+                <div class="input-group">
+                    <span class="input-group-addon">姓名</span>
+                    <input class="form-control" id="name" type="text">
+                </div>
+            </div>
+        </div>
+        <div class="row">
+            <div class="form-group col-lg-5">
+                <div class="input-group">
+                    <span class="input-group-addon">用户名</span>
+                    <input class="form-control" id="username" type="text" onblur="checkUsername()">
+                    <span id="usernameSpan"></span>
+                </div>
+            </div>
+        </div>
+        <div class="row">
+            <div class="form-group col-lg-5">
+                <div class="input-group">
+                    <span class="input-group-addon">密码</span>
+                    <input class="form-control" id="password" type="text" placeholder="请设置登录密码">
+                </div>
+            </div>
+        </div>
+        <div class="row">
+            <div class="form-group col-lg-5">
+                <div class="input-group">
+                    <span class="input-group-addon">确认密码</span>
+                    <input class="form-control" id="password2" type="text" onkeyup="checkPassword()" placeholder="请再次填写密码">
+                    <span id="passwordSpan"></span>
+                </div>
+            </div>
+        </div>
+        <div class="row">
+            <div class="form-group col-lg-5">
+                <div class="input-group">
+                    <span class="input-group-addon">身份证号</span>
+                    <input class="form-control" id="idCard" type="text">
+                </div>
+            </div>
+        </div>
+        <div class="row">
+            <!--下拉框-->
+            <div class="form-group col-lg-5">
+                <div class="input-group">
+                    <span class="input-group-addon">所属单位</span>
+                    <select class="form-control" id="unitcode">
+
+                    </select>
+                </div>
+            </div>
+        </div>
+        <div class="row">
+            <div class="form-group col-lg-5">
+                <div class="input-group">
+                    <span class="input-group-addon">角色</span>
+                    <select class="form-control" id="role">
+                        <option value="1">一级管理员</option>
+                        <option value="2">二级管理员</option>
+                    </select>
+                </div>
+            </div>
+        </div>
+
+        <button class="btn" id="saveUser" >保存</button>
+
+    </div>
+</form>
+</body>
+</html>

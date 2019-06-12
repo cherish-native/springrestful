@@ -71,6 +71,7 @@
 	</div>
 	<div class="dltip">
 		<p class="dltip-nr"><img src="../images/tubiao-1.gif" /><span>当前用户:</span><span id="loginUser"></span></p>
+		<span id="role" hidden></span>
 	</div>
 	<div class="ysbj"></div>
 
@@ -188,8 +189,7 @@
                     }
                 });
 
-
-
+                getUserInfo()
 				loadMenu();
             })
 
@@ -198,6 +198,7 @@
                     "main/menu/getMenuList"
                     , {
                         async: false
+						, complete : getUserInfo
                         , cache: false
                         , dataType: "json"
                         , data: {}
@@ -207,8 +208,7 @@
                             if (textStatus == "success") {
                                 if(data.success != undefined){
                                     if(data.success){
-                                        buildMenu(data.rows)
-                                        getUserInfo()
+										buildMenu(data.rows, $("#role").text())
                                     }
                                     else {
                                         alert(data.message);
@@ -226,32 +226,34 @@
                 );
             }
 
-            function buildMenu(rows){
+            function buildMenu(rows,role){
                 var str = ""
                 if(rows.length > 0){
                     str += "<ul class=\"nav nav-list\">"
                     for(var i=0; i< rows.length;i++){
                         if(rows[i].pcode == "0"){
-                            str += "<li class=\"\"> " +
-										"<a href=\"javascript:void(0);\" class=\"dropdown-toggle\">" +
-                                					getMenuIcon(rows[i].code) +
-												"<span class=\"menu-text\">" + rows[i].title +"</span> " +
-													"<b class=\"arrow fa fa-angle-down\"></b> " +
-										"</a> " +
-										"<b class=\"arrow\"></b>"
-                            str += "<ul class=\"submenu\"> "
-							for(var j= 0; j< rows.length;j++){
-                                if(rows[j].pcode == rows[i].code){
-                                     str+="<li class=\"\"> " +
-										         "<a href=\"javascript:void(0);\" onclick=setMain('" + rows[j].url + "')> " +
-													"<i class=\"menu-icon fa fa-caret-right\"></i>" + rows[j].title
-										      + " </a> <b class=\"arrow\"></b> " +
-										     "</li> "
+                            if(rows[i].code != "4" || role == "1") {
+                                str += "<li class=\"\"> " +
+                                    "<a href=\"javascript:void(0);\" class=\"dropdown-toggle\">" +
+                                    getMenuIcon(rows[i].code) +
+                                    "<span class=\"menu-text\">" + rows[i].title + "</span> " +
+                                    "<b class=\"arrow fa fa-angle-down\"></b> " +
+                                    "</a> " +
+                                    "<b class=\"arrow\"></b>"
+                                str += "<ul class=\"submenu\"> "
+                                for (var j = 0; j < rows.length; j++) {
+                                    if (rows[j].pcode == rows[i].code) {
+                                        str += "<li class=\"\"> " +
+                                            "<a href=\"javascript:void(0);\" onclick=setMain('" + rows[j].url + "')> " +
+                                            "<i class=\"menu-icon fa fa-caret-right\"></i>" + rows[j].title
+                                            + " </a> <b class=\"arrow\"></b> " +
+                                            "</li> "
 
-								}
-							}
-                            str += "</ul>"
-							str += "</li>"
+                                    }
+                                }
+                                str += "</ul>"
+                                str += "</li>"
+                            }
 						}
 					}
 					str += "</ul>"

@@ -1,5 +1,6 @@
 package com.controller.depart;
 
+import com.dao.SysDepartDao;
 import com.entity.SysDepart;
 import com.service.SysDepartService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -7,10 +8,7 @@ import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 @Controller
 @RequestMapping(value = "/pages/sysDepart")
@@ -18,6 +16,8 @@ public class SysDepartController {
 
     @Autowired
     private SysDepartService sysDepartService;
+    @Autowired
+    private SysDepartDao sysDepartDao;
 
     /**
      * 系统部门模糊检索
@@ -38,6 +38,24 @@ public class SysDepartController {
             }
         }
         return resultList;
+    }
+
+    /**
+     * 获取系统部门列表
+     */
+    @ResponseBody
+    @RequestMapping(value = "/getDepart")
+    public Map<String, String> getDepart(){
+        Map<String, String> map = new HashMap<>();
+        Iterable<SysDepart> sysDepartList = sysDepartDao.findAll();
+       if(sysDepartList != null){
+           Iterator<SysDepart> sysDeparts = sysDepartList.iterator();
+           while(sysDeparts.hasNext()){
+               SysDepart sysDepart = sysDeparts.next();
+                map.put(sysDepart.getDepartCode(), sysDepart.getDepartName());
+            }
+        }
+        return map;
     }
 
 }
