@@ -38,8 +38,11 @@
                     }},
                     {field:"userName",title:"用户名",width:fixWidthWithOptWidth(0.15)},
                     {field:"opt",title:"操作",width:optwidth, formatter: function (value, row, index){
-                        return '<a href="user_form.html?username='+ row.userName +'")>修改</a> &nbsp;&nbsp;&nbsp;&nbsp;'+
-                            '<a href="#" onclick="deleteUser(\''+ row.id +'\')">删除</a>';
+                        if(row.userName != "admin"){
+                            return '<a href="user_form.html?username='+ row.userName +'")>修改</a> &nbsp;&nbsp;&nbsp;&nbsp;'+'<a href="#" onclick="deleteUser(\''+ row.id +'\')">删除</a>';
+                        }else {
+                            return '<a href="user_form.html?username='+ row.userName +'")>修改</a> &nbsp;&nbsp;&nbsp;&nbsp;'
+                        }
                     }}
                 ]],
                 pagination : false,
