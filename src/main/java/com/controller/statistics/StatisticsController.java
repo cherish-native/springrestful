@@ -1,8 +1,10 @@
 package com.controller.statistics;
 
+import com.constant.Constant;
 import com.constant.StatisticConstant;
 import com.controller.BaseController;
 import com.entity.StatisticQualityDay;
+import com.entity.SysUser;
 import com.entity.WorkQueue;
 import com.entity.vo.DataGridReturn;
 import com.entity.vo.ImageSubstandardStatistics;
@@ -90,7 +92,7 @@ public class StatisticsController extends BaseController {
     @RequestMapping("/gatherSubstandardExamineDetailList")
     @ResponseBody
     public DataGridReturn gatherSubstandardExamineDetailList(String departCode, String gatheruserName, String beginDate, String endDate, HttpServletRequest request){
-        return statisticService.gatherSubstandardExamineDetailList(departCode, gatheruserName, beginDate, endDate, getPagination(request));
+        return statisticService.gatherSubstandardExamineDetailList(departCode, gatheruserName, beginDate, endDate, getPagination(request), findLoginUser(request));
     }
 
     /**
@@ -130,7 +132,7 @@ public class StatisticsController extends BaseController {
      */
     @RequestMapping("/historyImageQualityStatistics")
     @ResponseBody
-    public Map<String,Object> historyImageQualityStatistics(String departCode,String dateStr) throws Exception {
+    public Map<String,Object> historyImageQualityStatistics(String departCode,String dateStr, HttpServletRequest request) throws Exception {
         Map<String,Object> result = new HashMap<>();
         //横坐标数据
         int xAxisCount = 12;
@@ -149,6 +151,10 @@ public class StatisticsController extends BaseController {
 //            String[] yAxisDataItem = new String[xAxisCount];
 //            yAxisData.add(yAxisDataItem);
 //        }
+        SysUser sysUser = findLoginUser(request);
+        if(sysUser != null && !Constant.TOP_DEPARTCODE.equals(sysUser.getUnitCode())){
+            departCode = sysUser.getUnitCode();
+        }
     	yAxisData = statisticService.getGatherQualityCount(dateStr,xAxisCount,departCode);
         result.put("xAxisData", xAxisData);
         result.put("series", yAxisData);

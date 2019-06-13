@@ -223,15 +223,20 @@ public class StatisticServiceImpl implements StatisticService {
     }
 
     @Override
-    public DataGridReturn gatherSubstandardExamineDetailList(String departCode, String gatheruserName, String beginDate, String endDate, Pageable pagination) {
+    public DataGridReturn gatherSubstandardExamineDetailList(String departCode, String gatheruserName, String beginDate, String endDate, Pageable pagination, SysUser sysUser) {
         StringBuilder sql = new StringBuilder("SELECT q.*,t.personid,t.name, t.idcard,t.person_level,t.printdate FROM personinfo t left join quality_score q on t.personid = q.cardid ");
         QueryBuilder queryBuilder = new QueryBuilder(sql.toString());
         queryBuilder.appendAndWhere(" t.printdate is not null ", null);
         //默认查询未达标数据
         queryBuilder.appendAndWhere(" t.is_qualified = ? ", 0);
-        if(StringUtils.isNotEmpty(departCode)){
-            queryBuilder.appendAndWhere(" t.print_unit_code = ? ", departCode);
+        if(Constant.TOP_DEPARTCODE.equals(sysUser.getUnitCode())){
+            if(StringUtils.isNotEmpty(departCode)){
+                queryBuilder.appendAndWhere("t.print_unit_code = ?", departCode);
+            }
+        }else{
+            queryBuilder.appendAndWhere("t.print_unit_code = ?", sysUser.getUnitCode());
         }
+
         if(StringUtils.isNotEmpty(gatheruserName)){
             try {
                 gatheruserName = java.net.URLDecoder.decode(gatheruserName,"utf-8");
