@@ -14,6 +14,8 @@ public class Constant {
 
     public static final String SA = "$yc@";
 
+    public static final String TOP_DEPARTCODE = "310107000000";
+
     /**
      * 单位代码与首页地图单位名称map
      */

@@ -5,6 +5,7 @@ import com.dao.BaseDao;
 import com.dao.StatisticQualityDayDao;
 import com.entity.StatisticQualityDay;
 import com.entity.SysDepart;
+import com.entity.SysUser;
 import com.entity.vo.DataGridReturn;
 import com.entity.vo.ImageSubstandardStatistics;
 import com.entity.vo.PersonVo;
@@ -67,7 +68,7 @@ public class StatisticServiceImpl implements StatisticService {
     }
 
     @Override
-    public DataGridReturn getGatherQualityExamineList(String departCode, String beginDate, String endDate, Pageable pageable) throws Exception {
+    public DataGridReturn getGatherQualityExamineList(String departCode, String beginDate, String endDate, Pageable pageable, SysUser sysUser) throws Exception {
         StringBuilder sql = new StringBuilder();
         sql.append("     select t.depart_code DEPARTCODE, t.gatheruser_name GATHERUSERNAME,")
                 .append("sum(count) COUNT,")
@@ -78,8 +79,12 @@ public class StatisticServiceImpl implements StatisticService {
                 .append("sum(t.count_level_e) COUNTLEVELE ")
                 .append(" from statistic_quality_day t");
         QueryBuilder queryBuilder = new QueryBuilder(sql.toString());
-        if(StringUtils.isNotEmpty(departCode)){
-            queryBuilder.appendAndWhere("t.depart_code like ?", departCode);
+        if(Constant.TOP_DEPARTCODE.equals(sysUser.getUnitCode())){
+            if(StringUtils.isNotEmpty(departCode)){
+                queryBuilder.appendAndWhere("t.depart_code like ?", departCode);
+            }
+        }else{
+            queryBuilder.appendAndWhere("t.depart_code = ?", sysUser.getUnitCode());
         }
         if(StringUtils.isNotEmpty(beginDate)){
             queryBuilder.appendAndWhere("t.statistic_time >= ?", Integer.parseInt(beginDate.replaceAll("-", "")));
@@ -178,15 +183,19 @@ public class StatisticServiceImpl implements StatisticService {
     }
 
     @Override
-    public DataGridReturn gatherSubstandardExamineList(String departCode, String beginDate, String endDate, Pageable pagination) {
+    public DataGridReturn gatherSubstandardExamineList(String departCode, String beginDate, String endDate, Pageable pagination, SysUser sysUser) {
         StringBuilder sql = new StringBuilder();
         sql.append("     select t.depart_code DEPARTCODE, t.gatheruser_name GATHERUSERNAME,")
                 .append("sum(count) COUNT,")
                 .append("sum(t.substandard_count) SUBSTANDARDCOUNT")
                 .append(" from statistic_quality_day t");
         QueryBuilder queryBuilder = new QueryBuilder(sql.toString());
-        if(StringUtils.isNotEmpty(departCode)){
-            queryBuilder.appendAndWhere("t.depart_code like ?", departCode);
+        if(Constant.TOP_DEPARTCODE.equals(sysUser.getUnitCode())){
+            if(StringUtils.isNotEmpty(departCode)){
+                queryBuilder.appendAndWhere("t.depart_code like ?", departCode);
+            }
+        }else{
+            queryBuilder.appendAndWhere("t.depart_code = ?", sysUser.getUnitCode());
         }
         if(StringUtils.isNotEmpty(beginDate)){
             queryBuilder.appendAndWhere("t.statistic_time >= ?", Integer.parseInt(beginDate.replaceAll("-", "")));
@@ -268,7 +277,7 @@ public class StatisticServiceImpl implements StatisticService {
     }
 
     @Override
-    public DataGridReturn gatherCompelPassList(String departCode, String beginDate, String endDate, Pageable pagination) {
+    public DataGridReturn gatherCompelPassList(String departCode, String beginDate, String endDate, Pageable pagination, SysUser sysUser) {
         StringBuilder sql = new StringBuilder();
         sql.append(" select t.depart_code DEPARTCODE,                   ")
                 .append("        t.gatheruser_name GATHERUSERNAME,           ")
@@ -277,8 +286,12 @@ public class StatisticServiceImpl implements StatisticService {
                 .append("   from statistic_quality_day t                     ");
 
         QueryBuilder queryBuilder = new QueryBuilder(sql.toString());
-        if(StringUtils.isNotEmpty(departCode)){
-            queryBuilder.appendAndWhere("t.depart_code like ?", departCode);
+        if(Constant.TOP_DEPARTCODE.equals(sysUser.getUnitCode())){
+            if(StringUtils.isNotEmpty(departCode)){
+                queryBuilder.appendAndWhere("t.depart_code like ?", departCode);
+            }
+        }else{
+            queryBuilder.appendAndWhere("t.depart_code = ?", sysUser.getUnitCode());
         }
         if(StringUtils.isNotEmpty(beginDate)){
             queryBuilder.appendAndWhere("t.statistic_time >= ?", Integer.parseInt(beginDate.replaceAll("-", "")));

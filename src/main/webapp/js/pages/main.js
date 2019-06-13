@@ -53,7 +53,7 @@ function signOut() {
             , success: function (data, textStatus, xhr) {
                 if (textStatus == "success") {
                     if(data.success){
-                        window.location.href = "index.html"
+                        window.location.href = "../index.html"
                     }
                     else {
                         alert(data.message);

@@ -62,7 +62,7 @@ public class StatisticsController extends BaseController {
     @RequestMapping("/gatherQualityExamineList")
     @ResponseBody
     public DataGridReturn gatherQualityExamineList(String departCode, String beginDate, String endDate, HttpServletRequest request) throws Exception {
-        return statisticService.getGatherQualityExamineList(departCode, beginDate, endDate, getPagination(request));
+        return statisticService.getGatherQualityExamineList(departCode, beginDate, endDate, getPagination(request), findLoginUser(request));
     }
 
     /**
@@ -76,7 +76,7 @@ public class StatisticsController extends BaseController {
     @ResponseBody
     @RequestMapping("/gatherSubstandardExamineList")
     public DataGridReturn gatherSubstandardExamineList(String departCode, String beginDate, String endDate, HttpServletRequest request){
-        return statisticService.gatherSubstandardExamineList(departCode, beginDate, endDate, getPagination(request));
+        return statisticService.gatherSubstandardExamineList(departCode, beginDate, endDate, getPagination(request), findLoginUser(request));
     }
 
     /**
@@ -104,7 +104,7 @@ public class StatisticsController extends BaseController {
     @ResponseBody
     @RequestMapping("/gatherCompelPassList")
     public DataGridReturn gatherCompelPassList(String departCode, String beginDate, String endDate, HttpServletRequest request){
-        return statisticService.gatherCompelPassList(departCode, beginDate, endDate, getPagination(request));
+        return statisticService.gatherCompelPassList(departCode, beginDate, endDate, getPagination(request), findLoginUser(request));
     }
 
     /**

@@ -1,6 +1,7 @@
 package com.service;
 
 import com.entity.StatisticQualityDay;
+import com.entity.SysUser;
 import com.entity.vo.DataGridReturn;
 import com.entity.vo.ImageSubstandardStatistics;
 import com.entity.vo.Pagination;
@@ -26,7 +27,7 @@ public interface StatisticService {
      * @param pageable
      * @return
      */
-    DataGridReturn getGatherQualityExamineList(String departCode, String beginDate, String endDate, Pageable pageable) throws Exception;
+    DataGridReturn getGatherQualityExamineList(String departCode, String beginDate, String endDate, Pageable pageable, SysUser sysUser) throws Exception;
 
     /**
      * 统计每日数据
@@ -42,7 +43,7 @@ public interface StatisticService {
      * @param pagination
      * @return
      */
-    DataGridReturn gatherSubstandardExamineList(String departCode, String beginDate, String endDate, Pageable pagination);
+    DataGridReturn gatherSubstandardExamineList(String departCode, String beginDate, String endDate, Pageable pagination, SysUser sysUser);
 
     /**
      * 采集未达标详细列表
@@ -62,7 +63,7 @@ public interface StatisticService {
      * @param pagination
      * @return
      */
-    DataGridReturn gatherCompelPassList(String departCode, String beginDate, String endDate, Pageable pagination);
+    DataGridReturn gatherCompelPassList(String departCode, String beginDate, String endDate, Pageable pagination, SysUser sysUser);
 
     /**
      * 强制通过详细列表

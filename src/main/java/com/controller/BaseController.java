@@ -1,5 +1,6 @@
 package com.controller;
 
+import com.entity.SysUser;
 import com.entity.vo.Pagination;
 import com.util.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -28,4 +29,12 @@ public class BaseController {
         return new PageRequest(page, size);
     }
 
+    /**
+     * 获取登录用户信息
+     * @param request
+     * @return
+     */
+    public SysUser findLoginUser(HttpServletRequest request){
+        return ((SysUser)request.getSession().getAttribute("user"));
+    }
 }
