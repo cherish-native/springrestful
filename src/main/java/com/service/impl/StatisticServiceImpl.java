@@ -469,13 +469,32 @@ public class StatisticServiceImpl implements StatisticService {
     }
     
     @Override
-    public List<ImageSubstandardStatistics> getGatherQualitySubstandardCount(String dateStr,int xAxisCount,String departCode) throws Exception {
+    public List<ImageSubstandardStatistics> getGatherQualitySubstandardCount(String dateStr,int xAxisCount,String departCode) throws Exception { 	
     	List<ImageSubstandardStatistics> yAxisDataList = new ArrayList<>();
+    	List<ImageSubstandardStatistics> yAxisDataListTOPDEPART = new ArrayList<>();//分局数据
+
+    	
     	String[] departCodeList = null ;
         if(StringUtils.isNotEmpty(departCode)){
             departCodeList = departCode.split(",");
         }else{
         	return yAxisDataList;
+        }
+        HashMap<String, Integer> departDataMap = new HashMap<String, Integer>();
+        int listIndex = 0 ; //记录yAxisDataList集合中 部门的索引号，以便根据sql查询结果修改采集不合格率数组中数据
+        for(int i=0;i<departCodeList.length;i++){
+        	if(!departCodeList[i].equals(Constant.TOP_DEPARTCODE)){
+            	ImageSubstandardStatistics  iss = new ImageSubstandardStatistics();
+            	iss.setDepartCode(departCodeList[i]);
+            	String departName = sysDepartService.findDepartNameByDepartCode(departCodeList[i]);
+            	iss.setDepartName(departName);
+            	int[] substandardPercent = new int[xAxisCount];
+            	iss.setSubstandardPercent(substandardPercent);
+        		departDataMap.put(departCodeList[i], listIndex++);
+            	yAxisDataList.add(iss);
+        	}else{//分局数据单独计算
+        		yAxisDataListTOPDEPART = getGatherQualitySubstandardCountByTOPDepart(dateStr,xAxisCount);
+        	}
         }
 //        System.out.println(departCodeList.length);
     	//departCode = "";
@@ -541,12 +560,91 @@ public class StatisticServiceImpl implements StatisticService {
         List<Map<String, Object>> list = baseDao.findListBySql(queryBuilder.getSql(), queryBuilder.getParams());
         
         ImageSubstandardStatistics iss = null;
+
+        if(list.size()>0){
+            for(Map<String, Object> map : list){
+            	String resultDapartCode  = StringUtils.nvlString(map.get("DEPARTCODE"));
+            	String departName  = StringUtils.nvlString(map.get("DEPARTNAME"));
+            	String date = StringUtils.nvlString(map.get("STATISTIC_TIME"));
+            	Integer yAxisDataIndex = departDataMap.get(resultDapartCode);
+            	if(yAxisDataIndex!=null){
+            		iss = yAxisDataList.get(yAxisDataIndex);
+            		int[] substandardPercent = iss.getSubstandardPercent();
+                	int index = Integer.parseInt(date.substring(date.length()-2, date.length()));
+                	substandardPercent[index-1] =(int)(StringUtils.nvlDouble(map.get("SUBSTANDARDPERCENT"))*100);
+                	iss.setSubstandardPercent(substandardPercent);
+            	}
+            }
+        }
+        if(yAxisDataListTOPDEPART.size()>0){//如果勾选了分局，则加入分局数据
+        	yAxisDataList.addAll(yAxisDataListTOPDEPART);
+        }
+        return yAxisDataList;
+    }
+    @Override
+    public List<ImageSubstandardStatistics> getGatherQualitySubstandardCountByTOPDepart(String dateStr,int xAxisCount) throws Exception {
+    	List<ImageSubstandardStatistics> yAxisDataList = new ArrayList<>();
+        int minQueryParam;
+        int maxQueryParam;
+
+        StringBuilder sql = new StringBuilder();
+        
+
+        sql.append(" select ")
+        	.append("ROUND(sum(t.SUBSTANDARD_COUNT)/sum(t.COUNT),2) AS substandardPercent,");
+
+                
+        QueryBuilder queryBuilder = new QueryBuilder(sql.toString());
+        
+        if(xAxisCount==12){
+        	queryBuilder.appendSql(" substr(t.statistic_time,0,6) statistic_time");
+        	queryBuilder.appendSql(" from statistic_quality_day t");
+            queryBuilder.appendSql("group by substr(t.statistic_time,0,6)");
+
+            //设置年份查询条件
+        	String year = dateStr.substring(0,4);
+            minQueryParam = Integer.parseInt(year+"01");
+            maxQueryParam = Integer.parseInt(year+"12");
+            if(StringUtils.isNotEmpty(minQueryParam)){
+                queryBuilder.appendAndHaving("substr(t.statistic_time,0,6) >= ?", minQueryParam);
+            }
+            if(StringUtils.isNotEmpty(maxQueryParam)){
+                queryBuilder.appendAndHaving("substr(t.statistic_time,0,6) <= ?", maxQueryParam);
+            }
+        }else{
+        	queryBuilder.appendSql("t.statistic_time statistic_time ");
+        	queryBuilder.appendSql(" from statistic_quality_day t");
+            queryBuilder.appendSql("group by t.statistic_time");
+
+        	//获取当月的第一天和最后一天
+        	SimpleDateFormat sdf = new SimpleDateFormat("yyyyMMdd"); 
+            Calendar cale = Calendar.getInstance(); 
+            cale.set(Calendar.YEAR,Integer.parseInt(dateStr.substring(0,4)));
+            cale.set(Calendar.MONTH,Integer.parseInt(dateStr.substring(5,dateStr.length()))-1);           
+            int firstDay = cale.getActualMinimum(Calendar.DAY_OF_MONTH);
+            int lastDay = cale.getActualMaximum(Calendar.DAY_OF_MONTH);
+   			cale.set(Calendar.DAY_OF_MONTH, firstDay);
+   			String firstDayOfMonth = sdf.format(cale.getTime());
+            minQueryParam = Integer.parseInt(firstDayOfMonth);
+   			cale.set(Calendar.DAY_OF_MONTH, lastDay);
+   			String lastDayOfMonth = sdf.format(cale.getTime());
+            maxQueryParam = Integer.parseInt(lastDayOfMonth);
+            if(StringUtils.isNotEmpty(minQueryParam)){
+                queryBuilder.appendAndHaving("t.statistic_time >= ?", minQueryParam);
+            }
+            if(StringUtils.isNotEmpty(maxQueryParam)){
+                queryBuilder.appendAndHaving("t.statistic_time <= ?", maxQueryParam);
+            }         
+        }
+        List<Map<String, Object>> list = baseDao.findListBySql(queryBuilder.getSql(), queryBuilder.getParams());
+        
+        ImageSubstandardStatistics iss = null;
         HashMap<String, Integer> departDataMap = new HashMap<String, Integer>();
         int listIndex = 0 ;
         if(list != null){
             for(Map<String, Object> map : list){
-            	String resultDapartCode  = StringUtils.nvlString(map.get("DEPARTCODE"));
-            	String departName  = StringUtils.nvlString(map.get("DEPARTNAME"));
+            	String resultDapartCode  = Constant.TOP_DEPARTCODE;
+            	String departName  = Constant.TOP_DEPARTNAME;
             	String date = StringUtils.nvlString(map.get("STATISTIC_TIME"));
             	Integer yAxisDataIndex = departDataMap.get(resultDapartCode);
             	if(yAxisDataIndex!=null){
@@ -570,7 +668,6 @@ public class StatisticServiceImpl implements StatisticService {
         }
         return yAxisDataList;
     }
-    
     private int getIsCompelPass(char r, char p){
         return (r|p)-48;
     }

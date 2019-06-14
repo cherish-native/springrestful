@@ -16,4 +16,11 @@ public interface SysDepartService {
      */
     List<SysDepart> fuzzySearchDepart(String fuzzyStr);
 
+    /**
+     * 根据部门编码查找部门名称
+     * @param departCode
+     * @return
+     */
+    String findDepartNameByDepartCode(String departCode);
+
 }

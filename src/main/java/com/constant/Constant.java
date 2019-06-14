@@ -15,6 +15,7 @@ public class Constant {
     public static final String SA = "$yc@";
 
     public static final String TOP_DEPARTCODE = "310107000000";
+    public static final String TOP_DEPARTNAME = "上海普陀分局";
 
     /**
      * 单位代码与首页地图单位名称map

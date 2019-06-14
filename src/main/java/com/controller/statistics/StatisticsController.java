@@ -171,7 +171,9 @@ public class StatisticsController extends BaseController {
      */
     @RequestMapping("/historyImageSubstandardStatistics")
     @ResponseBody
-    public Map<String,Object> historyImageSubstandardStatistics(String departCode,String dateStr) throws Exception{
+    public Map<String,Object> historyImageSubstandardStatistics(String departCode,String dateStr,HttpServletRequest request) throws Exception{
+        SysUser sysUser = findLoginUser(request);
+
     	Map<String,Object> result = new HashMap<>();
         //横坐标数据
         int xAxisCount = 12;
@@ -195,9 +197,14 @@ public class StatisticsController extends BaseController {
 
         	}
         List<ImageSubstandardStatistics> y = new ArrayList<ImageSubstandardStatistics>();
-        	
-    	y = statisticService.getGatherQualitySubstandardCount(dateStr,xAxisCount,departCode);
 
+/*       if("".equals(departCode)){
+    	   if(sysUser.getUnitCode().equals(Constant.TOP_DEPARTCODE)){
+    		   departCode =  Constant.TOP_DEPARTCODE+",";
+    	   }
+    	   departCode = Constant.TOP_DEPARTCODE+","+sysUser.getUnitCode();
+       }*/
+    	y = statisticService.getGatherQualitySubstandardCount(dateStr,xAxisCount,departCode);
         result.put("xAxisData", xAxisData);
         result.put("yAxisData", y);
         return result;

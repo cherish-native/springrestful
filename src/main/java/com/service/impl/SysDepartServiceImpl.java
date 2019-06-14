@@ -31,7 +31,25 @@ public class SysDepartServiceImpl implements SysDepartService {
     private SysDepartDao sysDepartDao;
     @Autowired
     private BaseDao baseDao;
+    
+    @Override
+    public String findDepartNameByDepartCode(String departCode){
+    	String departName = "";
+        StringBuilder sql = new StringBuilder();
 
+        sql.append("select t.depart_name from SYS_DEPART t ");
+        QueryBuilder queryBuilder = new QueryBuilder(sql.toString());
+        if(StringUtils.isNotEmpty(departCode)){
+            queryBuilder.appendAndWhere("t.depart_code = ?", departCode);
+        }
+        List<Map<String, Object>> list = baseDao.findListBySql(queryBuilder.getSql(), queryBuilder.getParams());
+        if(list != null){
+            for(Map<String, Object> map : list){
+            	departName = (String)map.get("DEPART_NAME");
+            }
+        }
+        return departName;
+    }
     @Override
     public List<SysDepart> fuzzySearchDepart(String fuzzyStr) {
 //        List<SysDepart> sysDepartList = new ArrayList<>();

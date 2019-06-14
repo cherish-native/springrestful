@@ -47,6 +47,36 @@ public class SysDepartController extends BaseController {
         }
         return resultList;
     }
+    
+    /**
+     * 系统部门模糊检索
+     * @param fuzzyStr
+     * @return
+     */
+    @ResponseBody
+    @RequestMapping("/fuzzySearchDepartAll")
+    public List<Map<String, String>> fuzzySearchDepartAll(String fuzzyStr, HttpServletRequest request){
+        List<Map<String, String>> resultList = new ArrayList<>();
+        SysUser sysUser = findLoginUser(request);
+        List<SysDepart> sysDepartList = sysDepartService.fuzzySearchDepart(fuzzyStr);
+        if(sysDepartList != null && sysDepartList.size() > 0){
+            for(SysDepart sysDepart : sysDepartList){
+                Map<String, String> map = new HashMap<>();
+                map.put("id", sysDepart.getDepartCode());
+                map.put("text", sysDepart.getDepartName());
+            	if(sysDepart.getDepartCode().equals(sysUser.getUnitCode())){
+            		map.put("isChecked", "1");//页面是否选中
+            	}else if(Constant.TOP_DEPARTCODE.equals(sysDepart.getDepartCode())){
+            		map.put("isChecked", "1");//页面是否选中
+            	}else{
+            		map.put("isChecked", "0");//页面是否选中
+
+            	}
+                resultList.add(map);
+            }
+        }
+        return resultList;
+    }
 
     /**
      * 获取系统部门列表

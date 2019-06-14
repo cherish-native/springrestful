@@ -86,11 +86,17 @@
         function loadDepart(){
     		$.ajax({
  			        type:"POST",
- 			        url:"sysDepart/fuzzySearchDepart",
+ 			        url:"sysDepart/fuzzySearchDepartAll",
+ 		   			async: false,
  			        success:function(data){
+ 					console.log(data);
  							var listHtml ='';
  							for(var i =0;i<data.length;i++){
-	 							listHtml += "<input id='"+data[i].id+"' type='checkbox' name='departCode' onchange='loadData()' /> <label for='"+data[i].id+"'>"+data[i].text+"</label><br/>";
+ 								if(data[i].isChecked == "1"){
+		 							listHtml += "<input id='"+data[i].id+"' type='checkbox' checked='checked' name='departCode' onchange='loadData()' /> <label for='"+data[i].id+"'>"+data[i].text+"</label><br/>";
+ 								}else{
+		 							listHtml += "<input id='"+data[i].id+"' type='checkbox' name='departCode' onchange='loadData()' /> <label for='"+data[i].id+"'>"+data[i].text+"</label><br/>"; 									
+ 								}
  							}
  						    $("#departCK").html(listHtml); 
 
@@ -173,8 +179,8 @@
                     formatter: '{value} %'
                 },
             },
-            color:['#00BFFF'],
-            series:yAxisDataArray/*  [{
+/*             color:['#00BFFF'], */    
+        series:yAxisDataArray/*  [{
             	name:'邮件营销',
                 type:'line',
                 data:[120, 132, 101, 134, 90, 230, 210]

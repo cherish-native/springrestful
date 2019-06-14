@@ -91,5 +91,13 @@ public interface StatisticService {
      * @throws Exception
      */
     List<ImageSubstandardStatistics> getGatherQualitySubstandardCount(String dateStr,int xAxisCount,String departCode) throws Exception;
+    /**
+     * 历史采集未达标统计
+     * @param dateStr
+     * @param xAxisCount
+     * @return
+     * @throws Exception
+     */
+    List<ImageSubstandardStatistics> getGatherQualitySubstandardCountByTOPDepart(String dateStr,int xAxisCount) throws Exception;
 
 }
