@@ -70,6 +70,7 @@ public class PersonLevelSetServiceImpl implements PersonLevelSetService {
     }
 
     @Override
+    @Transactional
     public int updatePersonLevel() {
         int result = baseDao.updateBySql("update personinfo set person_level ='' ",null);
         return result;

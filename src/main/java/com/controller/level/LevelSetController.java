@@ -72,6 +72,8 @@ public class LevelSetController {
                     workQueue.setWorkType(workQueue.TYPE_IMG_LEVEL);
                     workQueue.setWorkState(workQueue.STATE_SERVICE_RUNNING);
                     workQueueService.save(workQueue);
+                    resultMap.put("success", true);
+                    resultMap.put("message", "设置成功");
                 } else {
                     resultMap.put("success", true);
                     resultMap.put("message", "设置成功");

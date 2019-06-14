@@ -85,7 +85,7 @@ public class BaseDaoImpl implements BaseDao{
 
     @Override
     public int updateBySql(String sql, List<Object> params) {
-        Query query = entityManager.createQuery(sql);
+        Query query = entityManager.createNativeQuery(sql);
         if(params != null){
             for(int i=0;i<params.size();i++){
                 query.setParameter(i+1,params.get(i));
