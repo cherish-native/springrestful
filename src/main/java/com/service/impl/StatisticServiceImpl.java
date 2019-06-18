@@ -4,14 +4,12 @@ import com.constant.Constant;
 import com.dao.BaseDao;
 import com.dao.StatisticQualityDayDao;
 import com.entity.StatisticQualityDay;
-import com.entity.SysDepart;
 import com.entity.SysUser;
 import com.entity.vo.DataGridReturn;
 import com.entity.vo.ImageSubstandardStatistics;
 import com.entity.vo.PersonVo;
 import com.service.StatisticService;
 import com.service.SysDepartService;
-import com.util.DateUtil;
 import com.util.QueryBuilder;
 import com.util.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -182,6 +180,12 @@ public class StatisticServiceImpl implements StatisticService {
         }
     }
 
+    public static void main(String[] args) throws Exception{
+        String o = "%E5%94%90%E5%AF%85%E6%9D%B0";
+        String gatheruserName = java.net.URLDecoder.decode(o,"utf-8");
+        System.out.println(gatheruserName);
+    }
+
     @Override
     public DataGridReturn gatherSubstandardExamineList(String departCode, String beginDate, String endDate, Pageable pagination, SysUser sysUser) {
         StringBuilder sql = new StringBuilder();
@@ -246,10 +250,10 @@ public class StatisticServiceImpl implements StatisticService {
             queryBuilder.appendAndWhere(" t.printer = ? ", gatheruserName);
         }
         if(StringUtils.isNotEmpty(beginDate)){
-            queryBuilder.appendAndWhere(" t.printdate >= ? ", beginDate);
+            queryBuilder.appendAndWhere(" t.printdate >= ? ", beginDate.replaceAll("-",""));
         }
         if(StringUtils.isNotEmpty(endDate)){
-            queryBuilder.appendAndWhere(" t.printdate <= ? ", endDate);
+            queryBuilder.appendAndWhere(" t.printdate <= ? ", endDate.replaceAll("-",""));
         }
         DataGridReturn dataGridReturn = baseDao.pageQuery(queryBuilder.getSql(), queryBuilder.getParams(), pagination);
         List<PersonVo> personVos = new ArrayList<>();
