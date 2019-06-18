@@ -99,9 +99,9 @@ public class ImageReachSetController {
             List<WorkQueue> workQueueList = workQueueService.getWorkQueueWorkState(stateArr);
             if(repeat ==1 && workQueueList.size()>0){
                 if(workQueueList.get(0).getWorkState()== 1){
-                    throw new Exception("设置失败，正在处理历史人员是否达标");
+                    throw new Exception("正在处理历史人员是否达标,请稍后设置");
                 }else{
-                    throw new Exception("设置失败，正在统计历史数据");
+                    throw new Exception("正在统计历史数据,请稍后设置");
                 }
             }else {
                 int yx_min = Integer.parseInt(request.getParameter("yx_min"));
@@ -180,9 +180,9 @@ public class ImageReachSetController {
                 List<WorkQueue> workQueueList = workQueueService.getWorkQueueWorkState(stateArr);
                 if(workQueueList.size()>0){
                     if(workQueueList.get(0).getWorkState()== 1){
-                        throw new Exception("设置失败，正在处理历史人员是否达标");
+                        throw new Exception("正在处理历史人员是否达标，请稍后设置");
                     }else{
-                        throw new Exception("设置失败，正在统计历史数据");
+                        throw new Exception("正在统计历史数据，请稍后设置");
                     }
                 }else {
                     levelScoreSet(levelMap);
