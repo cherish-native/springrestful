@@ -190,9 +190,9 @@ public class ImageReachSetController {
                     HttpResult httpResult = HttpComponent.rpc_get(config.getApiUrl() + "/FingerGradePage");
                     if (httpResult.getSuccess()) {
                         resultMap.put("success", true);
-                        resultMap.put("message", httpResult.getMessage());
+                        resultMap.put("message", "人员指位等级设置成功,开始重新判定历史人员指纹采集是否达标");
                     } else {
-                        throw new Exception(httpResult.getMessage());
+                        throw new Exception("判定历史人员指纹采集是否达标");
                     }
                 }
             }else{
