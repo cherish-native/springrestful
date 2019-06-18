@@ -63,7 +63,7 @@ public class WorkQueueServiceImpl implements WorkQueueService {
     @Override
     public WorkQueue getLastWorkQueue() {
         Sort sort = new Sort(Sort.Direction.DESC, "insertTime");
-        List<WorkQueue> workQueueList = workQueueDao.findByOrderByInsertTimeAsc();
+        List<WorkQueue> workQueueList = workQueueDao.findByOrderByInsertTimeDesc();
         if(workQueueList != null && workQueueList.size() > 0){
             return workQueueList.get(0);
         }else{

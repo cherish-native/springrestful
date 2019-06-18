@@ -13,5 +13,5 @@ public interface WorkQueueDao extends CrudRepository<WorkQueue,String> {
 
     Page<WorkQueue> findAll(Specification<WorkQueue> params, Pageable pageable);
 
-    List<WorkQueue> findByOrderByInsertTimeAsc();
+    List<WorkQueue> findByOrderByInsertTimeDesc();
 }
