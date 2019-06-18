@@ -94,10 +94,10 @@ public class ImageReachSetController {
         Map<String,Object> resultMap = new HashMap<>();
         Map<String,int[]> scoreMap = new HashMap<>();
         try{
-            int repeat = Integer.parseInt(request.getParameter("repeat"));
+//            int repeat = Integer.parseInt(request.getParameter("repeat"));
             int[] stateArr = {1,2,3};
             List<WorkQueue> workQueueList = workQueueService.getWorkQueueWorkState(stateArr);
-            if(repeat ==1 && workQueueList.size()>0){
+            if(workQueueList.size()>0){
                 if(workQueueList.get(0).getWorkState()== 1){
                     throw new Exception("正在处理历史人员是否达标,请稍后设置");
                 }else{
@@ -174,29 +174,17 @@ public class ImageReachSetController {
             levelMap.put("A",array_a);
             levelMap.put("B",array_b);
             levelMap.put("C",array_c);
-
+            levelScoreSet(levelMap);
             if(repeat == 1){
-                int[] stateArr = {1,2,3};
-                List<WorkQueue> workQueueList = workQueueService.getWorkQueueWorkState(stateArr);
-                if(workQueueList.size()>0){
-                    if(workQueueList.get(0).getWorkState()== 1){
-                        throw new Exception("正在处理历史人员是否达标，请稍后设置");
-                    }else{
-                        throw new Exception("正在统计历史数据，请稍后设置");
-                    }
-                }else {
-                    levelScoreSet(levelMap);
-                    // 按照新规则判断人员指纹是否达标
-                    HttpResult httpResult = HttpComponent.rpc_get(config.getApiUrl() + "/FingerGradePage");
-                    if (httpResult.getSuccess()) {
-                        resultMap.put("success", true);
-                        resultMap.put("message", "人员指位等级设置成功,开始重新判定历史人员指纹采集是否达标");
-                    } else {
-                        throw new Exception("判定历史人员指纹采集是否达标异常");
-                    }
+                // 按照新规则判断人员指纹是否达标
+                HttpResult httpResult = HttpComponent.rpc_get(config.getApiUrl() + "/FingerGradePage");
+                if (httpResult.getSuccess()) {
+                    resultMap.put("success", true);
+                    resultMap.put("message", "人员指位等级设置成功,开始重新判定历史人员指纹采集是否达标");
+                } else {
+                    throw new Exception("判定历史人员指纹采集是否达标异常");
                 }
             }else{
-                levelScoreSet(levelMap);
                 resultMap.put("success",true);
                 resultMap.put("message","人员指位等级设置成功");
             }
