@@ -80,7 +80,7 @@ public class StatisticServiceImpl implements StatisticService {
                 .append(" from statistic_quality_day t");
         QueryBuilder queryBuilder = new QueryBuilder(sql.toString());
         if(Constant.TOP_DEPARTCODE.equals(sysUser.getUnitCode())){
-            if(StringUtils.isNotEmpty(departCode)){
+            if(StringUtils.isNotEmpty(departCode) && !Constant.TOP_DEPARTCODE.equals(departCode)){
                 queryBuilder.appendAndWhere("t.depart_code like ?", departCode);
             }
         }else{
@@ -191,7 +191,7 @@ public class StatisticServiceImpl implements StatisticService {
                 .append(" from statistic_quality_day t");
         QueryBuilder queryBuilder = new QueryBuilder(sql.toString());
         if(Constant.TOP_DEPARTCODE.equals(sysUser.getUnitCode())){
-            if(StringUtils.isNotEmpty(departCode)){
+            if(StringUtils.isNotEmpty(departCode)&& !Constant.TOP_DEPARTCODE.equals(departCode)){
                 queryBuilder.appendAndWhere("t.depart_code like ?", departCode);
             }
         }else{
@@ -292,7 +292,7 @@ public class StatisticServiceImpl implements StatisticService {
 
         QueryBuilder queryBuilder = new QueryBuilder(sql.toString());
         if(Constant.TOP_DEPARTCODE.equals(sysUser.getUnitCode())){
-            if(StringUtils.isNotEmpty(departCode)){
+            if(StringUtils.isNotEmpty(departCode) && !Constant.TOP_DEPARTCODE.equals(departCode)){
                 queryBuilder.appendAndWhere("t.depart_code like ?", departCode);
             }
         }else{
@@ -406,7 +406,7 @@ public class StatisticServiceImpl implements StatisticService {
         if(xAxisCount==12){
         	queryBuilder.appendSql(" substr(t.statistic_time,0,6) statistic_time");
         	queryBuilder.appendSql(" from statistic_quality_day t");
-        	if(StringUtils.isNotEmpty(departCode)&& !Constant.TOP_DEPARTCODE.equals(departCode)){
+        	if(StringUtils.isNotEmpty(departCode) && !Constant.TOP_DEPARTCODE.equals(departCode)){
             	queryBuilder.appendAndWhere(" t.depart_code = ? ", departCode);
         	}
             queryBuilder.appendSql("group by substr(t.statistic_time,0,6)");
@@ -423,7 +423,7 @@ public class StatisticServiceImpl implements StatisticService {
         }else{
         	queryBuilder.appendSql("t.statistic_time statistic_time ");
         	queryBuilder.appendSql(" from statistic_quality_day t");
-        	if(StringUtils.isNotEmpty(departCode)){
+        	if(StringUtils.isNotEmpty(departCode)&& !Constant.TOP_DEPARTCODE.equals(departCode)){
             	queryBuilder.appendAndWhere(" t.depart_code = ? ", departCode);
         	}
             queryBuilder.appendSql("group by t.statistic_time");
