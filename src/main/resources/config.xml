@@ -4,7 +4,8 @@
         <bind>127.0.0.1:8080</bind>
     </web_config>
     <database_config>
-        <ip>192.168.1.213</ip>
+        <!-- <ip>192.168.1.213</ip> -->
+        <ip>192.168.1.121</ip>
         <port>1521</port>
         <database_name>oragafis</database_name>
         <username>cherish</username>
@@ -18,9 +19,15 @@
     </zookeeper_config>
 
     <ftp_config>
-        <ftpHostAddr>192.168.1.132</ftpHostAddr>
-        <ftpUserName>zchao</ftpUserName>
-        <ftpPassword>123456</ftpPassword>
+        <ftpHostAddr>192.168.1.120</ftpHostAddr>
+        <ftpUserName>ciser</ftpUserName>
+        <ftpPassword>ciser</ftpPassword>
         <ftpPort>21</ftpPort>
+<!--         
+        <ftpHost>192.168.1.120</ftpHost>      指纹图片保存到FTP的地址
+		<ftpPort>21</ftpPort>                 FTP端口号
+		<ftpUserName>ciser</ftpUserName>        FTP账号
+		<ftpPassword>ciser</ftpPassword>        FTP密码
+		<ftpPath>image/</ftpPath>             图片保存的路径 例：image/  注：目录后方加/，开头不能加/ -->
     </ftp_config>
 </config>

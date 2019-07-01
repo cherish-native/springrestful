@@ -36,12 +36,15 @@ public class FTPUtil {
      * 从文件服务器上下载文件到本地
      * @param filename
      */
-    public static byte[] downFile(String ftppath, String filename) {
-        FTPClient ftp = initFtp(ftppath);
+    public static byte[] downFile(String ftppath, String personId,String filename) {
+        FTPClient ftp = initFtp();
         byte[] result = null;
         try{
             //4.指定要下载的目录
-            ftp.changeWorkingDirectory(ftppath);// 转移到FTP服务器目录
+        	//String a =File.separator+ ftppath+File.separator+personId;
+        	String a = ftppath+"/"+personId+"/";
+
+        	ftp.changeWorkingDirectory(a);// 转移到FTP服务器目录
             //5.遍历下载的目录
             FTPFile[] fs = ftp.listFiles();
             for (FTPFile ff : fs) {
@@ -51,6 +54,46 @@ public class FTPUtil {
                 if (fn.equals(filename)){
                     InputStream in = ftp.retrieveFileStream(ff.getName());
                     result = input2byte(in);
+                    in.close();
+                }
+            }
+            ftp.logout();
+        }catch(Exception e){
+            e.printStackTrace();
+            new Exception("从服务器下载文件过程中发生错误");
+        }finally{
+            if (ftp.isConnected()) {
+                try {
+                    ftp.disconnect();
+                } catch (IOException ioe) {
+                    ioe.printStackTrace();
+                }
+            }
+        }
+        return result;
+    }
+    /**
+     * 从文件服务器上下载BMP文件到本地(BMP文件头+数据库捺印原图(去gafis头))
+     * @param filename
+     */
+    public static byte[] downFileBMP(String ftppath, String personId,String filename) {
+        FTPClient ftp = initFtp();
+        byte[] result = null;
+        try{
+            //4.指定要下载的目录
+        	//String a =File.separator+ ftppath+File.separator+personId;
+        	String a = ftppath+"/"+personId+"/";
+
+        	ftp.changeWorkingDirectory(a);// 转移到FTP服务器目录
+            //5.遍历下载的目录
+            FTPFile[] fs = ftp.listFiles();
+            for (FTPFile ff : fs) {
+                //解决中文乱码问题，两次解码
+                byte[] bytes=ff.getName().getBytes("iso-8859-1");
+                String fn=new String(bytes,"utf8");
+                if (fn.equals(filename)){
+                    InputStream in = ftp.retrieveFileStream(ff.getName());
+                    result = input2byteBMP(in);//去除文件前gafis头  拼上BMP图片头
                     in.close();
                 }
             }
@@ -82,8 +125,32 @@ public class FTPUtil {
         swapStream.close();
         return in2b;
     }
+    
+    public static byte[] input2byteBMP(InputStream inStream)
+            throws IOException {
+		 BMPImageHead bih = new BMPImageHead();
+		 byte[] bmpHead = bih.toByteArray();
 
-    public static FTPClient initFtp(String ftppath) {
+        ByteArrayOutputStream swapStream = new ByteArrayOutputStream();
+        byte[] buff = new byte[1024];
+        int rc = 0;
+        while ((rc = inStream.read(buff, 0, buff.length)) > 0) {
+            swapStream.write(buff, 0, rc);
+        }
+        byte[] in2b = swapStream.toByteArray();        
+        swapStream.close();
+		byte[] gafisHead = new byte[64];//gafis头长度
+		byte[] bmpBody = new byte[in2b.length - gafisHead.length];
+		System.arraycopy(in2b, gafisHead.length, bmpBody, 0, bmpBody.length);//去除gafis 只保留像素部分
+        //输出bmp图像
+		byte[] last = new byte[bmpHead.length + in2b.length];
+		System.arraycopy(bmpHead, 0, last , 0, bmpHead.length);
+		System.arraycopy(bmpBody, 0, last , bmpHead.length, bmpBody.length);
+		
+        return last;
+    }
+
+    public static FTPClient initFtp() {
         int reply;
         FTPClient ftp = new FTPClient();
         try {

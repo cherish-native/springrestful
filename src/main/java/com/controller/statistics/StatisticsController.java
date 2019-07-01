@@ -301,9 +301,9 @@ public class StatisticsController extends BaseController {
         int baseInt = fgpCase*10;
         try {
             if(type == 1){
-                imageBytes = FTPUtil.downFile(imgPath,personId + "_" + (baseInt+fgp) + ".bmp");
+                imageBytes = FTPUtil.downFileBMP(imgPath,personId,personId + "_" + (baseInt+fgp) + ".bmp");
             }else{
-                imageBytes = FTPUtil.downFile(imgPath,personId + "_" + (baseInt+fgp) + ".jpg");
+                imageBytes = FTPUtil.downFile(imgPath,personId,personId + "_" + (baseInt+fgp) + ".jpg");
             }
         } catch (Exception e){
             e.printStackTrace();
