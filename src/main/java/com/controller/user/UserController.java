@@ -138,6 +138,9 @@ public class UserController  {
         Map<String,Object> resultMap = new HashMap<>();
         try{
             SysUser sysUser = new SysUser();
+            if(request.getParameter("id")!= null && !request.getParameter("id").equals("")){
+                sysUser.setId(request.getParameter("id"));
+            }
             sysUser.setUserName(request.getParameter("username"));
             sysUser.setPassword(DigestUtils.sha1Hex((request.getParameter("password") + Constant.SA).getBytes()));
             sysUser.setTrueName(request.getParameter("name"));

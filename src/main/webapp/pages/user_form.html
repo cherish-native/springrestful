@@ -59,6 +59,7 @@
                         , data: {username:username}
                         , type: "GET"
                         , success: function (data,textStatus, xhr) {
+                            $('#id').val(data.id)
                             $('#policeId').val(data.policeId)
                             $('#name').val(data.trueName)
                             $('#username').val(data.userName)
@@ -94,6 +95,7 @@
             });
 
             $('#saveUser').on('click',function (e){
+                var id = $('#id').val()
                 var policeId = $('#policeId').val()
                 var name = $('#name').val()
                 var username = $('#username').val()
@@ -125,6 +127,7 @@
                 }
 
                 var params = {
+                    id:id,
                     policeId :policeId,
                     name:name,
                     username:username,
